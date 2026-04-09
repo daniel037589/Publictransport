@@ -23,25 +23,30 @@ function LocationAutocomplete({ id, name, placeholder, disabled, required }) {
   const [query, setQuery] = useState('');
   const [results, setResults] = useState([]);
   const [isOpen, setIsOpen] = useState(false);
+  const [isSearching, setIsSearching] = useState(false);
   const wrapperRef = useRef(null);
 
   useEffect(() => {
     const fetchLocations = async () => {
       if (query.trim().length < 3) {
         setResults([]);
+        setIsSearching(false);
         return;
       }
+      setIsSearching(true);
       try {
         const url = `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(query + ', Weesp, Netherlands')}&limit=5`;
-        const resp = await fetch(url);
+        const resp = await fetch(url, { headers: { 'Accept-Language': 'en-US' } });
         const data = await resp.json();
-        setResults(data);
+        setResults(data || []);
       } catch (err) {
         console.error("Autocomplete error", err);
+      } finally {
+        setIsSearching(false);
       }
     };
 
-    const debounce = setTimeout(fetchLocations, 400);
+    const debounce = setTimeout(fetchLocations, 450);
     return () => clearTimeout(debounce);
   }, [query]);
 
@@ -56,7 +61,7 @@ function LocationAutocomplete({ id, name, placeholder, disabled, required }) {
   }, [wrapperRef]);
 
   return (
-    <div style={{ position: 'relative' }} ref={wrapperRef}>
+    <div style={{ position: 'relative', zIndex: isOpen ? 1000 : 1 }} ref={wrapperRef}>
       <input 
         className="form-input" 
         id={id} 
@@ -73,29 +78,37 @@ function LocationAutocomplete({ id, name, placeholder, disabled, required }) {
         }}
         onFocus={() => setIsOpen(true)}
       />
-      {isOpen && results.length > 0 && (
+      {isOpen && (query.trim().length >= 3) && (
         <ul style={{
           position: 'absolute', top: 'calc(100% + 4px)', left: 0, right: 0, 
           background: 'var(--color-brand-white)',
-          border: '1px solid #eaeaea', borderRadius: '12px', zIndex: 1000,
+          border: '1px solid #eaeaea', borderRadius: '12px', zIndex: 10000,
           listStyle: 'none', margin: 0, padding: '8px 0', 
-          boxShadow: '0 8px 24px rgba(0,0,0,0.1)',
-          maxHeight: '220px', overflowY: 'auto'
+          boxShadow: '0 8px 24px rgba(0,0,0,0.15)',
+          maxHeight: '260px', overflowY: 'auto'
         }}>
-          {results.map((r, i) => (
-            <li 
-              key={i} 
-              style={{ padding: '12px 16px', borderBottom: i < results.length - 1 ? '1px solid #eaeaea' : 'none', cursor: 'pointer', fontSize: '14px', color: 'var(--color-text-black)', display: 'flex', flexDirection: 'column', gap: '4px' }}
-              onClick={() => {
-                const displayName = r.display_name.includes('Weesp') ? r.display_name.split(', Weesp')[0] : r.display_name.split(',')[0];
-                setQuery(displayName);
-                setIsOpen(false);
-              }}
-            >
-              <strong style={{ fontFamily: 'var(--font-family-title)' }}>{r.name || r.display_name.split(',')[0]}</strong>
-              <span style={{ fontSize: '12px', color: 'var(--color-text-nav)' }}>{r.display_name}</span>
-            </li>
-          ))}
+          {isSearching && results.length === 0 ? (
+             <li style={{ padding: '12px 16px', fontSize: '14px', color: 'var(--color-text-nav)' }}>Searching streets...</li>
+          ) : results.length === 0 ? (
+             <li style={{ padding: '12px 16px', fontSize: '14px', color: 'var(--color-text-nav)' }}>No results found in Weesp</li>
+          ) : (
+            results.map((r, i) => (
+              <li 
+                key={i} 
+                style={{ padding: '12px 16px', borderBottom: i < results.length - 1 ? '1px solid #eaeaea' : 'none', cursor: 'pointer', fontSize: '14px', color: 'var(--color-text-black)', display: 'flex', flexDirection: 'column', gap: '4px', background: 'var(--color-brand-white)' }}
+                onMouseEnter={(e) => e.currentTarget.style.background = 'var(--color-bg-gray)'}
+                onMouseLeave={(e) => e.currentTarget.style.background = 'var(--color-brand-white)'}
+                onClick={() => {
+                  const displayName = r.display_name.includes('Weesp') ? r.display_name.split(', Weesp')[0] : r.display_name.split(',')[0];
+                  setQuery(displayName);
+                  setIsOpen(false);
+                }}
+              >
+                <strong style={{ fontFamily: 'var(--font-family-title)', color: 'var(--color-brand-blue)' }}>{r.name || r.display_name.split(',')[0]}</strong>
+                <span style={{ fontSize: '12px', color: 'var(--color-text-nav)' }}>{r.display_name}</span>
+              </li>
+            ))
+          )}
         </ul>
       )}
     </div>
