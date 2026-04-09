@@ -5,6 +5,7 @@ import Navbar from './components/Navbar';
 import { GetRideScreen } from './components/GetRide';
 import { GiveRideScreen } from './components/GiveRide';
 import { ProfileScreen } from './components/Profile';
+import { MyTripsScreen } from './components/MyTrips';
 import './index.css';
 
 const INITIAL_RIDERS = [
@@ -99,14 +100,18 @@ function App() {
       .channel('public-ride_requests-changes')
       .on(
         'postgres_changes',
-        { event: 'INSERT', schema: 'public', table: 'ride_requests' },
+        { event: '*', schema: 'public', table: 'ride_requests' },
         (payload) => {
           console.log("Supabase Realtime Received:", payload);
-          const incomingRider = deserializeFromDb(payload.new);
-          setRiders(prev => {
-            if (prev.some(r => r.id === incomingRider.id)) return prev;
-            return [...prev, incomingRider];
-          });
+          if (payload.eventType === 'INSERT') {
+            const incomingRider = deserializeFromDb(payload.new);
+            setRiders(prev => {
+              if (prev.some(r => r.id === incomingRider.id)) return prev;
+              return [...prev, incomingRider];
+            });
+          } else if (payload.eventType === 'DELETE') {
+            setRiders(prev => prev.filter(r => String(r.id) !== String(payload.old.id)));
+          }
         }
       )
       .subscribe();
@@ -135,6 +140,17 @@ function App() {
     }
   };
 
+  const handleDeleteRide = async (rideId) => {
+    // Locally optimistically update state instantly for snappy UI
+    setRiders(prev => prev.filter(r => String(r.id) !== String(rideId)));
+
+    // Execute deletion from persistent storage
+    const { error } = await supabase.from('ride_requests').delete().eq('id', String(rideId));
+    if (error) {
+      console.error("Failed to delete request from Supabase!", error.message);
+    }
+  };
+
   return (
     <div className="app-shell">
       {/* Screens container */}
@@ -155,10 +171,7 @@ function App() {
       <div 
         className={`screen ${activeTab === 'trips' ? 'screen--active' : 'screen--hidden-right'}`}
       >
-        <div style={{ padding: '80px 20px', textAlign: 'center' }}>
-          <h2>My Trips Page</h2>
-          <p>This is a placeholder for the My Trips screen.</p>
-        </div>
+        <MyTripsScreen riders={riders} onDeleteRide={handleDeleteRide} />
       </div>
 
       <div 
