@@ -147,6 +147,17 @@ function App() {
     if (error) console.error("Failed to update request in Supabase!", error.message);
   };
 
+  const handleCancelOffer = async (rideId) => {
+    // Reverts an actively driven ride back into the pending global queue
+    setRiders(prev => prev.map(r => r.id === rideId ? { ...r, status: 'pending', driverName: null } : r));
+    
+    const { error } = await supabase.from('ride_requests')
+      .update({ status: 'pending', driver_name: null })
+      .eq('id', String(rideId));
+      
+    if (error) console.error("Failed to cancel offer in Supabase!", error.message);
+  };
+
   if (isInitializing) return null;
 
   // Intercept the entire layout with boarding flow if identity is missing
@@ -166,7 +177,7 @@ function App() {
       </div>
 
       <div className={`screen ${activeTab === 'trips' ? 'screen--active' : 'screen--hidden-right'}`}>
-        <MyTripsScreen riders={riders} onDeleteRide={handleDeleteRide} userProfile={userProfile} />
+        <MyTripsScreen riders={riders} onDeleteRide={handleDeleteRide} onCancelOffer={handleCancelOffer} userProfile={userProfile} />
       </div>
 
       <div className={`screen ${activeTab === 'community' ? 'screen--active' : 'screen--hidden-right'}`}>
