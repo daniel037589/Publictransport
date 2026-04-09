@@ -1,0 +1,381 @@
+/* ============================================================
+   WEESP DESIGN SYSTEM — CSS Custom Properties
+   Source: Figma file HivvJKKNj8eIuQd6vd6L4g, node 346:2719
+   ============================================================ */
+
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap');
+
+:root {
+  /* Colors */
+  --color-brand-blue: #1164fd;
+  --color-brand-black: #000000;
+  --color-brand-white: #ffffff;
+  --color-bg-primary: #f6f6f6;
+  --color-bg-gray: #f6f6f6;
+  --color-text-blue: #1164fd;
+  --color-text-black: #000000;
+  --color-text-nav: #737373;
+
+  /* Typography — Family */
+  --font-family-title: 'Inter', sans-serif;
+  --font-family-body: 'Inter', sans-serif;
+
+  /* Typography — Weight */
+  --font-weight-bold: 700;
+  --font-weight-semibold: 600;
+  --font-weight-regular: 400;
+
+  /* Typography — Size */
+  --font-size-xxl: 48px;
+  --font-size-xl: 32px;
+  --font-size-l: 24px;
+  --font-size-m: 20px;
+  --font-size-s: 16px;
+  --font-size-xs: 14px;
+  --font-size-xxs: 12px;
+
+  /* Typography — Line Height */
+  --line-height-xxl: 48px;
+  --line-height-xl: 32px;
+  --line-height-l: 24px;
+  --line-height-m: 20px;
+  --line-height-s: 16px;
+  --line-height-xs: 16px;
+
+  /* Border Radius */
+  --radius-bigbuttons: 50px;
+  --radius-navbartop: 35px;
+  --radius-navbarbottom: 0px;
+  --radius-navitem: 32px;
+  --radius-pill: 100px;
+
+  /* Layout */
+  --navbar-height: 74px;
+  --mobile-width: 402px;
+
+  /* Spacing */
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 9px;
+  --space-4: 10px;
+  --space-5: 12px;
+  --space-6: 16px;
+  --space-8: 24px;
+  --space-10: 32px;
+  --space-12: 39px;
+  --space-14: 50px;
+
+  /* Shadows */
+  --shadow-card: 0 2px 8px rgba(0, 0, 0, 0.08);
+  --shadow-elevated: 0 4px 20px rgba(0, 0, 0, 0.12);
+}
+
+/* ============================================================
+   RESET & BASE STYLES
+   ============================================================ */
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html, body, #root {
+  height: 100%;
+  width: 100%;
+  background: #e8e8e8;
+}
+
+body {
+  font-family: var(--font-family-body);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  background: #e0e0e0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+}
+
+#root {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+p, h1, h2, h3 {
+  margin: 0;
+  padding: 0;
+}
+
+button {
+  cursor: pointer;
+  border: none;
+  background: none;
+  font-family: inherit;
+}
+
+/* ============================================================
+   MOBILE SHELL — Simulates a phone frame in browser
+   ============================================================ */
+.app-shell {
+  position: relative;
+  width: var(--mobile-width);
+  height: 870px;
+  background: var(--color-brand-white);
+  overflow: hidden;
+  border-radius: 40px;
+  box-shadow: 0 24px 64px rgba(0, 0, 0, 0.25), 0 0 0 1px rgba(0,0,0,0.06);
+}
+
+/* ============================================================
+   SCREEN TRANSITIONS
+   ============================================================ */
+.screen {
+  position: absolute;
+  inset: 0;
+  background: var(--color-brand-white);
+  transition: transform 0.35s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.35s ease;
+}
+
+.screen--active {
+  transform: translateX(0);
+  opacity: 1;
+  pointer-events: all;
+}
+
+.screen--hidden-right {
+  transform: translateX(100%);
+  opacity: 0;
+  pointer-events: none;
+}
+
+.screen--hidden-left {
+  transform: translateX(-100%);
+  opacity: 0;
+  pointer-events: none;
+}
+
+/* ============================================================
+   NAVBAR
+   ============================================================ */
+.navbar {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: var(--navbar-height);
+  background: var(--color-bg-primary);
+  border-radius: var(--radius-navbartop) var(--radius-navbartop) 0 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 50;
+}
+
+.navbar__inner {
+  display: flex;
+  gap: 39px;
+  align-items: center;
+  justify-content: center;
+}
+
+.navbar__item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-1);
+  padding: var(--space-5);
+  border-radius: var(--radius-navitem);
+  width: 44px;
+  height: 44px;
+  cursor: pointer;
+  transition: background 0.2s ease, transform 0.15s ease;
+  background: transparent;
+  color: var(--color-text-nav);
+}
+
+.navbar__item:hover {
+  background: rgba(17, 100, 253, 0.06);
+}
+
+.navbar__item--active {
+  background: rgba(17, 100, 253, 0.1);
+  color: var(--color-brand-blue);
+}
+
+.navbar__item--active .navbar__label {
+  color: var(--color-brand-blue);
+}
+
+.navbar__item img {
+  width: 28px;
+  height: auto;
+  display: block;
+}
+
+.navbar__label {
+  font-family: var(--font-family-body);
+  font-size: var(--font-size-xxs);
+  line-height: var(--line-height-xs);
+  font-weight: var(--font-weight-regular);
+  color: var(--color-text-nav);
+  white-space: nowrap;
+  margin-top: 2px;
+}
+
+/* ============================================================
+   HOME SCREEN
+   ============================================================ */
+.home-screen {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding-top: 57px;
+  gap: 164px;
+  height: 100%;
+}
+
+.home-logo {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 9px;
+  width: 258px;
+}
+
+.home-logo__title {
+  font-family: var(--font-family-title);
+  font-weight: var(--font-weight-bold);
+  font-size: var(--font-size-xxl);
+  line-height: var(--line-height-xxl);
+  color: var(--color-text-blue);
+  text-align: center;
+  width: 100%;
+  letter-spacing: -1px;
+  animation: fadeSlideDown 0.5s ease both;
+}
+
+.home-logo__tagline {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 0 50px;
+  width: 100%;
+  animation: fadeSlideDown 0.6s ease both;
+}
+
+.home-logo__tagline img {
+  width: 42px;
+  height: 42px;
+  flex-shrink: 0;
+}
+
+.home-logo__tagline-text {
+  font-family: var(--font-family-title);
+  font-weight: var(--font-weight-bold);
+  font-size: var(--font-size-m);
+  line-height: var(--line-height-m);
+  color: var(--color-text-black);
+  white-space: nowrap;
+}
+
+/* ============================================================
+   BIG BUTTONS
+   ============================================================ */
+.big-buttons {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  align-items: flex-end;
+  justify-content: flex-start;
+  width: 355px;
+}
+
+.big-btn {
+  background: var(--color-bg-gray);
+  border-radius: var(--radius-bigbuttons);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 16px;
+  cursor: pointer;
+  transition: transform 0.18s ease, box-shadow 0.18s ease, background 0.18s ease;
+  border: 2px solid transparent;
+  animation: fadeScaleIn 0.5s ease both;
+}
+
+.big-btn:hover {
+  transform: translateY(-3px) scale(1.02);
+  box-shadow: var(--shadow-elevated);
+  background: #eeeeee;
+}
+
+.big-btn:active {
+  transform: translateY(0) scale(0.98);
+  box-shadow: none;
+}
+
+.big-btn--full {
+  width: 355px;
+  height: 115px;
+  gap: 8px;
+  flex-direction: row;
+  animation-delay: 0.1s;
+}
+
+.big-btn--half {
+  width: 172px;
+  height: 176px;
+  gap: 8px;
+  flex-direction: column;
+}
+
+.big-btn--half:nth-child(2) { animation-delay: 0.2s; }
+.big-btn--half:nth-child(3) { animation-delay: 0.3s; }
+
+.big-btn__icon {
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.big-btn__label {
+  font-family: var(--font-family-title);
+  font-weight: var(--font-weight-semibold);
+  font-size: var(--font-size-xl);
+  line-height: var(--line-height-xl);
+  color: var(--color-text-black);
+  text-align: center;
+}
+
+/* ============================================================
+   ANIMATIONS
+   ============================================================ */
+@keyframes fadeSlideDown {
+  from {
+    opacity: 0;
+    transform: translateY(-16px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes fadeScaleIn {
+  from {
+    opacity: 0;
+    transform: scale(0.94);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.6; }
+}

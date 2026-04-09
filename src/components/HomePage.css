@@ -1,0 +1,112 @@
+/* HomePage specific styles - most styles are in index.css */
+
+.home-screen {
+  display: flex;
+  flex-direction: column;
+  padding: 40px 24px calc(var(--navbar-height) + 24px);
+  gap: var(--space-7);
+  height: 100%;
+}
+
+.home-logo {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+  align-items: center;
+  justify-content: center;
+  margin-top: 4vh;
+}
+
+.home-logo__title {
+  font-family: var(--font-family-title);
+  font-weight: var(--font-weight-heavy);
+  font-size: var(--font-size-xxl);
+  color: var(--color-text-black);
+}
+
+.home-logo__tagline {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+}
+
+.home-logo__tagline-text {
+  font-family: var(--font-family-title);
+  font-weight: var(--font-weight-semibold);
+  font-size: var(--font-size-l);
+  color: var(--color-text-black);
+  line-height: var(--line-height-m);
+}
+
+.big-buttons {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-3);
+  width: 100%;
+  margin-top: auto;
+  margin-bottom: auto;
+}
+
+.big-btn {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-3);
+  background: var(--color-bg-gray);
+  border-radius: var(--radius-bigbuttons);
+  padding: var(--space-5);
+  box-shadow: var(--shadow-card);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  cursor: pointer;
+  border: none;
+  color: var(--color-text-nav);
+}
+
+.big-btn--teal {
+  background: linear-gradient(135deg, #d2faf4 0%, #75e8d8 100%);
+  color: #0b685c;
+}
+
+.big-btn--orange {
+  background: linear-gradient(135deg, #ffeaca 0%, #ffc085 100%);
+  color: #924d06;
+}
+
+.big-btn--purple {
+  background: linear-gradient(135deg, #efe2ff 0%, #c49fff 100%);
+  color: #4b1793;
+}
+
+.big-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.08);
+}
+
+.big-btn:active {
+  transform: translateY(0);
+}
+
+.big-btn--full {
+  flex: 1 1 100%;
+  aspect-ratio: 354 / 158;
+}
+
+.big-btn--half {
+  flex: 1 1 calc(50% - (var(--space-3) / 2));
+  aspect-ratio: 169 / 164;
+}
+
+.big-btn__icon {
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.big-btn__label {
+  font-family: var(--font-family-title);
+  font-weight: var(--font-weight-semibold);
+  font-size: var(--font-size-m);
+  line-height: var(--line-height-m);
+}

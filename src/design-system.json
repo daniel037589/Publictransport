@@ -1,0 +1,156 @@
+{
+  "$schema": "https://weesp.app/design-system/v1",
+  "meta": {
+    "name": "Weesp Design System",
+    "description": "Design tokens for the Weesp ride-sharing app, sourced from Figma (node: 346:2719)",
+    "figmaFileId": "HivvJKKNj8eIuQd6vd6L4g",
+    "version": "1.0.0"
+  },
+  "colors": {
+    "brand": {
+      "blue": "#1164fd",
+      "black": "#000000",
+      "white": "#ffffff"
+    },
+    "background": {
+      "primary": "#f6f6f6",
+      "gray": "#f6f6f6",
+      "white": "#ffffff"
+    },
+    "font": {
+      "blue": "#1164fd",
+      "black": "#000000",
+      "navbarIcons": "#737373"
+    },
+    "items": {
+      "navbarIcons": "#737373"
+    }
+  },
+  "typography": {
+    "fontFamily": {
+      "title": "Inter",
+      "body": "Inter"
+    },
+    "fontWeight": {
+      "bold": 700,
+      "semibold": 600,
+      "regular": 400
+    },
+    "fontSize": {
+      "xxl": "48px",
+      "xl": "32px",
+      "l": "24px",
+      "m": "20px",
+      "s": "16px",
+      "xs": "14px",
+      "xxs": "12px"
+    },
+    "lineHeight": {
+      "xxl": "48px",
+      "xl": "32px",
+      "l": "24px",
+      "m": "20px",
+      "s": "16px",
+      "xs": "16px",
+      "xxs": "12px"
+    },
+    "textStyles": {
+      "Title": {
+        "fontFamily": "Inter",
+        "fontWeight": 700,
+        "fontSize": "48px",
+        "lineHeight": "48px",
+        "letterSpacing": 0
+      },
+      "BrandTitle": {
+        "fontFamily": "Inter",
+        "fontWeight": 700,
+        "fontSize": "20px",
+        "lineHeight": "20px",
+        "letterSpacing": 0
+      },
+      "GiantButton": {
+        "fontFamily": "Inter",
+        "fontWeight": 600,
+        "fontSize": "32px",
+        "lineHeight": "32px",
+        "letterSpacing": 0
+      },
+      "NavigationBar": {
+        "fontFamily": "Inter",
+        "fontWeight": 400,
+        "fontSize": "12px",
+        "lineHeight": "16px",
+        "letterSpacing": 0
+      }
+    }
+  },
+  "spacing": {
+    "0": "0px",
+    "4": "4px",
+    "8": "8px",
+    "9": "9px",
+    "10": "10px",
+    "12": "12px",
+    "16": "16px",
+    "24": "24px",
+    "32": "32px",
+    "39": "39px",
+    "48": "48px",
+    "50": "50px"
+  },
+  "borderRadius": {
+    "bigButtons": "50px",
+    "navbarTop": "35px",
+    "navbarBottom": "0px",
+    "navItem": "32px",
+    "pill": "100px"
+  },
+  "sizing": {
+    "mobileWidth": "402px",
+    "navbarHeight": "74px",
+    "bigButtonFull": {
+      "width": "355px",
+      "height": "115px"
+    },
+    "bigButtonHalf": {
+      "width": "172px",
+      "height": "176px"
+    },
+    "navIcon": "28px",
+    "navItem": "44px"
+  },
+  "shadows": {
+    "none": "none",
+    "card": "0 2px 8px rgba(0,0,0,0.08)",
+    "elevated": "0 4px 16px rgba(0,0,0,0.12)"
+  },
+  "cssVariables": {
+    "--color-brand-blue": "#1164fd",
+    "--color-brand-black": "#000000",
+    "--color-brand-white": "#ffffff",
+    "--color-bg-primary": "#f6f6f6",
+    "--color-bg-gray": "#f6f6f6",
+    "--color-text-blue": "#1164fd",
+    "--color-text-black": "#000000",
+    "--color-text-nav": "#737373",
+    "--font-family-title": "'Inter', sans-serif",
+    "--font-family-body": "'Inter', sans-serif",
+    "--font-weight-bold": "700",
+    "--font-weight-semibold": "600",
+    "--font-weight-regular": "400",
+    "--font-size-xxl": "48px",
+    "--font-size-xl": "32px",
+    "--font-size-m": "20px",
+    "--font-size-xxs": "12px",
+    "--line-height-xxl": "48px",
+    "--line-height-xl": "32px",
+    "--line-height-m": "20px",
+    "--line-height-xs": "16px",
+    "--radius-bigbuttons": "50px",
+    "--radius-navbartop": "35px",
+    "--radius-navbarbottom": "0px",
+    "--navbar-height": "74px",
+    "--mobile-width": "402px"
+  }
+}
