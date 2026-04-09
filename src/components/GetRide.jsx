@@ -18,7 +18,14 @@ function CommunityShieldIcon() {
   );
 }
 
-export function GetRideScreen({ onBack, onRequestRide }) {
+export function GetRideScreen({ onBack, onRequestRide, userProfile }) {
+  const PREF_MAP = {
+    'wheelchair': { icon: '♿️', text: 'Wheelchair Assist', color: 'blue' },
+    'stroller': { icon: '👶', text: 'Stroller', color: 'blue' },
+    'pets': { icon: '🐾', text: 'Pet Friendly', color: 'grey' },
+    'quiet': { icon: '🤫', text: 'Quiet Ride', color: 'grey' }
+  };
+
   const handleSubmit = (e) => {
     e.preventDefault();
     const formData = new FormData(e.target);
@@ -28,10 +35,12 @@ export function GetRideScreen({ onBack, onRequestRide }) {
     const newLocation = [52.3082 + (Math.random() - 0.5)*0.015, 5.0416 + (Math.random() - 0.5)*0.015];
     const dropoffLocation = [52.3082 + (Math.random() - 0.5)*0.015, 5.0416 + (Math.random() - 0.5)*0.015];
 
+    const mappedBadges = (userProfile?.preferences || []).map(p => PREF_MAP[p]).filter(Boolean);
+
     const newRider = {
       id: 'you-' + Date.now(),
-      name: 'You',
-      initial: 'Y',
+      name: userProfile ? userProfile.name : 'You',
+      initial: userProfile ? userProfile.name.charAt(0).toUpperCase() : 'Y',
       distance: '0 km away',
       timeframe: 'Needs ride now',
       destination: destination,
@@ -39,7 +48,8 @@ export function GetRideScreen({ onBack, onRequestRide }) {
       destinationLocation: dropoffLocation,
       color: '#ffc085', // warm orange
       badges: [
-        { icon: '📍', text: 'Ready', color: 'blue' }
+        { icon: '📍', text: 'Ready', color: 'blue' },
+        ...mappedBadges
       ]
     };
 
