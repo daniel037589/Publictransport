@@ -50,7 +50,9 @@ export function GetRideScreen({ onBack, onRequestRide, userProfile }) {
       badges: [
         { icon: '📍', text: 'Ready', color: 'blue' },
         ...mappedBadges
-      ]
+      ],
+      avatarUrl: userProfile?.avatarUrl,
+      status: 'pending'
     };
 
     if(onRequestRide) onRequestRide(newRider);

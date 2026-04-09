@@ -38,7 +38,10 @@ const serializeForDb = (rider) => ({
   location: rider.location,
   destination_location: rider.destinationLocation,
   color: rider.color,
-  badges: rider.badges
+  badges: rider.badges,
+  avatar_url: rider.avatarUrl,
+  status: rider.status || 'pending',
+  driver_name: rider.driverName || null
 });
 
 const deserializeFromDb = (row) => ({
@@ -51,7 +54,10 @@ const deserializeFromDb = (row) => ({
   location: row.location,
   destinationLocation: row.destination_location,
   color: row.color,
-  badges: row.badges
+  badges: row.badges,
+  avatarUrl: row.avatar_url,
+  status: row.status || 'pending',
+  driverName: row.driver_name || null
 });
 
 function App() {
@@ -100,6 +106,9 @@ function App() {
             });
           } else if (payload.eventType === 'DELETE') {
             setRiders(prev => prev.filter(r => String(r.id) !== String(payload.old.id)));
+          } else if (payload.eventType === 'UPDATE') {
+            const updatedRider = deserializeFromDb(payload.new);
+            setRiders(prev => prev.map(r => r.id === updatedRider.id ? updatedRider : r));
           }
         }
       )
@@ -124,6 +133,18 @@ function App() {
     if (error) console.error("Failed to delete request from Supabase!", error.message);
   };
 
+  const handleOfferRide = async (rideId) => {
+    // Optimistic local UI update
+    setRiders(prev => prev.map(r => r.id === rideId ? { ...r, status: 'ongoing', driverName: userProfile.name } : r));
+    setActiveTab('trips');
+    
+    const { error } = await supabase.from('ride_requests')
+      .update({ status: 'ongoing', driver_name: userProfile.name })
+      .eq('id', String(rideId));
+      
+    if (error) console.error("Failed to update request in Supabase!", error.message);
+  };
+
   if (isInitializing) return null;
 
   // Intercept the entire layout with boarding flow if identity is missing
@@ -139,11 +160,11 @@ function App() {
 
       <div className={`screen ${(activeTab === 'get-ride' || activeTab === 'give-ride') ? 'screen--active' : 'screen--hidden-right'}`} style={{ zIndex: 100 }}>
         {activeTab === 'get-ride' && <GetRideScreen onBack={() => setActiveTab('home')} onRequestRide={handleAddRider} userProfile={userProfile} />}
-        {activeTab === 'give-ride' && <GiveRideScreen onBack={() => setActiveTab('home')} riders={riders} />}
+        {activeTab === 'give-ride' && <GiveRideScreen onBack={() => setActiveTab('home')} riders={riders} onOfferRide={handleOfferRide} />}
       </div>
 
       <div className={`screen ${activeTab === 'trips' ? 'screen--active' : 'screen--hidden-right'}`}>
-        <MyTripsScreen riders={riders} onDeleteRide={handleDeleteRide} />
+        <MyTripsScreen riders={riders} onDeleteRide={handleDeleteRide} userProfile={userProfile} />
       </div>
 
       <div className={`screen ${activeTab === 'community' ? 'screen--active' : 'screen--hidden-right'}`}>

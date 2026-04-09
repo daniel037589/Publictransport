@@ -37,7 +37,7 @@ function CloseIcon() {
   );
 }
 
-export function GiveRideScreen({ onBack, riders }) {
+export function GiveRideScreen({ onBack, riders, onOfferRide }) {
   const [selectedRider, setSelectedRider] = useState(null);
   
   // Weesp center coordinates (User)
@@ -45,6 +45,9 @@ export function GiveRideScreen({ onBack, riders }) {
 
   const handleSelectRider = (rider) => setSelectedRider(rider);
   const handleClose = () => setSelectedRider(null);
+
+  // Filter out rides that have already been accepted
+  const pendingRiders = riders.filter(r => r.status === 'pending' || !r.status);
 
   return (
     <div className="ride-screen" style={{ overflow: selectedRider ? 'hidden' : 'auto' }}>
@@ -79,7 +82,7 @@ export function GiveRideScreen({ onBack, riders }) {
           </Marker>
 
           {/* Interactive rider pins & routes */}
-          {riders.map(rider => (
+          {pendingRiders.map(rider => (
             <div key={rider.id}>
               {rider.destinationLocation && (
                 <Polyline 
@@ -89,7 +92,12 @@ export function GiveRideScreen({ onBack, riders }) {
               )}
               <Marker 
                 position={rider.location} 
-                icon={createRiderIcon(rider.color, rider.initial)}
+                icon={new L.divIcon({
+                  className: 'custom-rider-icon',
+                  html: `<div class='rider-marker' ${rider.avatarUrl ? `style='background-image: url(${rider.avatarUrl}); background-size: cover; color: transparent;'` : `style='background-color: ${rider.color};'`}>${rider.avatarUrl ? '' : rider.initial}</div>`,
+                  iconSize: [28, 28],
+                  iconAnchor: [14, 14]
+                })}
                 eventHandlers={{ click: () => handleSelectRider(rider) }}
               />
             </div>
@@ -100,11 +108,16 @@ export function GiveRideScreen({ onBack, riders }) {
       <div className="requests-container">
         <h2 className="requests-title">Nearby Requests (Weesp)</h2>
 
-        {riders.map(rider => (
+        {pendingRiders.map(rider => (
           <div className="request-card" key={rider.id} onClick={() => handleSelectRider(rider)}>
             <div className="request-card-header">
               <div className="request-profile">
-                <div className="request-avatar" style={{ background: rider.color }}>{rider.initial}</div>
+                <div 
+                  className="request-avatar" 
+                  style={rider.avatarUrl ? { backgroundImage: `url(${rider.avatarUrl})`, backgroundSize: 'cover', color: 'transparent' } : { background: rider.color }}
+                >
+                  {rider.avatarUrl ? '' : rider.initial}
+                </div>
                 <div className="request-info">
                   <h3>{rider.name}</h3>
                   <p>{rider.distance} • {rider.timeframe}</p>
@@ -129,6 +142,9 @@ export function GiveRideScreen({ onBack, riders }) {
             </div>
           </div>
         ))}
+        {pendingRiders.length === 0 && (
+          <p style={{ textAlign: 'center', margin: '24px 0', color: 'var(--color-text-nav)' }}>No pending requests at the moment.</p>
+        )}
       </div>
 
       <button className="btn-primary" style={{ marginTop: '32px' }}>
@@ -141,8 +157,11 @@ export function GiveRideScreen({ onBack, riders }) {
           <div className="rider-detail-sheet" onClick={e => e.stopPropagation()}>
             <div className="sheet-header">
               <div className="request-profile">
-                <div className="request-avatar" style={{ background: selectedRider.color }}>
-                  {selectedRider.initial}
+                <div 
+                  className="request-avatar" 
+                  style={selectedRider.avatarUrl ? { backgroundImage: `url(${selectedRider.avatarUrl})`, backgroundSize: 'cover', color: 'transparent' } : { background: selectedRider.color }}
+                >
+                  {selectedRider.avatarUrl ? '' : selectedRider.initial}
                 </div>
                 <div className="request-info">
                   <h3>{selectedRider.name}'s Request</h3>
@@ -177,7 +196,7 @@ export function GiveRideScreen({ onBack, riders }) {
             <div className="sheet-actions">
               <button className="btn-secondary" onClick={handleClose}>Ignore</button>
               <button className="btn-primary" style={{ marginTop: 0 }} onClick={() => {
-                alert(`You offered to pick up ${selectedRider.name}!`);
+                if (onOfferRide) onOfferRide(selectedRider.id);
                 handleClose();
               }}>
                 Pick Up
