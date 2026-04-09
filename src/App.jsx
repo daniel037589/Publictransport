@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import mqtt from 'mqtt';
+import { supabase } from './supabaseClient';
 import HomePage from './components/HomePage';
 import Navbar from './components/Navbar';
 import { GetRideScreen } from './components/GetRide';
@@ -40,39 +40,80 @@ const INITIAL_RIDERS = [
   }
 ];
 
+// Helper to map UI rider shape to DB shape
+const serializeForDb = (rider) => ({
+  id: String(rider.id),
+  name: rider.name,
+  initial: rider.initial,
+  distance: rider.distance,
+  timeframe: rider.timeframe,
+  destination: rider.destination,
+  location: rider.location,
+  destination_location: rider.destinationLocation,
+  color: rider.color,
+  badges: rider.badges
+});
+
+// Helper to map DB shape back to UI shape
+const deserializeFromDb = (row) => ({
+  id: row.id,
+  name: row.name,
+  initial: row.initial,
+  distance: row.distance,
+  timeframe: row.timeframe,
+  destination: row.destination,
+  location: row.location,
+  destinationLocation: row.destination_location,
+  color: row.color,
+  badges: row.badges
+});
+
 function App() {
   const [activeTab, setActiveTab] = useState('home');
   const [riders, setRiders] = useState(INITIAL_RIDERS);
-  const [mqttClient, setMqttClient] = useState(null);
 
-  // Setup MQTT Client on mount for realtime global requests
+  // Mount Supabase connection securely handling global requests over Postgres
   useEffect(() => {
-    const client = mqtt.connect('wss://broker.hivemq.com:8443/mqtt');
-    
-    client.on('connect', () => {
-      console.log('Connected to MQTT broker via WebSocket');
-      client.subscribe('weesp/rides/requests');
-    });
-
-    client.on('message', (topic, message) => {
-      if (topic === 'weesp/rides/requests') {
-        try {
-          const payload = JSON.parse(message.toString());
-          console.log("MQTT Received:", payload);
-          // Add rider locally if they don't already exist
-          setRiders(prev => {
-            if (prev.some(r => r.id === payload.id)) return prev;
-            return [...prev, payload];
+    // 1. Fetch persistent historical requests on load
+    const fetchExistingRides = async () => {
+      const { data, error } = await supabase.from('ride_requests').select('*');
+      if (error) {
+        console.error('Supabase fetch error. Is the table created?', error.message);
+      } else if (data) {
+        // Merge fetched historic DB riders with our UI mockup default riders
+        const dbRiders = data.map(deserializeFromDb);
+        setRiders(prev => {
+          const merged = [...prev];
+          dbRiders.forEach(dbR => {
+            if (!merged.some(p => p.id === dbR.id)) merged.push(dbR);
           });
-        } catch (err) {
-          console.error("Failed to parse MQTT payload", err);
-        }
+          return merged;
+        });
       }
-    });
+    };
+    
+    fetchExistingRides();
 
-    setMqttClient(client);
+    // 2. Subscribe to LIVE incoming database requests (replaces MQTT)
+    const channel = supabase
+      .channel('public-ride_requests-changes')
+      .on(
+        'postgres_changes',
+        { event: 'INSERT', schema: 'public', table: 'ride_requests' },
+        (payload) => {
+          console.log("Supabase Realtime Received:", payload);
+          const incomingRider = deserializeFromDb(payload.new);
+          setRiders(prev => {
+            if (prev.some(r => r.id === incomingRider.id)) return prev;
+            return [...prev, incomingRider];
+          });
+        }
+      )
+      .subscribe();
 
-    return () => client.end();
+    return () => {
+      supabase.removeChannel(channel);
+    };
   }, []);
 
   const handleNavigate = (path) => {
@@ -80,15 +121,18 @@ function App() {
     setActiveTab(path);
   };
 
-  const handleAddRider = (newRider) => {
-    // If online, broadcast request over MQTT to everyone
-    if (mqttClient && mqttClient.connected) {
-      mqttClient.publish('weesp/rides/requests', JSON.stringify(newRider));
-    } else {
-      // Offline fallback
-      setRiders(prev => [...prev, newRider]);
+  const handleAddRider = async (newRider) => {
+    // Locally optimistically update state instantly for immediate snap feedback
+    setRiders(prev => [...prev, newRider]);
+    setActiveTab('give-ride'); 
+
+    // Asynchronously insert persistent request to DB, triggering live broadcast to everyone else
+    const record = serializeForDb(newRider);
+    const { error } = await supabase.from('ride_requests').insert([record]);
+    
+    if (error) {
+      console.error("Failed to push request to Supabase!", error.message);
     }
-    setActiveTab('give-ride'); // Auto navigate to show it worked!
   };
 
   return (
