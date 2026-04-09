@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import './RideScreens.css';
 
 function BackIcon() {
@@ -19,6 +20,8 @@ function CommunityShieldIcon() {
 }
 
 export function GetRideScreen({ onBack, onRequestRide, userProfile }) {
+  const [isLoading, setIsLoading] = useState(false);
+
   const PREF_MAP = {
     'wheelchair': { icon: '♿️', text: 'Wheelchair Assist', color: 'blue' },
     'stroller': { icon: '👶', text: 'Stroller', color: 'blue' },
@@ -26,42 +29,74 @@ export function GetRideScreen({ onBack, onRequestRide, userProfile }) {
     'quiet': { icon: '🤫', text: 'Quiet Ride', color: 'grey' }
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
+    setIsLoading(true);
     const formData = new FormData(e.target);
-    const destination = formData.get('dropoff') || 'Somewhere in Weesp';
+    const pickupInput = formData.get('pickup') || 'Weesp Station';
+    const destinationInput = formData.get('dropoff') || 'Somewhere in Weesp';
     
-    // Simulate some logic for a new request
-    const newLocation = [52.3082 + (Math.random() - 0.5)*0.015, 5.0416 + (Math.random() - 0.5)*0.015];
-    const dropoffLocation = [52.3082 + (Math.random() - 0.5)*0.015, 5.0416 + (Math.random() - 0.5)*0.015];
+    try {
+      // 1. Convert Text Addresses into Lat/Lng
+      const fetchCoords = async (query) => {
+        const url = `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(query + ', Weesp, Netherlands')}`;
+        const resp = await fetch(url);
+        const data = await resp.json();
+        if (data && data.length > 0) return [parseFloat(data[0].lat), parseFloat(data[0].lon)];
+        return null;
+      };
 
-    const mappedBadges = (userProfile?.preferences || []).map(p => PREF_MAP[p]).filter(Boolean);
+      let pickupCoords = await fetchCoords(pickupInput);
+      let dropoffCoords = await fetchCoords(destinationInput);
 
-    const newRider = {
-      id: 'you-' + Date.now(),
-      name: userProfile ? userProfile.name : 'You',
-      initial: userProfile ? userProfile.name.charAt(0).toUpperCase() : 'Y',
-      distance: '0 km away',
-      timeframe: 'Needs ride now',
-      destination: destination,
-      location: newLocation,
-      destinationLocation: dropoffLocation,
-      color: '#ffc085', // warm orange
-      badges: [
-        { icon: '📍', text: 'Ready', color: 'blue' },
-        ...mappedBadges
-      ],
-      avatarUrl: userProfile?.avatarUrl,
-      status: 'pending'
-    };
+      // Fallbacks if Nominatim fails to find the exact street
+      if (!pickupCoords) pickupCoords = [52.3082 + (Math.random() - 0.5)*0.015, 5.0416 + (Math.random() - 0.5)*0.015];
+      if (!dropoffCoords) dropoffCoords = [52.3082 + (Math.random() - 0.5)*0.015, 5.0416 + (Math.random() - 0.5)*0.015];
 
-    if(onRequestRide) onRequestRide(newRider);
+      // 2. Fetch Turn-by-Turn OSRM Graph Routing
+      let routeGeometry = null;
+      const routeUrl = `https://router.project-osrm.org/route/v1/driving/${pickupCoords[1]},${pickupCoords[0]};${dropoffCoords[1]},${dropoffCoords[0]}?overview=full&geometries=geojson`;
+      const routeResp = await fetch(routeUrl);
+      const routeData = await routeResp.json();
+
+      if (routeData.code === 'Ok' && routeData.routes.length > 0) {
+        // GeoJSON uses [lng, lat], Leaflet uses [lat, lng]. Map it properly.
+        routeGeometry = routeData.routes[0].geometry.coordinates.map(c => [c[1], c[0]]);
+      }
+
+      const mappedBadges = (userProfile?.preferences || []).map(p => PREF_MAP[p]).filter(Boolean);
+
+      const newRider = {
+        id: 'you-' + Date.now(),
+        name: userProfile ? userProfile.name : 'You',
+        initial: userProfile ? userProfile.name.charAt(0).toUpperCase() : 'Y',
+        distance: '0 km away',
+        timeframe: 'Needs ride now',
+        destination: destinationInput,
+        location: pickupCoords,
+        destinationLocation: dropoffCoords,
+        routeGeometry: routeGeometry, // Map arrays natively
+        color: '#ffc085',
+        badges: [
+          { icon: '📍', text: 'Ready', color: 'blue' },
+          ...mappedBadges
+        ],
+        avatarUrl: userProfile?.avatarUrl,
+        status: 'pending'
+      };
+
+      if(onRequestRide) onRequestRide(newRider);
+    } catch (err) {
+      console.error('Routing failed', err);
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   return (
     <div className="ride-screen">
       <header className="ride-header">
-        <button className="btn-back" type="button" onClick={onBack} aria-label="Go back">
+        <button className="btn-back" type="button" onClick={onBack} aria-label="Go back" disabled={isLoading}>
           <BackIcon />
         </button>
         <h1 className="ride-title">Get a Ride</h1>
@@ -74,17 +109,17 @@ export function GetRideScreen({ onBack, onRequestRide, userProfile }) {
       <form className="ride-form" onSubmit={handleSubmit}>
         <div className="form-group">
           <label className="form-label" htmlFor="pickup">Pick-up Location</label>
-          <input className="form-input" id="pickup" name="pickup" type="text" placeholder="e.g. Town Hall or your address" />
+          <input className="form-input" id="pickup" name="pickup" type="text" placeholder="e.g. Town Hall or your address" disabled={isLoading} />
         </div>
 
         <div className="form-group">
           <label className="form-label" htmlFor="dropoff">Where to?</label>
-          <input className="form-input" id="dropoff" name="dropoff" type="text" placeholder="Destination address" required />
+          <input className="form-input" id="dropoff" name="dropoff" type="text" placeholder="Destination address" required disabled={isLoading} />
         </div>
 
         <div className="form-group">
           <label className="form-label" htmlFor="time">When</label>
-          <input className="form-input" id="time" name="time" type="time" defaultValue="08:30" />
+          <input className="form-input" id="time" name="time" type="time" defaultValue="08:30" disabled={isLoading} />
         </div>
 
         <div className="community-notice">
@@ -92,8 +127,8 @@ export function GetRideScreen({ onBack, onRequestRide, userProfile }) {
           <p><strong>Community Trust:</strong> You match with verified locals and neighbors. It’s about sharing, not just riding.</p>
         </div>
 
-        <button className="btn-primary" type="submit" style={{ marginTop: '32px' }}>
-          Find a Neighbor
+        <button className="btn-primary" type="submit" style={{ marginTop: '32px' }} disabled={isLoading}>
+          {isLoading ? 'Calculating Route...' : 'Find a Neighbor'}
         </button>
       </form>
     </div>

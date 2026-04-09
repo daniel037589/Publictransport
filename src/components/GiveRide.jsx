@@ -84,12 +84,17 @@ export function GiveRideScreen({ onBack, riders, onOfferRide }) {
           {/* Interactive rider pins & routes */}
           {pendingRiders.map(rider => (
             <div key={rider.id}>
-              {rider.destinationLocation && (
+              {rider.routeGeometry && rider.routeGeometry.length > 0 ? (
+                <Polyline 
+                  positions={rider.routeGeometry} 
+                  pathOptions={{ color: rider.color, weight: 5, lineCap: 'round', opacity: 0.9 }} 
+                />
+              ) : rider.destinationLocation ? (
                 <Polyline 
                   positions={[rider.location, rider.destinationLocation]} 
                   pathOptions={{ color: rider.color, weight: 4, dashArray: '8, 8', lineCap: 'round', opacity: 0.8 }} 
                 />
-              )}
+              ) : null}
               <Marker 
                 position={rider.location} 
                 icon={new L.divIcon({
