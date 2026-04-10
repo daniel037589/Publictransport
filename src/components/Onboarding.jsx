@@ -9,11 +9,33 @@ const PREFERENCES = [
   { id: 'quiet', label: 'Quiet Ride', icon: '🤫' },
 ];
 
+const LANGUAGES = [
+  { id: 'nl', label: 'Nederlands', flag: '🇳🇱' },
+  { id: 'en', label: 'English', flag: '🇬🇧' },
+  { id: 'de', label: 'Deutsch', flag: '🇩🇪' },
+  { id: 'fr', label: 'Français', flag: '🇫🇷' },
+  { id: 'es', label: 'Español', flag: '🇪🇸' },
+  { id: 'tr', label: 'Türkçe', flag: '🇹🇷' },
+  { id: 'ar', label: 'العربية', flag: '🇸🇦' },
+  { id: 'pl', label: 'Polski', flag: '🇵🇱' },
+];
+
+function calculateAge(birthdate) {
+  const birth = new Date(birthdate);
+  const today = new Date();
+  let age = today.getFullYear() - birth.getFullYear();
+  const monthDiff = today.getMonth() - birth.getMonth();
+  if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < birth.getDate())) {
+    age--;
+  }
+  return age;
+}
+
 export function OnboardingScreen({ onComplete }) {
   const [formData, setFormData] = useState({
     name: '',
-    age: '',
-    language: 'English',
+    birthdate: '',
+    languages: [],
     preferences: [],
     avatarUrl: null,
   });
@@ -27,6 +49,17 @@ export function OnboardingScreen({ onComplete }) {
         return { ...prev, preferences: prev.preferences.filter(p => p !== prefId) };
       } else {
         return { ...prev, preferences: [...prev.preferences, prefId] };
+      }
+    });
+  };
+
+  const toggleLanguage = (langId) => {
+    setFormData(prev => {
+      const isSelected = prev.languages.includes(langId);
+      if (isSelected) {
+        return { ...prev, languages: prev.languages.filter(l => l !== langId) };
+      } else {
+        return { ...prev, languages: [...prev.languages, langId] };
       }
     });
   };
@@ -46,9 +79,15 @@ export function OnboardingScreen({ onComplete }) {
     e.preventDefault();
     if (!formData.name.trim()) return alert("Please enter your name!");
     
+    // Calculate age from birthdate and store both
+    const profileData = {
+      ...formData,
+      age: formData.birthdate ? calculateAge(formData.birthdate) : null,
+    };
+    
     // Save to device local storage securely
-    localStorage.setItem('weesp_user_profile', JSON.stringify(formData));
-    onComplete(formData);
+    localStorage.setItem('weesp_user_profile', JSON.stringify(profileData));
+    onComplete(profileData);
   };
 
   return (
@@ -61,7 +100,7 @@ export function OnboardingScreen({ onComplete }) {
     >
       <div className="onboarding-header">
         <h1 className="onboarding-title">Welcome to Weesp</h1>
-        <p className="onboarding-subtitle">Let’s map out your community profile.</p>
+        <p className="onboarding-subtitle">Let's map out your community profile.</p>
       </div>
 
       <form onSubmit={handleSubmit}>
@@ -101,31 +140,36 @@ export function OnboardingScreen({ onComplete }) {
             />
           </div>
 
-          <div style={{ display: 'flex', gap: '16px' }}>
-            <div style={{ flex: 1 }}>
-              <label className="form-label" htmlFor="age">Age</label>
-              <input 
-                id="age"
-                className="form-input" 
-                type="number" 
-                placeholder="25"
-                value={formData.age}
-                onChange={e => setFormData({...formData, age: e.target.value})}
-              />
-            </div>
-            
-            <div style={{ flex: 1 }}>
-              <label className="form-label" htmlFor="lang">Language</label>
-              <select 
-                id="lang"
-                className="form-select"
-                value={formData.language}
-                onChange={e => setFormData({...formData, language: e.target.value})}
+          <div>
+            <label className="form-label" htmlFor="birthdate">Birthdate</label>
+            <input 
+              id="birthdate"
+              className="form-input" 
+              type="date" 
+              value={formData.birthdate}
+              onChange={e => setFormData({...formData, birthdate: e.target.value})}
+            />
+            {formData.birthdate && (
+              <span style={{ fontSize: '13px', color: 'var(--color-text-nav)', marginTop: '6px', marginLeft: '16px', display: 'block' }}>
+                Age: {calculateAge(formData.birthdate)} years old
+              </span>
+            )}
+          </div>
+        </div>
+
+        <div className="onboarding-card">
+          <label className="form-label" style={{ marginBottom: '16px' }}>I speak...</label>
+          <div className="preferences-grid">
+            {LANGUAGES.map(lang => (
+              <div 
+                key={lang.id}
+                className={`pref-toggle ${formData.languages.includes(lang.id) ? 'pref-toggle--active' : ''}`}
+                onClick={() => toggleLanguage(lang.id)}
               >
-                <option value="English">English</option>
-                <option value="Dutch">Nederlands</option>
-              </select>
-            </div>
+                <span className="pref-icon">{lang.flag}</span>
+                <span>{lang.label}</span>
+              </div>
+            ))}
           </div>
         </div>
 

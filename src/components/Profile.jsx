@@ -2,10 +2,33 @@ import { motion } from 'framer-motion';
 import { WaveIcon, CarIcon } from './Icons';
 import './Profile.css';
 
+const ALL_LANGUAGES = [
+  { id: 'nl', label: 'Nederlands', flag: '🇳🇱' },
+  { id: 'en', label: 'English', flag: '🇬🇧' },
+  { id: 'de', label: 'Deutsch', flag: '🇩🇪' },
+  { id: 'fr', label: 'Français', flag: '🇫🇷' },
+  { id: 'es', label: 'Español', flag: '🇪🇸' },
+  { id: 'tr', label: 'Türkçe', flag: '🇹🇷' },
+  { id: 'ar', label: 'العربية', flag: '🇸🇦' },
+  { id: 'pl', label: 'Polski', flag: '🇵🇱' },
+];
+
+function calculateAge(birthdate) {
+  if (!birthdate) return null;
+  const birth = new Date(birthdate);
+  const today = new Date();
+  let age = today.getFullYear() - birth.getFullYear();
+  const monthDiff = today.getMonth() - birth.getMonth();
+  if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < birth.getDate())) age--;
+  return age;
+}
+
 export function ProfileScreen({ userProfile, onLogout }) {
   const profileName = userProfile?.name || 'You';
   const profileInitial = profileName.charAt(0).toUpperCase();
   const prefs = userProfile?.preferences || [];
+  const userLanguages = ALL_LANGUAGES.filter(l => (userProfile?.languages || []).includes(l.id));
+  const age = userProfile?.birthdate ? calculateAge(userProfile.birthdate) : userProfile?.age;
 
   const ALL_PREFS = [
     { id: 'wheelchair', label: 'Needs Wheelchair Assist', icon: '♿️' },
@@ -45,7 +68,7 @@ export function ProfileScreen({ userProfile, onLogout }) {
         >
           <h2 className="profile-name">{profileName}</h2>
           <p className="profile-status">
-            <span style={{ color: 'var(--color-brand-blue)' }}>★ 5.0</span> • Weesp Neighbor
+            <span style={{ color: 'var(--color-brand-blue)' }}>★ 5.0</span> • {age ? `${age} y/o • ` : ''}Weesp Neighbor
           </p>
         </motion.div>
       </div>
@@ -63,6 +86,33 @@ export function ProfileScreen({ userProfile, onLogout }) {
         <div className="stat-card">
           <span className="stat-value">0</span>
           <span className="stat-label">Rides Taken</span>
+        </div>
+      </motion.div>
+
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0.35 }}
+      >
+        <h3 className="profile-section-title">Languages I Speak</h3>
+        <div className="profile-card">
+          {userLanguages.length > 0 ? (
+            <div style={{ display: 'flex', flexWrap: 'wrap', gap: '10px' }}>
+              {userLanguages.map(lang => (
+                <div key={lang.id} style={{ 
+                  display: 'flex', alignItems: 'center', gap: '8px',
+                  background: 'rgba(17, 100, 253, 0.08)', borderRadius: '100px',
+                  padding: '10px 16px', fontSize: '14px', fontWeight: '600',
+                  color: 'var(--color-brand-blue)'
+                }}>
+                  <span style={{ fontSize: '20px' }}>{lang.flag}</span>
+                  {lang.label}
+                </div>
+              ))}
+            </div>
+          ) : (
+            <p style={{ color: 'var(--color-text-nav)', fontSize: '14px' }}>No languages selected</p>
+          )}
         </div>
       </motion.div>
 
