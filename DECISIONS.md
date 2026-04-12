@@ -182,9 +182,10 @@ Screens are absolutely positioned inside the shell and transition via `translate
 ```javascript
 {
   name: 'Daniel',
-  age: '25',
-  language: 'English',
-  preferences: ['wheelchair', 'quiet'],  // Array of IDs
+  birthdate: '2001-03-15',               // ISO date string
+  age: 25,                                // Auto-calculated from birthdate
+  languages: ['nl', 'en'],               // Array of language IDs
+  preferences: ['wheelchair', 'quiet'],   // Array of preference IDs
   avatarUrl: 'data:image/jpeg;base64,...' // Base64 encoded (nullable)
 }
 ```
@@ -399,6 +400,21 @@ A red "Cancel Drive" button was added to each card in the "Rides I'm Giving" sec
 
 ---
 
+## Decision 13: Birthdate Instead of Age + Multi-Select Languages with Flags
+
+**Date:** 2026-04-10  
+**Context:** The onboarding form asked for a static `age` number and offered only a single dropdown to pick one language (English or Dutch). Age is a value that changes over time, and many Weesp residents speak multiple languages.
+
+**Decision:**
+1. **Birthdate replaces age.** The form now uses `<input type="date">` to capture a birthdate. Age is auto-calculated via `calculateAge()` at submission time and on the Profile screen. Both `birthdate` and the derived `age` are stored in the profile.
+2. **Multi-select language chips replace the dropdown.** Eight languages are available (NL, EN, DE, FR, ES, TR, AR, PL), each represented as a toggleable chip with a country flag emoji. Users can select as many as they speak. Stored as an array of language IDs (e.g., `['nl', 'en']`).
+3. **Profile screen shows flags.** A new "Languages I Speak" section renders selected languages as styled flag badges with rounded pill styling in `rgba(17, 100, 253, 0.08)` background.
+4. **Age shown dynamically.** The profile status line now reads "★ 5.0 • 25 y/o • Weesp Neighbor", with age recalculated from birthdate on every render so it stays accurate.
+
+**Rationale:** Birthdate is immutable and future-proof. Multi-language support reflects the diverse international community in Weesp. Flag badges make language information instantly scannable.
+
+---
+
 # Part 3: Environment & Deployment
 
 ## Environment Variables
@@ -470,3 +486,18 @@ These string IDs are used in the user profile `preferences` array and mapped to 
 | `stroller` | 👶 | Stroller |
 | `pets` | 🐾 | Pet Friendly |
 | `quiet` | 🤫 | Quiet Ride |
+
+## Language IDs
+
+These string IDs are used in the user profile `languages` array. The same constant is defined in both `Onboarding.jsx` and `Profile.jsx`.
+
+| ID | Flag | Label |
+|---|---|---|
+| `nl` | 🇳🇱 | Nederlands |
+| `en` | 🇬🇧 | English |
+| `de` | 🇩🇪 | Deutsch |
+| `fr` | 🇫🇷 | Français |
+| `es` | 🇪🇸 | Español |
+| `tr` | 🇹🇷 | Türkçe |
+| `ar` | 🇸🇦 | العربية |
+| `pl` | 🇵🇱 | Polski |
