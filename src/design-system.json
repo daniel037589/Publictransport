@@ -136,6 +136,7 @@
     "--color-text-nav": "#737373",
     "--font-family-title": "'Inter', sans-serif",
     "--font-family-body": "'Inter', sans-serif",
+    "--font-family-button": "'Onest', sans-serif",
     "--font-weight-bold": "700",
     "--font-weight-semibold": "600",
     "--font-weight-regular": "400",

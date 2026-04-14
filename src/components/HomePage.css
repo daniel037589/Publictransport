@@ -107,14 +107,16 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  border-radius: 32px;
-  padding: 20px 24px;
+  border-radius: 20px;
+  padding: 0 24px 0 32px;
   cursor: pointer;
   border: none;
   transition: transform 0.2s ease, box-shadow 0.2s ease;
-  min-height: 88px;
+  height: 100px;
+  width: 100%;
   position: relative;
   overflow: hidden;
+  margin-bottom: 8px; /* Slight spacing between stacked cards */
 }
 
 .home-action-card:hover {
@@ -126,24 +128,40 @@
   transform: translateY(0);
 }
 
-/* "I need a ride" — solid green from Figma 585:3813 */
+/* "I need a ride" — solid vibrant green #BBCD2F from Figma 585:7052 */
 .home-action-card--need {
-  background: #CBD24A;
+  background-color: #BBCD2F;
+  /* Diagonal hatch pattern */
+  background-image: repeating-linear-gradient(
+    135deg,
+    rgba(45, 51, 32, 0.08) 0px,
+    rgba(45, 51, 32, 0.08) 2px,
+    transparent 2px,
+    transparent 24px
+  );
 }
 
-/* "I'm here to help" — solid orange from Figma 585:3813 */
+/* "I'm here to help" — solid orange (assuming #E49339 based on prior visual with similar lines) */
 .home-action-card--help {
-  background: #E49339;
+  background-color: #F7AC53; /* Reverting to bright orange from visual */
+  /* Diagonal hatch pattern */
+  background-image: repeating-linear-gradient(
+    135deg,
+    rgba(45, 51, 32, 0.08) 0px,
+    rgba(45, 51, 32, 0.08) 2px,
+    transparent 2px,
+    transparent 24px
+  );
 }
 
 .home-action-card__text {
-  font-family: var(--font-family-title);
-  font-weight: var(--font-weight-bold);
-  font-size: 24px;
-  line-height: 1.15;
+  font-family: var(--font-family-button);
+  font-weight: var(--font-weight-semibold);
+  font-size: 32px;
+  line-height: 1.1;
   color: #2D3320;
-  max-width: 55%;
   text-align: left;
+  z-index: 2; /* keep text above pattern if needed */
 }
 
 .home-action-card__icon {

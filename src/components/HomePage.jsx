@@ -52,29 +52,12 @@ function SearchIcon() {
   );
 }
 
-// Taxi icon — Figma 585:8029 (front-facing taxi silhouette)
+// Taxi icon — Figma 585:7054
 function TaxiIcon() {
   return (
-    <svg width="80" height="80" viewBox="0 0 80 80" fill="none" xmlns="http://www.w3.org/2000/svg">
-      <g opacity="0.85">
-        {/* Taxi sign on top */}
-        <rect x="30" y="12" width="20" height="8" rx="4" fill="#2D3320"/>
-        {/* Car body */}
-        <path d="M16 36L22 22H58L64 36V56C64 58.2091 62.2091 60 60 60H20C17.7909 60 16 58.2091 16 56V36Z" fill="#2D3320"/>
-        {/* Windshield */}
-        <path d="M24 24L20 36H60L56 24H24Z" fill="rgba(255,255,255,0.2)"/>
-        {/* Windows */}
-        <rect x="22" y="38" width="14" height="10" rx="3" fill="rgba(255,255,255,0.25)"/>
-        <rect x="44" y="38" width="14" height="10" rx="3" fill="rgba(255,255,255,0.25)"/>
-        {/* Wheels */}
-        <circle cx="26" cy="60" r="7" fill="#2D3320"/>
-        <circle cx="26" cy="60" r="3" fill="rgba(255,255,255,0.15)"/>
-        <circle cx="54" cy="60" r="7" fill="#2D3320"/>
-        <circle cx="54" cy="60" r="3" fill="rgba(255,255,255,0.15)"/>
-        {/* Headlights */}
-        <rect x="18" y="50" width="6" height="4" rx="2" fill="rgba(255,255,255,0.3)"/>
-        <rect x="56" y="50" width="6" height="4" rx="2" fill="rgba(255,255,255,0.3)"/>
-      </g>
+    <svg width="60" height="48" viewBox="0 0 60 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <path d="M12 8C12 5.79086 13.7909 4 16 4H44C46.2091 4 48 5.79086 48 8V14H12V8Z" fill="#2D3320" fill-opacity="0.85"/>
+      <path d="M4 14C4 11.7909 5.79086 10 8 10H52C54.2091 10 56 11.7909 56 14V34C56 38.4183 52.4183 42 48 42H12C7.58172 42 4 38.4183 4 34V14Z" fill="#2D3320" fill-opacity="0.85"/>
     </svg>
   );
 }
@@ -158,24 +141,24 @@ export default function HomePage({ onNavigate }) {
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.4, delay: 0.2 }}
         >
-          <span className="home-action-card__text">I need a<br/>ride</span>
+          <span className="home-action-card__text">I need a ride</span>
           <div className="home-action-card__icon">
             <TaxiIcon />
           </div>
         </motion.button>
 
-        {/* "I'm here to help" — warm orange #F7AC53 */}
+        {/* "Offer a ride" */}
         <motion.button
           className="home-action-card home-action-card--help"
           onClick={() => onNavigate('give-ride')}
-          aria-label="I'm here to help"
+          aria-label="Offer a ride"
           whileHover={{ scale: 1.02 }}
           whileTap={{ scale: 0.97 }}
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.4, delay: 0.3 }}
         >
-          <span className="home-action-card__text">I'm here<br/>to help</span>
+          <span className="home-action-card__text">Offer a ride</span>
           <div className="home-action-card__icon">
             <HandHeartIcon />
           </div>
