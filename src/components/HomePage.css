@@ -1,4 +1,4 @@
-/* HomePage — New design from Figma node 585:2116 */
+/* HomePage — Figma node 585:2116 + components 585:3773, 585:7057, 585:8029, 585:7148 */
 
 .home-screen {
   display: flex;
@@ -8,29 +8,21 @@
   overflow: hidden;
 }
 
-/* ── Community Header ── */
+/* ── Community Header — Logo 585:3773 ── */
 .home-header {
   display: flex;
   align-items: center;
   gap: 12px;
-  padding: 48px 24px 16px;
+  padding: 48px 24px 12px;
 }
 
 .home-header__icon {
-  width: 40px;
-  height: 40px;
-  border-radius: 50%;
-  background: #bfc9a6;
+  width: 44px;
+  height: 46px;
+  flex-shrink: 0;
   display: flex;
   align-items: center;
   justify-content: center;
-  flex-shrink: 0;
-}
-
-.home-header__icon svg {
-  width: 22px;
-  height: 22px;
-  color: #4a5236;
 }
 
 .home-header__text {
@@ -44,14 +36,14 @@
   font-weight: var(--font-weight-regular);
   font-size: 12px;
   color: #8a8a7a;
-  letter-spacing: 0.5px;
+  letter-spacing: 0.3px;
 }
 
 .home-header__title {
   font-family: var(--font-family-title);
   font-weight: var(--font-weight-bold);
   font-size: 20px;
-  color: #2d3320;
+  color: #2D3320;
   line-height: 1.2;
 }
 
@@ -62,7 +54,7 @@
   margin: 0 16px;
   border-radius: 24px;
   overflow: hidden;
-  min-height: 260px;
+  min-height: 220px;
   background: #eceee4;
 }
 
@@ -84,11 +76,11 @@
   background: var(--color-brand-white);
   padding: 12px 24px;
   border-radius: 100px;
-  box-shadow: 0 4px 16px rgba(0,0,0,0.12);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.12);
   font-family: var(--font-family-title);
   font-weight: var(--font-weight-semibold);
   font-size: 14px;
-  color: #2d3320;
+  color: #2D3320;
   border: none;
   cursor: pointer;
   transition: transform 0.2s ease, box-shadow 0.2s ease;
@@ -96,16 +88,14 @@
 
 .home-map__explore:hover {
   transform: translateX(-50%) translateY(-2px);
-  box-shadow: 0 6px 20px rgba(0,0,0,0.16);
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.16);
 }
 
 .home-map__explore svg {
-  width: 16px;
-  height: 16px;
   color: #6b7a51;
 }
 
-/* ── Action Cards ── */
+/* ── Action Cards — Figma 585:7057 ── */
 .home-actions {
   display: flex;
   flex-direction: column;
@@ -118,75 +108,59 @@
   align-items: center;
   justify-content: space-between;
   border-radius: 32px;
-  padding: 24px 28px;
+  padding: 20px 24px;
   cursor: pointer;
   border: none;
   transition: transform 0.2s ease, box-shadow 0.2s ease;
-  min-height: 90px;
+  min-height: 88px;
   position: relative;
   overflow: hidden;
 }
 
 .home-action-card:hover {
   transform: translateY(-2px);
-  box-shadow: 0 8px 24px rgba(0,0,0,0.1);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
 }
 
 .home-action-card:active {
   transform: translateY(0);
 }
 
+/* "I need a ride" — warm yellow-green from Figma 585:7057 */
 .home-action-card--need {
-  background: linear-gradient(135deg, #e8e4c8 0%, #d4cf9e 100%);
+  background: linear-gradient(135deg, #E5E88E 0%, #CBD24A 100%);
 }
 
+/* "I'm here to help" — warm orange from Figma 585:7057 */
 .home-action-card--help {
-  background: linear-gradient(135deg, #c5cfa5 0%, #a3b07a 100%);
+  background: linear-gradient(135deg, #F7C984 0%, #F7AC53 100%);
 }
 
 .home-action-card__text {
   font-family: var(--font-family-title);
   font-weight: var(--font-weight-bold);
   font-size: 24px;
-  line-height: 1.2;
-  color: #2d3320;
-  max-width: 60%;
+  line-height: 1.15;
+  color: #2D3320;
+  max-width: 55%;
+  text-align: left;
 }
 
 .home-action-card__icon {
-  width: 72px;
-  height: 72px;
+  width: 80px;
+  height: 80px;
   display: flex;
   align-items: center;
   justify-content: center;
   flex-shrink: 0;
 }
 
-.home-action-card__icon img,
-.home-action-card__icon svg {
-  width: 100%;
-  height: 100%;
-  object-fit: contain;
-}
-
-/* ── Olive map pin markers ── */
+/* ── Map Pins ── */
 .home-map-pin {
   width: 28px;
   height: 28px;
   background: #8a9462;
   border-radius: 50%;
   border: 3px solid white;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.2);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.home-map-pin--user {
-  width: 14px;
-  height: 14px;
-  background: #6b7a51;
-  border-radius: 50%;
-  border: 3px solid white;
-  box-shadow: 0 0 8px 3px rgba(107, 122, 81, 0.4);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
 }
