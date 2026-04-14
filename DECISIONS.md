@@ -415,6 +415,24 @@ A red "Cancel Drive" button was added to each card in the "Rides I'm Giving" sec
 
 ---
 
+## Decision 14: HomeScreen Redesign — Community Map + Action Cards
+
+**Date:** 2026-04-14  
+**Context:** The original home screen had a large "Weesp" title, a "Samen Uit & Thuis" tagline, and three colored big buttons (Ongoing Rides, Get Ride, Give Ride). The user updated the Figma design (node `585:2116`) with a completely new layout and color palette.
+
+**Decision:** Complete redesign of `HomePage.jsx` and `HomePage.css` to match the new Figma:
+1. **Community header** — replaces the large title. Shows a circular olive-green icon with a community/people SVG, a "Your Community" label in muted text, and "Ons Kortenhoef" as the main heading in earthy dark olive (`#2d3320`).
+2. **Embedded interactive map** — takes up the middle of the screen. Uses `react-leaflet` with CartoDB light tiles, pre-placed olive-toned community member pins (`#8a9462`), and a floating "Explore" pill button that navigates to the Give Ride map.
+3. **Two stacked action cards** — replace the three big buttons:
+   - **"I need a ride"** — warm tan gradient (`#e8e4c8` → `#d4cf9e`) with a taxi silhouette SVG icon.
+   - **"I'm here to help"** — olive green gradient (`#c5cfa5` → `#a3b07a`) with a handshake SVG icon.
+4. **Color palette shift** — from blue/teal/orange/purple to an earthy olive/green/warm neutral palette. Key new colors: `#2d3320` (text), `#8a9462` (pins), `#bfc9a6` (header icon), `#8a8a7a` (labels).
+5. **Old CSS removed** — Legacy `.home-logo`, `.big-btn` styles purged from `index.css` (replaced by a comment pointing to `HomePage.css`).
+
+**Rationale:** The new design feels more grounded, community-focused, and mature. The embedded map immediately shows users the neighborhood context. The two clear action cards simplify the decision tree from three options to two.
+
+---
+
 # Part 3: Environment & Deployment
 
 ## Environment Variables
