@@ -1,112 +1,192 @@
-/* HomePage specific styles - most styles are in index.css */
+/* HomePage — New design from Figma node 585:2116 */
 
 .home-screen {
   display: flex;
   flex-direction: column;
-  padding: 40px 24px calc(var(--navbar-height) + 24px);
-  gap: var(--space-7);
   height: 100%;
+  background: var(--color-brand-white);
+  overflow: hidden;
 }
 
-.home-logo {
+/* ── Community Header ── */
+.home-header {
   display: flex;
-  flex-direction: column;
-  gap: var(--space-4);
+  align-items: center;
+  gap: 12px;
+  padding: 48px 24px 16px;
+}
+
+.home-header__icon {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: #bfc9a6;
+  display: flex;
   align-items: center;
   justify-content: center;
-  margin-top: 4vh;
+  flex-shrink: 0;
 }
 
-.home-logo__title {
+.home-header__icon svg {
+  width: 22px;
+  height: 22px;
+  color: #4a5236;
+}
+
+.home-header__text {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.home-header__label {
+  font-family: var(--font-family-body);
+  font-weight: var(--font-weight-regular);
+  font-size: 12px;
+  color: #8a8a7a;
+  letter-spacing: 0.5px;
+}
+
+.home-header__title {
   font-family: var(--font-family-title);
-  font-weight: var(--font-weight-heavy);
-  font-size: var(--font-size-xxl);
-  color: var(--color-text-black);
+  font-weight: var(--font-weight-bold);
+  font-size: 20px;
+  color: #2d3320;
+  line-height: 1.2;
 }
 
-.home-logo__tagline {
+/* ── Map Section ── */
+.home-map {
+  flex: 1;
+  position: relative;
+  margin: 0 16px;
+  border-radius: 24px;
+  overflow: hidden;
+  min-height: 260px;
+  background: #eceee4;
+}
+
+.home-map .leaflet-container {
+  width: 100%;
+  height: 100%;
+  z-index: 1;
+}
+
+.home-map__explore {
+  position: absolute;
+  bottom: 16px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 10;
   display: flex;
   align-items: center;
-  gap: var(--space-3);
-}
-
-.home-logo__tagline-text {
+  gap: 8px;
+  background: var(--color-brand-white);
+  padding: 12px 24px;
+  border-radius: 100px;
+  box-shadow: 0 4px 16px rgba(0,0,0,0.12);
   font-family: var(--font-family-title);
   font-weight: var(--font-weight-semibold);
-  font-size: var(--font-size-l);
-  color: var(--color-text-black);
-  line-height: var(--line-height-m);
+  font-size: 14px;
+  color: #2d3320;
+  border: none;
+  cursor: pointer;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
 }
 
-.big-buttons {
-  display: flex;
-  flex-wrap: wrap;
-  gap: var(--space-3);
-  width: 100%;
-  margin-top: auto;
-  margin-bottom: auto;
+.home-map__explore:hover {
+  transform: translateX(-50%) translateY(-2px);
+  box-shadow: 0 6px 20px rgba(0,0,0,0.16);
 }
 
-.big-btn {
+.home-map__explore svg {
+  width: 16px;
+  height: 16px;
+  color: #6b7a51;
+}
+
+/* ── Action Cards ── */
+.home-actions {
   display: flex;
   flex-direction: column;
+  gap: 10px;
+  padding: 14px 16px calc(var(--navbar-height) + 14px);
+}
+
+.home-action-card {
+  display: flex;
   align-items: center;
-  justify-content: center;
-  gap: var(--space-3);
-  background: var(--color-bg-gray);
-  border-radius: var(--radius-bigbuttons);
-  padding: var(--space-5);
-  box-shadow: var(--shadow-card);
-  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  justify-content: space-between;
+  border-radius: 32px;
+  padding: 24px 28px;
   cursor: pointer;
   border: none;
-  color: var(--color-text-nav);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  min-height: 90px;
+  position: relative;
+  overflow: hidden;
 }
 
-.big-btn--teal {
-  background: linear-gradient(135deg, #d2faf4 0%, #75e8d8 100%);
-  color: #0b685c;
-}
-
-.big-btn--orange {
-  background: linear-gradient(135deg, #ffeaca 0%, #ffc085 100%);
-  color: #924d06;
-}
-
-.big-btn--purple {
-  background: linear-gradient(135deg, #efe2ff 0%, #c49fff 100%);
-  color: #4b1793;
-}
-
-.big-btn:hover {
+.home-action-card:hover {
   transform: translateY(-2px);
-  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.08);
+  box-shadow: 0 8px 24px rgba(0,0,0,0.1);
 }
 
-.big-btn:active {
+.home-action-card:active {
   transform: translateY(0);
 }
 
-.big-btn--full {
-  flex: 1 1 100%;
-  aspect-ratio: 354 / 158;
+.home-action-card--need {
+  background: linear-gradient(135deg, #e8e4c8 0%, #d4cf9e 100%);
 }
 
-.big-btn--half {
-  flex: 1 1 calc(50% - (var(--space-3) / 2));
-  aspect-ratio: 169 / 164;
+.home-action-card--help {
+  background: linear-gradient(135deg, #c5cfa5 0%, #a3b07a 100%);
 }
 
-.big-btn__icon {
+.home-action-card__text {
+  font-family: var(--font-family-title);
+  font-weight: var(--font-weight-bold);
+  font-size: 24px;
+  line-height: 1.2;
+  color: #2d3320;
+  max-width: 60%;
+}
+
+.home-action-card__icon {
+  width: 72px;
+  height: 72px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   flex-shrink: 0;
+}
+
+.home-action-card__icon img,
+.home-action-card__icon svg {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
+/* ── Olive map pin markers ── */
+.home-map-pin {
+  width: 28px;
+  height: 28px;
+  background: #8a9462;
+  border-radius: 50%;
+  border: 3px solid white;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.2);
   display: flex;
   align-items: center;
   justify-content: center;
 }
 
-.big-btn__label {
-  font-family: var(--font-family-title);
-  font-weight: var(--font-weight-semibold);
-  font-size: var(--font-size-m);
-  line-height: var(--line-height-m);
+.home-map-pin--user {
+  width: 14px;
+  height: 14px;
+  background: #6b7a51;
+  border-radius: 50%;
+  border: 3px solid white;
+  box-shadow: 0 0 8px 3px rgba(107, 122, 81, 0.4);
 }
