@@ -126,14 +126,14 @@
   transform: translateY(0);
 }
 
-/* "I need a ride" — warm yellow-green from Figma 585:7057 */
+/* "I need a ride" — solid green from Figma 585:3813 */
 .home-action-card--need {
-  background: linear-gradient(135deg, #E5E88E 0%, #CBD24A 100%);
+  background: #CBD24A;
 }
 
-/* "I'm here to help" — warm orange from Figma 585:7057 */
+/* "I'm here to help" — solid orange from Figma 585:3813 */
 .home-action-card--help {
-  background: linear-gradient(135deg, #F7C984 0%, #F7AC53 100%);
+  background: #E49339;
 }
 
 .home-action-card__text {

@@ -56,7 +56,7 @@ function SearchIcon() {
 function TaxiIcon() {
   return (
     <svg width="80" height="80" viewBox="0 0 80 80" fill="none" xmlns="http://www.w3.org/2000/svg">
-      <g opacity="0.6">
+      <g opacity="0.85">
         {/* Taxi sign on top */}
         <rect x="30" y="12" width="20" height="8" rx="4" fill="#2D3320"/>
         {/* Car body */}
@@ -83,7 +83,7 @@ function TaxiIcon() {
 function HandHeartIcon() {
   return (
     <svg width="80" height="80" viewBox="0 0 80 80" fill="none" xmlns="http://www.w3.org/2000/svg">
-      <g opacity="0.55">
+      <g opacity="0.85">
         {/* Hand */}
         <path d="M20 52C20 52 22 42 28 38C34 34 38 36 40 40C42 36 46 34 52 38C58 42 60 52 60 52" stroke="#2D3320" strokeWidth="4" strokeLinecap="round" strokeLinejoin="round"/>
         <path d="M16 54H64V62C64 64.2091 62.2091 66 60 66H20C17.7909 66 16 64.2091 16 62V54Z" fill="#2D3320"/>
