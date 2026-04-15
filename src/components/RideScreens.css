@@ -785,9 +785,10 @@
 
 .gr-sheet {
   background: #fff;
-  width: 370px;
-  border-radius: 16px 16px 0 0;
-  padding: 12px 16px 24px 16px;
+  width: 100%;
+  max-width: 402px;
+  border-radius: 28px 28px 0 0;
+  padding: 12px 16px 32px 16px;
   display: flex;
   flex-direction: column;
   gap: 16px;
