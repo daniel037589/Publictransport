@@ -51,7 +51,7 @@ export function GiveRideScreen({ onBack, riders, onOfferRide }) {
   const pendingRiders = riders.filter(r => r.status === 'pending' || !r.status);
 
   return (
-    <div className="ride-screen redesign" style={{ overflowY: 'auto' }}>
+    <div className="give-ride-screen">
       <header className="ride-header-new">
         <button className="btn-back-circle" type="button" onClick={onBack} aria-label="Go back">
           <BackIcon />

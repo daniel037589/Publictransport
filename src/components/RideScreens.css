@@ -752,3 +752,18 @@
   position: relative;
   z-index: 2;
 }
+
+/* Give Ride screen — same visual shell as ride-screen.redesign but scrollable */
+.give-ride-screen {
+  width: 402px;
+  height: 874px;
+  margin: 0 auto;
+  background-color: #F2F2EB;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  overflow-x: hidden;
+  overflow-y: auto;
+  position: relative;
+  font-family: var(--font-family-body);
+}
