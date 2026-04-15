@@ -99,19 +99,14 @@ export function ProfileScreen({ userProfile, onLogout }) {
           {userLanguages.length > 0 ? (
             <div style={{ display: 'flex', flexWrap: 'wrap', gap: '10px' }}>
               {userLanguages.map(lang => (
-                <div key={lang.id} style={{ 
-                  display: 'flex', alignItems: 'center', gap: '8px',
-                  background: 'rgba(17, 100, 253, 0.08)', borderRadius: '100px',
-                  padding: '10px 16px', fontSize: '14px', fontWeight: '600',
-                  color: 'var(--color-brand-blue)'
-                }}>
+                <div key={lang.id} className="language-pill">
                   <span style={{ fontSize: '20px' }}>{lang.flag}</span>
                   {lang.label}
                 </div>
               ))}
             </div>
           ) : (
-            <p style={{ color: 'var(--color-text-nav)', fontSize: '14px' }}>No languages selected</p>
+            <p style={{ color: '#8A8A7A', fontSize: '14px' }}>No languages selected</p>
           )}
         </div>
       </motion.div>

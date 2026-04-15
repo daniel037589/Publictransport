@@ -1,0 +1,238 @@
+.trips-screen {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  background-color: var(--color-bg-primary);
+  padding: 0 0 calc(var(--navbar-height) + 24px);
+  overflow-y: auto;
+}
+
+.trips-header {
+  margin-bottom: 24px;
+}
+
+.trips-community {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 52px 24px 16px;
+  flex-shrink: 0;
+}
+
+.trips-community-icon {
+  width: 50px;
+  height: 52px;
+  flex-shrink: 0;
+}
+
+.trips-community-icon img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  display: block;
+}
+
+.trips-community-info {
+  display: flex;
+  flex-direction: column;
+}
+
+.trips-community-label {
+  font-family: var(--font-family-body);
+  font-weight: var(--font-weight-regular);
+  font-size: 13px;
+  color: #8a8a7a;
+  letter-spacing: 0.2px;
+  line-height: 1.3;
+}
+
+.trips-community-name {
+  font-family: var(--font-family-title);
+  font-size: 19px;
+  font-weight: 700;
+  color: #2D3320;
+  line-height: 1.2;
+}
+
+.trips-tabs {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 32px;
+  overflow-x: auto;
+  padding: 0 24px 4px;
+  scrollbar-width: none;
+}
+
+.trips-tabs::-webkit-scrollbar {
+  display: none;
+}
+
+.trips-tab {
+  height: 40px;
+  padding: 0 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 9999px;
+  font-family: var(--font-family-button);
+  font-size: 14px;
+  font-weight: 500;
+  line-height: 21px;
+  letter-spacing: -0.28px;
+  background: var(--color-brand-white);
+  color: #1a1a1a;
+  border: none;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: all 0.2s ease;
+  box-shadow: 0 2px 6px 0 rgba(0, 0, 0, 0.10), 0 1px 4px 0 rgba(0, 0, 0, 0.12);
+}
+
+.trips-tab.active {
+  background: var(--color-secondary);
+  font-weight: 500; /* Design says 500 for both */
+}
+
+.trips-content {
+  padding: 0 24px;
+}
+
+.trips-date-group {
+  margin-bottom: 24px;
+}
+
+.trips-date-header {
+  font-family: var(--font-family-button);
+  font-size: 16px;
+  font-weight: 500;
+  color: #1a1a1a;
+  margin-top: 16px;
+  margin-bottom: 16px;
+}
+
+.trip-card {
+  background: var(--color-brand-white);
+  border-radius: 24px;
+  padding: 16px;
+  margin-bottom: 16px;
+  border: 1px solid #E1E1E3;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.trip-card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+}
+
+.trip-user-info {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.trip-avatar {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background-size: cover;
+  background-position: center;
+  background-color: #EEE;
+}
+
+.trip-user-details h3 {
+  font-family: var(--font-family-button);
+  font-size: 16px;
+  font-weight: 600;
+  margin: 0;
+  color: var(--color-text-black);
+}
+
+.trip-user-details p {
+  font-size: 14px;
+  color: var(--color-text-nav);
+  margin: 0;
+}
+
+.trip-cancel-btn {
+  background: transparent;
+  border: 1px solid #FF3B30;
+  color: #FF3B30;
+  font-family: var(--font-family-button);
+  font-size: 13px;
+  font-weight: 500;
+  padding: 8px 16px;
+  height: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 9999px;
+  cursor: pointer;
+}
+
+.trip-details {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.trip-location {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  position: relative;
+}
+
+.location-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  margin-top: 5px;
+  flex-shrink: 0;
+}
+
+.location-dot.start {
+  border: 2px solid var(--color-primary);
+}
+
+.location-dot.end {
+  border: 2px solid var(--color-secondary);
+}
+
+.location-line {
+  position: absolute;
+  left: 4px;
+  top: 15px;
+  bottom: -15px;
+  width: 2px;
+  background: #E1E1E3;
+}
+
+.location-info {
+  flex: 1;
+}
+
+.location-info p {
+  font-size: 14px;
+  line-height: 1.5;
+  margin: 0;
+  color: var(--color-text-black);
+}
+
+.trip-badges {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.trip-badge {
+  background: var(--color-brand-white);
+  border: 1px solid #E1E1E3;
+  padding: 6px 12px;
+  border-radius: 9999px;
+  font-size: 12px;
+  color: var(--color-text-black);
+  white-space: nowrap;
+}

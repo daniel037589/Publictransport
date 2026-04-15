@@ -7,6 +7,7 @@ import { GiveRideScreen } from './components/GiveRide';
 import { ProfileScreen } from './components/Profile';
 import { MyTripsScreen } from './components/MyTrips';
 import { OnboardingScreen } from './components/Onboarding';
+import { CommunitiesScreen } from './components/Community';
 import './index.css';
 
 const INITIAL_RIDERS = [
@@ -181,10 +182,7 @@ function App() {
       </div>
 
       <div className={`screen ${activeTab === 'community' ? 'screen--active' : 'screen--hidden-right'}`}>
-        <div style={{ padding: '80px 20px', textAlign: 'center' }}>
-          <h2>Community Page</h2>
-          <p>This is a placeholder for the Community screen.</p>
-        </div>
+        <CommunitiesScreen />
       </div>
 
       <div className={`screen ${activeTab === 'profile' ? 'screen--active' : 'screen--hidden-right'}`}>

@@ -6,15 +6,20 @@
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap');
 
 :root {
-  /* Colors */
-  --color-brand-blue: #1164fd;
-  --color-brand-black: #000000;
+  /* ── Figma Brand Colors ── */
+  --color-primary: #F08A4B;       /* branding/Primary Color — orange */
+  --color-secondary: #BBCD2F;    /* branding/Secondary Color — yellow-green */
+  --color-neutral: #5D5D5D;      /* branding/Neutral — navbar pill */
+
+  /* ── Semantic aliases ── */
+  --color-brand-blue: #2D3320;
+  --color-brand-black: #2D3320;
   --color-brand-white: #ffffff;
-  --color-bg-primary: #f6f6f6;
-  --color-bg-gray: #f6f6f6;
-  --color-text-blue: #1164fd;
-  --color-text-black: #000000;
-  --color-text-nav: #737373;
+  --color-bg-primary: #F3F2E7;
+  --color-bg-gray: #F3F2E7;
+  --color-text-blue: #2D3320;
+  --color-text-black: #1A1A1A;
+  --color-text-nav: #2D3320;
 
   /* Typography — Family */
   --font-family-title: 'Inter', sans-serif;
@@ -158,75 +163,97 @@ button {
 
 /* ============================================================
    NAVBAR — Figma 585:7148
-   Dark charcoal bar with yellow-green active pill
+   Floating dark pill. ALL items show label.
+   Inactive = column (icon above, text below).
+   Active = row (icon + text side by side) with green pill.
    ============================================================ */
 .navbar {
   position: absolute;
-  bottom: 0;
-  left: 0;
-  right: 0;
-  height: var(--navbar-height);
-  background: #3A3A3A;
-  border-radius: 35px 35px 0 0;
+  bottom: 16px;
+  left: 21px;            /* (402 - 360) / 2 = 21px → exact 360px width */
+  right: 21px;
+  height: 65px;          /* Figma spec: 360 × 65 */
+  background: var(--color-neutral); /* #5D5D5D */
+  border-radius: 100px;
   display: flex;
   align-items: center;
   justify-content: center;
-  z-index: 50;
+  z-index: 100;
+  padding: 7px 8px;
 }
 
 .navbar__inner {
   display: flex;
-  gap: 8px;
   align-items: center;
-  justify-content: center;
-  padding: 0 12px;
+  justify-content: space-between;
+  width: 100%;
+  height: 100%;
+  gap: 2px;
 }
 
+/* Each nav item — inactive = column (icon + label stacked) */
 .navbar__item {
   display: flex;
-  flex-direction: row;
+  flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: 6px;
-  padding: 10px 16px;
+  gap: 3px;
+  flex: 1;
+  height: 100%;
+  padding: 6px 4px;
   border-radius: 100px;
   cursor: pointer;
-  transition: background 0.25s ease, transform 0.15s ease, color 0.25s ease;
   background: transparent;
-  color: rgba(255, 255, 255, 0.6);
+  color: rgba(255, 255, 255, 0.5);
   border: none;
+  transition: color 0.2s ease;
+  min-width: 0;
 }
 
-.navbar__item:hover {
-  background: rgba(255, 255, 255, 0.08);
-  color: rgba(255, 255, 255, 0.9);
+.navbar__item svg {
+  flex-shrink: 0;
+  width: 20px;
+  height: 20px;
 }
 
+/* Active item — horizontal row layout, yellow-green pill */
 .navbar__item--active {
-  background: #CBD24A;
+  flex-direction: row;
+  flex: 0 0 auto;
+  padding: 0 20px;
+  gap: 8px;
+  background: #BBCD2F;
   color: #2D3320;
+  border-radius: 100px;
 }
 
-.navbar__item--active .navbar__label {
-  color: #2D3320;
-  display: block;
+/* Icon color for active item */
+.navbar__item--active svg path {
+  fill: #2D3320;
+}
+.navbar__item--active svg path[stroke]:not([fill]) {
+  stroke: #2D3320;
+  fill: none;
 }
 
-.navbar__item img {
-  width: 22px;
-  height: auto;
-  display: block;
-}
-
+/* Labels — always visible */
 .navbar__label {
-  font-family: var(--font-family-body);
-  font-size: 12px;
-  line-height: 16px;
-  font-weight: var(--font-weight-semibold);
-  color: rgba(255, 255, 255, 0.6);
+  font-family: var(--font-family-button);
+  font-size: 11px;
+  font-weight: 500;
   white-space: nowrap;
-  display: none; /* Only show label for active item */
+  display: block;
+  line-height: 1;
+  color: inherit;
 }
+
+/* Active label: slightly larger, same row as icon */
+.navbar__item--active .navbar__label {
+  font-size: 13px;
+  font-weight: var(--font-weight-semibold);
+  color: #2D3320;
+}
+
 
 /* (Home screen styles moved to HomePage.css) */
 

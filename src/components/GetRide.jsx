@@ -13,8 +13,8 @@ function BackIcon() {
 function CommunityShieldIcon() {
   return (
     <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" style={{ flexShrink: 0 }}>
-      <path d="M12 22C12 22 20 18 20 12V5L12 2L4 5V12C4 18 12 22 12 22Z" fill="var(--color-brand-blue)" fillOpacity="0.2" stroke="var(--color-brand-blue)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-      <path d="M9 12L11 14L15 10" stroke="var(--color-brand-blue)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+      <path d="M12 22C12 22 20 18 20 12V5L12 2L4 5V12C4 18 12 22 12 22Z" fill="#BBCD2F" fillOpacity="0.2" stroke="#BBCD2F" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+      <path d="M9 12L11 14L15 10" stroke="#BBCD2F" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
     </svg>
   );
 }
@@ -104,7 +104,7 @@ function LocationAutocomplete({ id, name, placeholder, disabled, required }) {
                   setIsOpen(false);
                 }}
               >
-                <strong style={{ fontFamily: 'var(--font-family-title)', color: 'var(--color-brand-blue)' }}>{r.name || r.display_name.split(',')[0]}</strong>
+                <strong style={{ fontFamily: 'var(--font-family-button)', color: 'var(--color-brand-blue)' }}>{r.name || r.display_name.split(',')[0]}</strong>
                 <span style={{ fontSize: '12px', color: 'var(--color-text-nav)' }}>{r.display_name}</span>
               </li>
             ))

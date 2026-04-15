@@ -13,8 +13,8 @@
       "white": "#ffffff"
     },
     "background": {
-      "primary": "#f6f6f6",
-      "gray": "#f6f6f6",
+      "primary": "#F3F2E7",
+      "gray": "#F3F2E7",
       "white": "#ffffff"
     },
     "font": {
@@ -126,14 +126,14 @@
     "elevated": "0 4px 16px rgba(0,0,0,0.12)"
   },
   "cssVariables": {
-    "--color-brand-blue": "#1164fd",
-    "--color-brand-black": "#000000",
+    "--color-brand-blue": "#2D3320",
+    "--color-brand-black": "#2D3320",
     "--color-brand-white": "#ffffff",
-    "--color-bg-primary": "#f6f6f6",
-    "--color-bg-gray": "#f6f6f6",
-    "--color-text-blue": "#1164fd",
-    "--color-text-black": "#000000",
-    "--color-text-nav": "#737373",
+    "--color-bg-primary": "#F3F2E7",
+    "--color-bg-gray": "#F3F2E7",
+    "--color-text-blue": "#2D3320",
+    "--color-text-black": "#1A1A1A",
+    "--color-text-nav": "#2D3320",
     "--font-family-title": "'Inter', sans-serif",
     "--font-family-body": "'Inter', sans-serif",
     "--font-family-button": "'Onest', sans-serif",

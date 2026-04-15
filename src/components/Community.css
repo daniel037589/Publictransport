@@ -1,0 +1,340 @@
+.communities-screen {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  background-color: var(--color-bg-primary);
+  padding: 0 0 calc(var(--navbar-height) + 24px);
+  overflow-y: auto;
+}
+
+.communities-header {
+  padding: 52px 24px 16px;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.communities-header__icon {
+  width: 50px;
+  height: 52px;
+  flex-shrink: 0;
+}
+
+.communities-header__icon img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  display: block;
+}
+
+.communities-header__text {
+  display: flex;
+  flex-direction: column;
+}
+
+.communities-header__label {
+  font-family: var(--font-family-body);
+  font-weight: var(--font-weight-regular);
+  font-size: 13px;
+  color: #8a8a7a;
+  letter-spacing: 0.2px;
+  line-height: 1.3;
+}
+
+.communities-header__title {
+  font-family: var(--font-family-title);
+  font-size: 19px;
+  font-weight: 700;
+  color: #2D3320;
+  line-height: 1.2;
+}
+
+.communities-content {
+  padding: 0 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+/* ── Range Card 375px ── */
+.community-range-card {
+  background: var(--color-brand-white);
+  border-radius: 32px;
+  height: 375px;
+  position: relative;
+  overflow: hidden;
+  box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.03);
+}
+
+.range-map-container {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+}
+
+.range-map-fade {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 120px;
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.00) -3.01%, rgba(255, 255, 255, 0.90) 100%);
+  z-index: 2;
+}
+
+.range-slider-overlay {
+  position: absolute;
+  bottom: 24px;
+  left: 20px;
+  right: 20px;
+  z-index: 3;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.range-slider-info {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+}
+
+.range-slider-label {
+  font-family: var(--font-family-button);
+  font-size: 14px;
+  font-weight: 600;
+  color: #1a1a1a;
+}
+
+.range-slider-value {
+  font-family: var(--font-family-button);
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--color-primary);
+}
+
+.range-slider-container {
+  position: relative;
+  height: 24px;
+  display: flex;
+  align-items: center;
+}
+
+.range-slider {
+  -webkit-appearance: none;
+  width: 100%;
+  height: 5px;
+  background: rgba(45, 51, 32, 0.1);
+  border-radius: 99px;
+  outline: none;
+}
+
+.range-slider::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 24px;
+  height: 24px;
+  background: var(--color-primary);
+  border: 3px solid white;
+  border-radius: 50%;
+  cursor: pointer;
+  box-shadow: 0px 2px 8px rgba(0, 0, 0, 0.15);
+}
+
+.range-labels {
+  display: flex;
+  justify-content: space-between;
+}
+
+.range-labels span {
+  font-size: 12px;
+  font-weight: 500;
+  color: #707072;
+}
+
+.communities-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+/* ── Community Item Card ── */
+.community-item-card {
+  background: var(--color-brand-white);
+  border-radius: 32px;
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  box-shadow: 0px 2px 8px rgba(0, 0, 0, 0.02);
+}
+
+.community-item-main {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.community-item-info {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.community-item-logo {
+  width: 48px;
+  height: 48px;
+  background: #FFF4E6;
+  border-radius: 14px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.community-item-logo.ons {
+  background: #F0F4D2;
+}
+
+.community-item-text {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.community-item-text h3 {
+  font-family: var(--font-family-button);
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--color-text-black);
+  margin: 0;
+}
+
+.community-location-meta {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 12px;
+  color: #707072;
+}
+
+.community-dist-badge {
+  font-size: 11px;
+  font-weight: 600;
+  color: #707072;
+  opacity: 0.8;
+  margin-top: 1px;
+}
+
+.communities-summary {
+  margin: 16px 0 8px;
+}
+
+.communities-summary h2 {
+  font-family: var(--font-family-button);
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--color-text-black);
+  margin: 0;
+}
+
+.communities-summary p {
+  font-size: 13px;
+  color: #8a8a7a;
+  margin: 0;
+}
+
+.community-item-btn {
+  padding: 8px 16px;
+  border-radius: 30px;
+  font-family: var(--font-family-button);
+  font-size: 14px;
+  font-weight: 500;
+  border: none;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.community-item-btn.joined {
+  background: #707072;
+  color: #FFFFFF;
+}
+
+.community-item-btn.explore {
+  background: var(--color-secondary);
+  color: #2D3320;
+}
+
+.community-item-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding-top: 4px;
+}
+
+.community-members {
+  display: flex;
+  align-items: center;
+}
+
+/* ── Custom Map Markers ── */
+.marker-current {
+  width: 14px;
+  height: 14px;
+  background: #F08A4B;
+  border: 2.5px solid #FFFFFF;
+  border-radius: 50%;
+  box-shadow: 0 0 0 4px rgba(240, 138, 75, 0.2);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  animation: markerPop 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+}
+
+@keyframes markerPop {
+  0% { transform: scale(0); opacity: 0; }
+  100% { transform: scale(1); opacity: 1; }
+}
+
+.marker-community {
+  width: 44px;
+  height: 44px;
+  background: rgba(255, 117, 58, 0.35);
+  border-radius: 50%;
+  animation: markerPop 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+}
+
+/* ── Town name label on map ── */
+.map-town-label {
+  background: transparent !important;
+  border: none !important;
+  box-shadow: none !important;
+  font-family: var(--font-family-button) !important;
+  font-weight: 700 !important;
+  font-size: 13px !important;
+  color: #2D3320 !important;
+  text-shadow: 0 1px 3px rgba(255,255,255,0.9), 0 0 8px rgba(255,255,255,0.7) !important;
+  white-space: nowrap !important;
+  padding: 0 !important;
+  pointer-events: none !important;
+}
+.map-town-label::before { display: none !important; }
+
+.member-avatars {
+  display: flex;
+}
+
+.member-avatar {
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  border: 2px solid white;
+  margin-right: -8px;
+  background-color: #DDD;
+  background-size: cover;
+}
+
+.member-count {
+  margin-left: 16px;
+  font-size: 11px;
+  color: #707072;
+}

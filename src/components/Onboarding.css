@@ -13,16 +13,16 @@
 }
 
 .onboarding-title {
-  font-family: var(--font-family-title);
-  font-size: var(--font-size-xl);
-  font-weight: var(--font-weight-heavy);
-  color: var(--color-text-black);
+  font-family: var(--font-family-button);
+  font-size: 32px;
+  font-weight: var(--font-weight-semibold);
+  color: var(--color-brand-blue);
 }
 
 .onboarding-subtitle {
-  font-size: var(--font-size-m);
-  color: var(--color-text-nav);
-  margin-top: 8px;
+  font-size: 16px;
+  color: #8A8A7A;
+  margin-top: 12px;
 }
 
 .avatar-upload-wrapper {
@@ -36,13 +36,13 @@
   width: 100px;
   height: 100px;
   border-radius: 50%;
-  background: linear-gradient(135deg, #ffeaca 0%, #ffc085 100%);
+  background: #E8E7D5;
   display: flex;
   align-items: center;
   justify-content: center;
-  color: #924d06;
+  color: var(--color-brand-blue);
   font-size: 36px;
-  font-family: var(--font-family-title);
+  font-family: var(--font-family-button);
   font-weight: bold;
   box-shadow: 0 8px 16px rgba(0,0,0,0.06);
   background-size: cover;
@@ -127,8 +127,8 @@
 }
 
 .pref-toggle--active {
-  background: rgba(17, 100, 253, 0.1);
-  border-color: var(--color-brand-blue);
+  background: #F3F2E7;
+  border-color: #BBCD2F;
   color: var(--color-brand-blue);
 }
 
