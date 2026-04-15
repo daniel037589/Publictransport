@@ -336,12 +336,7 @@ export function GetRideScreen({ onBack, onRequestRide, userProfile }) {
           </div>
         </div>
 
-        <div className="community-notice-clean">
-          <CommunityShieldIcon />
-          <p>Community matching with verified locals.</p>
-        </div>
-
-        <button className="btn-find-neighbour" type="submit" disabled={isLoading}>
+        <button className="btn-find-neighbour" style={{ position: 'absolute', bottom: '53px' }} type="submit" disabled={isLoading}>
           {isLoading ? 'Searching...' : 'Find a neighbour'}
         </button>
       </form>
