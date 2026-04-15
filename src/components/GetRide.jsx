@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, forwardRef, useImperativeHandle } from 'react';
 import { MapContainer, TileLayer, Polyline, Marker, useMap } from 'react-leaflet';
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
@@ -50,12 +50,14 @@ function CommunityShieldIcon() {
   );
 }
 
-function LocationAutocomplete({ id, name, placeholder, disabled, required, onSelect }) {
+const LocationAutocomplete = forwardRef(function LocationAutocomplete({ id, name, placeholder, disabled, required, onSelect }, ref) {
   const [query, setQuery] = useState('');
   const [results, setResults] = useState([]);
   const [isOpen, setIsOpen] = useState(false);
   const [isSearching, setIsSearching] = useState(false);
   const wrapperRef = useRef(null);
+
+  useImperativeHandle(ref, () => ({ setQuery }));
 
   useEffect(() => {
     const fetchLocations = async () => {
@@ -159,13 +161,49 @@ function LocationAutocomplete({ id, name, placeholder, disabled, required, onSel
       )}
     </div>
   );
-}
+});
 
 export function GetRideScreen({ onBack, onRequestRide, userProfile }) {
   const [isLoading, setIsLoading] = useState(false);
+  const [isLocating, setIsLocating] = useState(false);
   const [pickup, setPickup] = useState(null);
   const [dropoff, setDropoff] = useState(null);
   const [route, setRoute] = useState(null);
+  const [timeValue, setTimeValue] = useState(() => {
+    const now = new Date();
+    return `${String(now.getHours()).padStart(2,'0')}:${String(now.getMinutes()).padStart(2,'0')}`;
+  });
+  const [dateValue, setDateValue] = useState(() => new Date().toISOString().split('T')[0]);
+  const pickupInputRef = useRef(null);
+
+  const handleUseGPS = () => {
+    if (!navigator.geolocation) return alert('Geolocation is not supported by your browser.');
+    setIsLocating(true);
+    navigator.geolocation.getCurrentPosition(
+      async (pos) => {
+        const { latitude, longitude } = pos.coords;
+        try {
+          const url = `https://nominatim.openstreetmap.org/reverse?format=json&lat=${latitude}&lon=${longitude}&accept-language=nl`;
+          const resp = await fetch(url);
+          const data = await resp.json();
+          const streetName = data.address?.road || data.address?.neighbourhood || data.display_name?.split(',')[0] || 'Current Location';
+          setPickup({ lat: latitude, lng: longitude, name: streetName });
+          // Update the visible text in the autocomplete input
+          if (pickupInputRef.current) pickupInputRef.current.setQuery(streetName);
+        } catch {
+          setPickup({ lat: latitude, lng: longitude, name: 'Current Location' });
+          if (pickupInputRef.current) pickupInputRef.current.setQuery('Current Location');
+        } finally {
+          setIsLocating(false);
+        }
+      },
+      () => {
+        setIsLocating(false);
+        alert('Could not get your location. Please allow location access.');
+      },
+      { enableHighAccuracy: true, timeout: 10000 }
+    );
+  };
 
   useEffect(() => {
     const fetchRoute = async () => {
@@ -328,6 +366,7 @@ export function GetRideScreen({ onBack, onRequestRide, userProfile }) {
                 </svg>
               </span>
               <LocationAutocomplete 
+                ref={pickupInputRef}
                 id="pickup" 
                 name="pickup" 
                 placeholder="Pick Up" 
@@ -337,21 +376,24 @@ export function GetRideScreen({ onBack, onRequestRide, userProfile }) {
               <button 
                 type="button" 
                 className="btn-use-location" 
-                onClick={() => {
-                  setPickup({ name: 'Current Location', lat: center[0], lng: center[1] });
-                  const el = document.querySelector('#pickup');
-                  if (el) el.value = 'Current Location';
-                }}
+                onClick={handleUseGPS}
                 title="Use current location"
+                style={{ opacity: isLocating ? 0.5 : 1 }}
               >
-                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-                  <circle cx="12" cy="12" r="10"/>
-                  <circle cx="12" cy="12" r="3"/>
-                  <line x1="12" y1="2" x2="12" y2="5"/>
-                  <line x1="12" y1="19" x2="12" y2="22"/>
-                  <line x1="2" y1="12" x2="5" y2="12"/>
-                  <line x1="19" y1="12" x2="22" y2="12"/>
-                </svg>
+                {isLocating ? (
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" style={{ animation: 'spin 1s linear infinite' }}>
+                    <path d="M21 12a9 9 0 1 1-6.219-8.56"/>
+                  </svg>
+                ) : (
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                    <circle cx="12" cy="12" r="10"/>
+                    <circle cx="12" cy="12" r="3"/>
+                    <line x1="12" y1="2" x2="12" y2="5"/>
+                    <line x1="12" y1="19" x2="12" y2="22"/>
+                    <line x1="2" y1="12" x2="5" y2="12"/>
+                    <line x1="19" y1="12" x2="22" y2="12"/>
+                  </svg>
+                )}
               </button>
             </div>
           </div>
@@ -376,11 +418,11 @@ export function GetRideScreen({ onBack, onRequestRide, userProfile }) {
         </div>
 
         <div className="form-field">
-          <label className="form-label-new">What time?</label>
-          <div className="input-field-new">
+          <label className="form-label-new">When do you need a ride?</label>
+          <div className="input-field-new" style={{ gap: '4px' }}>
             <span className="input-icon-new">
               <svg width="18" height="18" viewBox="0 0 18 18" fill="none">
-                <path d="M9 0C7.21997 0 5.47991 0.527841 3.99987 1.51677C2.51983 2.50571 1.36628 3.91131 0.685088 5.55585C0.00389956 7.20038 -0.17433 9.00998 0.172937 10.7558C0.520203 12.5016 1.37737 14.1053 2.63604 15.364C3.89471 16.6226 5.49836 17.4798 7.24419 17.8271C8.99002 18.1743 10.7996 17.9961 12.4442 17.3149C14.0887 16.6337 15.4943 15.4802 16.4832 14.0001C17.4722 12.5201 18 10.78 18 9C17.9975 6.61382 17.0485 4.3261 15.3612 2.63882C13.6739 0.95154 11.3862 0.00251984 9 0ZM9 16.6154C7.49382 16.6154 6.02146 16.1687 4.76912 15.332C3.51678 14.4952 2.5407 13.3058 1.96431 11.9143C1.38792 10.5228 1.23711 8.99155 1.53095 7.51431C1.82479 6.03707 2.55008 4.68014 3.61511 3.61511C4.68014 2.55008 6.03708 1.82478 7.51431 1.53094C8.99155 1.2371 10.5228 1.38791 11.9143 1.9643C13.3058 2.54069 14.4952 3.51677 15.332 4.76912C16.1688 6.02146 16.6154 7.49382 16.6154 9C16.6131 11.019 15.81 12.9547 14.3824 14.3824C12.9547 15.81 11.019 16.6131 9 16.6154ZM14.5385 9C14.5385 9.18361 14.4655 9.3597 14.3357 9.48953C14.2059 9.61937 14.0298 9.69231 13.8462 9.69231H9C8.81639 9.69231 8.6403 9.61937 8.51047 9.48953C8.38063 9.3597 8.30769 9.18361 8.30769 9V4.15385C8.30769 3.97023 8.38063 3.79414 8.51047 3.66431C8.6403 3.53448 8.81639 3.46154 9 3.46154C9.18361 3.46154 9.3597 3.53448 9.48954 3.66431C9.61937 3.79414 9.69231 3.97023 9.69231 4.15385V8.30769H13.8462C14.0298 8.30769 14.2059 8.38063 14.3357 8.51046C14.4655 8.6403 14.5385 8.81639 14.5385 9Z" fill="#707072"/>
+                <path d="M9 0C7.21997 0 5.47991 0.527841 3.99987 1.51677C2.51983 2.50571 1.36628 3.91131 0.685088 5.55585C0.00389956 7.20038 -0.17433 9.00998 0.172937 10.7558C0.520203 12.5016 1.37737 14.1053 2.63604 15.364C3.89471 16.6226 5.49836 17.4798 7.24419 17.8271C8.99002 18.1743 10.7996 17.9961 12.4442 17.3149C14.0887 16.6337 15.4943 15.4802 16.4832 14.0001C17.4722 12.5201 18 10.78 18 9C17.9975 6.61382 17.0485 4.3261 15.3612 2.63882C13.6739 0.95154 11.3862 0.00251984 9 0ZM14.5385 9C14.5385 9.18361 14.4655 9.3597 14.3357 9.48953C14.2059 9.61937 14.0298 9.69231 13.8462 9.69231H9C8.81639 9.69231 8.6403 9.61937 8.51047 9.48953C8.38063 9.3597 8.30769 9.18361 8.30769 9V4.15385C8.30769 3.97023 8.38063 3.79414 8.51047 3.66431C8.6403 3.53448 8.81639 3.46154 9 3.46154C9.18361 3.46154 9.3597 3.53448 9.48954 3.66431C9.61937 3.79414 9.69231 3.97023 9.69231 4.15385V8.30769H13.8462C14.0298 8.30769 14.2059 8.38063 14.3357 8.51046C14.4655 8.6403 14.5385 8.81639 14.5385 9Z" fill="#707072"/>
               </svg>
             </span>
             <input 
@@ -388,19 +430,44 @@ export function GetRideScreen({ onBack, onRequestRide, userProfile }) {
               id="date" 
               name="date" 
               type="date" 
-              defaultValue={new Date().toISOString().split('T')[0]}
+              value={dateValue}
+              onChange={e => setDateValue(e.target.value)}
               disabled={isLoading} 
-              style={{ flex: 1 }}
+              style={{ flex: 1, minWidth: 0 }}
             />
             <input 
               className="form-input-clean" 
               id="time" 
               name="time" 
               type="time" 
-              defaultValue="08:30" 
+              value={timeValue}
+              onChange={e => setTimeValue(e.target.value)}
               disabled={isLoading} 
-              style={{ flex: 1 }}
+              style={{ flex: '0 0 90px', minWidth: 0 }}
             />
+            <button
+              type="button"
+              onClick={() => {
+                const now = new Date();
+                setTimeValue(`${String(now.getHours()).padStart(2,'0')}:${String(now.getMinutes()).padStart(2,'0')}`);
+                setDateValue(new Date().toISOString().split('T')[0]);
+              }}
+              style={{
+                flexShrink: 0,
+                background: '#BBCD2F',
+                color: '#2D3320',
+                border: 'none',
+                borderRadius: '20px',
+                padding: '4px 10px',
+                fontSize: '12px',
+                fontWeight: 600,
+                cursor: 'pointer',
+                whiteSpace: 'nowrap',
+                fontFamily: 'var(--font-family-button)'
+              }}
+            >
+              Right now
+            </button>
           </div>
         </div>
 
