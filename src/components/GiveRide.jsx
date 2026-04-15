@@ -111,7 +111,7 @@ export function GiveRideScreen({ onBack, riders, onOfferRide }) {
       </div>
 
       {/* ── Nearby Requests ───────────────────────────────── */}
-      <div style={{ width: '370px', paddingBottom: '40px', flexShrink: 0 }}>
+      <div className="ride-form-new" style={{ paddingBottom: '40px', flexShrink: 0 }}>
         <h2 style={{ fontFamily: 'var(--font-family-button)', fontSize: '18px', fontWeight: 700, color: '#2D3320', margin: '20px 0 12px 0' }}>
           Nearby Requests
         </h2>
