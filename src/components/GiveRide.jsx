@@ -62,7 +62,7 @@ export function GiveRideScreen({ onBack, riders, onOfferRide }) {
         <div className="card-header">
           <div className="card-title-group">
             <h1 className="card-title">I'm here to help</h1>
-            <p className="card-subtitle">Connect with a neighbour driver</p>
+            <p className="card-subtitle">Offer a ride to a neighbor</p>
           </div>
         </div>
 
@@ -72,7 +72,7 @@ export function GiveRideScreen({ onBack, riders, onOfferRide }) {
           </svg>
         </div>
 
-        <div className="card-map-container">
+        <div className="card-map-container-give">
           <MapContainer 
             center={MAP_CENTER} 
             zoom={13} 

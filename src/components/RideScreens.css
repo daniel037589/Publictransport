@@ -742,3 +742,13 @@
 .trip-pickup-btn:hover {
   background: #D87B40;
 }
+
+.card-map-container-give {
+  border-radius: 20px;
+  overflow: hidden;
+  height: 324px;
+  width: 100%;
+  margin-top: auto;
+  position: relative;
+  z-index: 2;
+}
