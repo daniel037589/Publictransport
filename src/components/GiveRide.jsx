@@ -135,55 +135,70 @@ export function GiveRideScreen({ onBack, riders, onOfferRide }) {
 
       {/* ── Rider Detail Bottom Sheet ─────────────────────── */}
       {selectedRider && (
-        <div className="rider-detail-overlay" onClick={() => setSelectedRider(null)}>
-          <div className="rider-detail-sheet" onClick={e => e.stopPropagation()}>
-            <div className="sheet-header">
-              <div className="request-profile">
-                <div
-                  className="request-avatar"
-                  style={selectedRider.avatarUrl
-                    ? { backgroundImage: `url(${selectedRider.avatarUrl})`, backgroundSize: 'cover', color: 'transparent' }
-                    : { background: selectedRider.color }}
-                >
-                  {selectedRider.avatarUrl ? '' : selectedRider.initial}
-                </div>
-                <div className="request-info">
-                  <h3>{selectedRider.name}'s Request</h3>
-                  <p>{selectedRider.distance}</p>
+        <div className="gr-overlay" onClick={() => setSelectedRider(null)}>
+          <div className="gr-sheet" onClick={e => e.stopPropagation()}>
+
+            {/* Drag handle */}
+            <div className="gr-handle" />
+
+            {/* Profile row */}
+            <div className="gr-profile">
+              <div
+                className="gr-avatar"
+                style={selectedRider.avatarUrl
+                  ? { backgroundImage: `url(${selectedRider.avatarUrl})`, backgroundSize: 'cover' }
+                  : { backgroundColor: selectedRider.color || '#F08A4B' }}
+              >
+                {!selectedRider.avatarUrl && (
+                  <span>{selectedRider.initial || (selectedRider.name ? selectedRider.name[0] : '?')}</span>
+                )}
+              </div>
+              <div className="gr-profile-info">
+                <p className="gr-name">{selectedRider.name}</p>
+                <p className="gr-age">{selectedRider.distance}</p>
+              </div>
+            </div>
+
+            {/* Badges */}
+            {selectedRider.badges && selectedRider.badges.length > 0 && (
+              <div className="gr-badges">
+                {selectedRider.badges.map((b, i) => (
+                  <span key={i} className="gr-badge">
+                    {typeof b === 'string' ? b : `${b.icon || ''} ${b.text || ''}`.trim()}
+                  </span>
+                ))}
+              </div>
+            )}
+
+            {/* Route rows */}
+            <div className="gr-route">
+              <div className="gr-route-row">
+                <div className="gr-dot gr-dot--pickup" />
+                <div className="gr-route-text">
+                  <p className="gr-route-label">Pick up</p>
+                  <p className="gr-route-address">{selectedRider.pickup || 'Kortenhoef center'}</p>
                 </div>
               </div>
-              <button className="sheet-close" onClick={() => setSelectedRider(null)}>
-                <CloseIcon />
+              <div className="gr-route-line" />
+              <div className="gr-route-row">
+                <div className="gr-dot gr-dot--dropoff" />
+                <div className="gr-route-text">
+                  <p className="gr-route-label">Drop off</p>
+                  <p className="gr-route-address">{selectedRider.destination || 'Destination'}</p>
+                </div>
+              </div>
+            </div>
+
+            {/* Action buttons */}
+            <div className="gr-actions">
+              <button className="gr-btn gr-btn--cancel" onClick={() => setSelectedRider(null)}>
+                Cancel
               </button>
-            </div>
-
-            <div className="request-route" style={{ marginTop: '8px' }}>
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
-                <circle cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="2"/>
-                <path d="M12 8L16 12L12 16M8 12H16" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
-              </svg>
-              <span>Destination: <strong>{selectedRider.destination}</strong></span>
-            </div>
-
-            <div className="request-badges" style={{ marginBottom: '8px' }}>
-              {(selectedRider.badges || []).map((b, i) => (
-                <span key={i} className={`request-badge request-badge--${b.color || 'grey'}`}>
-                  {b.icon} {b.text}
-                </span>
-              ))}
-            </div>
-
-            <p style={{ fontSize: '14px', color: 'var(--color-text-nav)', lineHeight: '1.5' }}>
-              {selectedRider.name} is looking for a friendly neighbor to help them reach their destination.
-            </p>
-
-            <div className="sheet-actions">
-              <button className="btn-secondary" onClick={() => setSelectedRider(null)}>Ignore</button>
-              <button className="btn-primary" style={{ marginTop: 0 }} onClick={() => {
+              <button className="gr-btn gr-btn--pickup" onClick={() => {
                 if (onOfferRide) onOfferRide(selectedRider.id);
                 setSelectedRider(null);
               }}>
-                Pick Up
+                Pick up
               </button>
             </div>
           </div>
