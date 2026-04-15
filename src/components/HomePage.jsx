@@ -1,6 +1,6 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { MapContainer, TileLayer, Marker, Tooltip } from 'react-leaflet';
+import { MapContainer, TileLayer, Marker, Tooltip, Polyline, useMap, Popup } from 'react-leaflet';
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
 import './HomePage.css';
@@ -10,13 +10,17 @@ import './HomePage.css';
  * Frame: 402 × 874px
  */
 
-// Community member pins (orange circles)
-const communityPinIcon = new L.DivIcon({
-  className: '',
-  html: '<div class="home-map-pin"></div>',
-  iconSize: [22, 22],
-  iconAnchor: [11, 11],
-});
+function MapRecenter({ bounds }) {
+  const map = useMap();
+  useEffect(() => {
+    if (bounds && bounds.length > 0) {
+      try {
+        map.fitBounds(bounds, { padding: [30, 30] });
+      } catch (e) {}
+    }
+  }, [bounds, map]);
+  return null;
+}
 
 // Invisible anchor for the town name tooltip
 const townLabelIcon = new L.DivIcon({
@@ -25,15 +29,6 @@ const townLabelIcon = new L.DivIcon({
   iconSize: [0, 0],
   iconAnchor: [0, 0],
 });
-
-const COMMUNITY_PINS = [
-  [52.2340, 5.0760],
-  [52.2315, 5.0820],
-  [52.2280, 5.0695],
-  [52.2365, 5.0840],
-  [52.2295, 5.0772],
-  [52.2350, 5.0710],
-];
 
 const KORTENHOEF = [52.2331, 5.0760];
 
@@ -76,7 +71,12 @@ function HandHeartIcon() {
 }
 
 // ── Reusable Map Content (shared by inline + fullscreen) ───────
-function MapContent({ dragging = false, scrollWheelZoom = false }) {
+function MapContent({ dragging = false, scrollWheelZoom = false, riders = [] }) {
+  const ongoingRides = riders.filter(r => r.status === 'ongoing');
+  const mapBounds = ongoingRides.length > 0 
+    ? ongoingRides.flatMap(r => [r.location, r.destinationLocation]).filter(Boolean)
+    : null;
+
   return (
     <>
       <TileLayer
@@ -95,15 +95,36 @@ function MapContent({ dragging = false, scrollWheelZoom = false }) {
         </Tooltip>
       </Marker>
       {/* Community member pins */}
-      {COMMUNITY_PINS.map((pos, i) => (
-        <Marker key={i} position={pos} icon={communityPinIcon} />
+      {/* Realtime Ongoing Rides */}
+      {ongoingRides.map(rider => rider.routeGeometry && (
+        <Polyline
+          key={`route-${rider.id}`}
+          positions={rider.routeGeometry}
+          pathOptions={{ color: rider.color || '#F08A4B', weight: 4, opacity: 0.8, dashArray: '8, 8' }}
+        />
       ))}
+      {ongoingRides.map(rider => rider.location && (
+        <Marker key={`car-${rider.id}`} position={rider.location} icon={new L.DivIcon({
+          className: '',
+          html: `<div style="background-color: white; border-radius: 50%; padding: 4px; box-shadow: 0 2px 4px rgba(0,0,0,0.2); font-size: 14px; text-align: center; line-height: 20px; width: 28px; height: 28px;">🚗</div>`,
+          iconSize: [28, 28],
+          iconAnchor: [14, 14],
+        })}>
+          <Popup className="rider-status-popup">
+            <div style={{ textAlign: 'center', lineHeight: '1.4' }}>
+              <div style={{ fontWeight: 'bold', color: '#1A1A1A' }}>{rider.name}</div>
+              <div style={{ fontSize: '12px', color: '#707072' }}>{rider.status === 'ongoing' ? 'En Route' : 'Waiting'}</div>
+            </div>
+          </Popup>
+        </Marker>
+      ))}
+      <MapRecenter bounds={mapBounds} />
     </>
   );
 }
 
 // ── Fullscreen Map Modal ───────────────────────────────────────
-function FullscreenMap({ onClose }) {
+function FullscreenMap({ onClose, riders = [] }) {
   return (
     <AnimatePresence>
       <motion.div
@@ -122,7 +143,7 @@ function FullscreenMap({ onClose }) {
           dragging
           style={{ width: '100%', height: '100%' }}
         >
-          <MapContent dragging scrollWheelZoom />
+          <MapContent dragging scrollWheelZoom riders={riders} />
         </MapContainer>
 
         {/* Close button */}
@@ -146,7 +167,7 @@ function FullscreenMap({ onClose }) {
 }
 
 // ── HomePage ───────────────────────────────────────────────────
-export default function HomePage({ onNavigate }) {
+export default function HomePage({ onNavigate, riders = [] }) {
   const [mapOpen, setMapOpen] = useState(false);
 
   return (
@@ -179,13 +200,13 @@ export default function HomePage({ onNavigate }) {
           <MapContainer
             center={KORTENHOEF}
             zoom={14}
-            scrollWheelZoom={false}
+            scrollWheelZoom={true}
             zoomControl={false}
             attributionControl={false}
-            dragging={false}
+            dragging={true}
             style={{ width: '100%', height: '100%' }}
           >
-            <MapContent />
+            <MapContent riders={riders} />
           </MapContainer>
 
           {/* Explore → opens fullscreen map */}
@@ -232,7 +253,7 @@ export default function HomePage({ onNavigate }) {
       </main>
 
       {/* ── Fullscreen Map overlay (portals over entire app-shell) ── */}
-      {mapOpen && <FullscreenMap onClose={() => setMapOpen(false)} />}
+      {mapOpen && <FullscreenMap onClose={() => setMapOpen(false)} riders={riders} />}
     </>
   );
 }

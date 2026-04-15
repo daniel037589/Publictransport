@@ -1,9 +1,21 @@
 import { useState, useEffect } from 'react';
 import { createPortal } from 'react-dom';
-import { MapContainer, TileLayer, Marker, Polyline, Popup } from 'react-leaflet';
+import { MapContainer, TileLayer, Marker, Polyline, Popup, useMap } from 'react-leaflet';
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
 import './RideScreens.css';
+
+function MapRecenter({ bounds }) {
+  const map = useMap();
+  useEffect(() => {
+    if (bounds && bounds.length > 0) {
+      try {
+        map.fitBounds(bounds, { padding: [30, 30] });
+      } catch (e) {}
+    }
+  }, [bounds, map]);
+  return null;
+}
 
 // ── Need badge SVG icons (Figma 732-5089/5084/5075/5070) ──────
 function VehicleEntryIcon() {
@@ -30,20 +42,15 @@ function StrollerSpaceIcon() {
 }
 function NewbornIcon() {
   return (
-    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
-      <circle cx="12" cy="8" r="3"/>
-      <path d="M7 21v-2a4 4 0 0 1 4-4h2a4 4 0 0 1 4 4v2"/>
-      <path d="M9 11c0 2 1 3 3 4"/>
+    <svg width="15" height="15" viewBox="0 0 15 15" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <path d="M4.90385 8.36538C4.73269 8.36538 4.56538 8.31463 4.42307 8.21954C4.28076 8.12445 4.16984 7.9893 4.10434 7.83117C4.03884 7.67304 4.0217 7.49904 4.05509 7.33117C4.08848 7.1633 4.1709 7.00911 4.29193 6.88808C4.41296 6.76705 4.56715 6.68463 4.73502 6.65124C4.90289 6.61785 5.07689 6.63499 5.23502 6.70049C5.39315 6.76599 5.5283 6.87691 5.62339 7.01922C5.71848 7.16153 5.76923 7.32884 5.76923 7.5C5.76923 7.72951 5.67806 7.94963 5.51577 8.11192C5.35348 8.27421 5.13336 8.36538 4.90385 8.36538ZM10.0962 6.63462C9.925 6.63462 9.75769 6.68537 9.61538 6.78046C9.47306 6.87555 9.36215 7.0107 9.29665 7.16883C9.23115 7.32696 9.21401 7.50096 9.2474 7.66883C9.28079 7.8367 9.36321 7.99089 9.48424 8.11192C9.60526 8.23295 9.75946 8.31537 9.92733 8.34876C10.0952 8.38215 10.2692 8.36501 10.4273 8.29951C10.5855 8.23401 10.7206 8.12309 10.8157 7.98078C10.9108 7.83847 10.9615 7.67116 10.9615 7.5C10.9615 7.27049 10.8704 7.05037 10.7081 6.88808C10.5458 6.72579 10.3257 6.63462 10.0962 6.63462ZM9.2113 9.89639C8.69747 10.2153 8.10475 10.3843 7.5 10.3843C6.89525 10.3843 6.30254 10.2153 5.7887 9.89639C5.65922 9.81473 5.5026 9.78784 5.35329 9.82165C5.20398 9.85546 5.07422 9.9472 4.99255 10.0767C4.91088 10.2062 4.884 10.3628 4.91781 10.5121C4.95162 10.6614 5.04336 10.7912 5.17284 10.8728C5.87102 11.3081 6.67727 11.5388 7.5 11.5388C8.32274 11.5388 9.12899 11.3081 9.82717 10.8728C9.95665 10.7912 10.0484 10.6614 10.0822 10.5121C10.116 10.3628 10.0891 10.2062 10.0075 10.0767C9.92579 9.9472 9.79602 9.85546 9.64672 9.82165C9.49741 9.78784 9.34079 9.81473 9.2113 9.89639ZM15 7.5C15 8.98336 14.5601 10.4334 13.736 11.6668C12.9119 12.9001 11.7406 13.8614 10.3701 14.4291C8.99968 14.9968 7.49168 15.1453 6.03683 14.8559C4.58197 14.5665 3.2456 13.8522 2.1967 12.8033C1.14781 11.7544 0.433503 10.418 0.144114 8.96318C-0.145275 7.50832 0.00324963 6.00032 0.570907 4.62987C1.13856 3.25943 2.09986 2.08809 3.33323 1.26398C4.5666 0.439867 6.01664 0 7.5 0C9.48848 0.00209987 11.3949 0.79295 12.801 2.19902C14.2071 3.60509 14.9979 5.51152 15 7.5ZM13.8462 7.5C13.8441 5.86633 13.213 4.2962 12.0837 3.11566C10.9545 1.93511 9.41394 1.23487 7.78197 1.16034C6.94616 2.3351 6.92308 3.45288 6.92308 3.46154C6.92308 3.61455 6.98386 3.76129 7.09206 3.86948C7.20025 3.97768 7.34699 4.03846 7.5 4.03846C7.65301 4.03846 7.79976 3.97768 7.90795 3.86948C8.01614 3.76129 8.07693 3.61455 8.07693 3.46154C8.07693 3.30853 8.13771 3.16179 8.2459 3.05359C8.3541 2.9454 8.50084 2.88462 8.65385 2.88462C8.80686 2.88462 8.9536 2.9454 9.0618 3.05359C9.16999 3.16179 9.23077 3.30853 9.23077 3.46154C9.23077 3.92057 9.04842 4.3608 8.72384 4.68538C8.39926 5.00996 7.95903 5.19231 7.5 5.19231C7.04097 5.19231 6.60075 5.00996 6.27616 4.68538C5.95158 4.3608 5.76923 3.92057 5.76923 3.46154C5.76923 3.40889 5.77861 2.43029 6.37933 1.25264C5.19113 1.46582 4.08837 2.01347 3.20047 2.83134C2.31257 3.6492 1.67635 4.70335 1.36648 5.87008C1.05661 7.03681 1.08595 8.26771 1.45104 9.41836C1.81613 10.569 2.50183 11.5916 3.42769 12.3663C4.35354 13.1409 5.48113 13.6354 6.67814 13.7918C7.87515 13.9481 9.09192 13.7598 10.1857 13.2489C11.2794 12.7381 12.2048 11.9258 12.8531 10.9075C13.5015 9.88926 13.846 8.70718 13.8462 7.5Z" fill="currentColor"/>
     </svg>
   );
 }
 function WalkerSpaceIcon() {
   return (
-    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
-      <circle cx="12" cy="4" r="2"/>
-      <path d="M8 10h8"/>
-      <path d="M9 10v8l3 4 3-4v-8"/>
-      <path d="M7 22h3M14 22h3"/>
+    <svg width="17" height="15" viewBox="0 0 17 15" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <path d="M10.9615 0H10.3846C10.0786 0 9.78511 0.121566 9.56872 0.337954C9.35233 0.554342 9.23077 0.847827 9.23077 1.15385V5.19231H3.40385C3.26997 4.54119 2.9157 3.95613 2.40075 3.53577C1.8858 3.1154 1.24166 2.88543 0.576923 2.88462C0.423914 2.88462 0.277171 2.9454 0.168977 3.05359C0.0607828 3.16179 0 3.30853 0 3.46154C0 3.61455 0.0607828 3.76129 0.168977 3.86948C0.277171 3.97768 0.423914 4.03846 0.576923 4.03846C1.03595 4.03846 1.47618 4.22081 1.80076 4.54539C2.12534 4.86997 2.30769 5.3102 2.30769 5.76923C2.30941 7.2988 2.91779 8.76523 3.99936 9.8468C5.08093 10.9284 6.54736 11.5367 8.07692 11.5385H10.9615C12.4916 11.5385 13.9591 10.9306 15.041 9.84869C16.1229 8.76675 16.7308 7.29933 16.7308 5.76923C16.7308 4.23914 16.1229 2.77171 15.041 1.68977C13.9591 0.607828 12.4916 0 10.9615 0ZM15.5394 5.19231H11.4526L14.4714 2.77716C15.056 3.4604 15.4273 4.30011 15.5394 5.19231ZM10.9615 1.15385C11.9088 1.15296 12.8331 1.44544 13.6075 1.99111L10.3846 4.56851V1.15385H10.9615ZM10.9615 10.3846H8.07692C6.95313 10.3833 5.86833 9.9725 5.02547 9.2292C4.18262 8.48589 3.63945 7.46096 3.4976 6.34615H15.5409C15.399 7.46096 14.8558 8.48589 14.013 9.2292C13.1701 9.9725 12.0853 10.3833 10.9615 10.3846ZM6.92308 13.8462C6.92308 14.0744 6.85541 14.2974 6.72862 14.4872C6.60183 14.6769 6.42163 14.8248 6.21079 14.9122C5.99995 14.9995 5.76795 15.0224 5.54413 14.9778C5.3203 14.9333 5.11471 14.8234 4.95334 14.662C4.79197 14.5007 4.68208 14.2951 4.63756 14.0713C4.59303 13.8474 4.61588 13.6154 4.70322 13.4046C4.79055 13.1938 4.93844 13.0136 5.12819 12.8868C5.31794 12.76 5.54102 12.6923 5.76923 12.6923C6.07525 12.6923 6.36873 12.8139 6.58512 13.0303C6.80151 13.2467 6.92308 13.5401 6.92308 13.8462ZM14.4231 13.8462C14.4231 14.0744 14.3554 14.2974 14.2286 14.4872C14.1018 14.6769 13.9216 14.8248 13.7108 14.9122C13.5 14.9995 13.268 15.0224 13.0441 14.9778C12.8203 14.9333 12.6147 14.8234 12.4533 14.662C12.292 14.5007 12.1821 14.2951 12.1376 14.0713C12.093 13.8474 12.1159 13.6154 12.2032 13.4046C12.2905 13.1938 12.4384 13.0136 12.6282 12.8868C12.8179 12.76 13.041 12.6923 13.2692 12.6923C13.5752 12.6923 13.8687 12.8139 14.0851 13.0303C14.3015 13.2467 14.4231 13.5401 14.4231 13.8462Z" fill="currentColor"/>
     </svg>
   );
 }
@@ -70,58 +77,79 @@ function NeedBadge({ badge }) {
   );
 }
 
-// ── GiveRideCard — Figma 661-4304 ───────────────────────────
-function GiveRideCard({ rider, onClick }) {
-  return (
-    <div className="gr-card" onClick={() => onClick(rider)}>
+// ── GiveRideCard — Figma 661-4342 ───────────────────────────
+export function GiveRideCard({ rider, onClick, showCancel, onCancel }) {
+  // Using real data from the rider object with realistic fallbacks if missing
+  const name = rider.name || 'Sara de Jong';
+  const age = rider.age ? `${rider.age} Years Old` : '35 Years Old';
+  // Use current date as mock if missing
+  const dateStr = rider.date || new Date().toLocaleDateString('en-GB', { weekday: 'short', day: 'numeric', month: 'short' });
+  const pickupDuration = rider.pickupDuration || rider.distance || '7 min (3.2 km)';
+  const pickupAddress = rider.pickupAddress || rider.pickup || 'Beukenlaan 9\n1341 UT Kortenhoef';
+  const dropoffDuration = rider.dropoffDuration || '30 min (9 km)';
+  const dropoffAddress = rider.dropoffAddress || rider.destination || 'Dorpsstraat 42\n1231 AB Loosdrecht';
+  const badges = rider.badges && rider.badges.length > 0 ? rider.badges : ['Has newborn', 'Needs walker space'];
 
-      {/* Profile */}
-      <div className="gr-card-profile">
-        <div
-          className="gr-card-avatar"
-          style={rider.avatarUrl
-            ? { backgroundImage: `url(${rider.avatarUrl})`, backgroundSize: 'cover' }
-            : { backgroundColor: rider.color || '#F08A4B' }}
-        >
-          {!rider.avatarUrl && <span>{rider.initial || (rider.name ? rider.name[0] : '?')}</span>}
+  return (
+    <div className="gr-card-redesign" onClick={() => onClick && onClick(rider)}>
+      
+      {/* Top Part */}
+      <div className="gr-card-top-row">
+        <div className="gr-card-profile" style={{ gap: '8px' }}>
+          <div
+            className="gr-card-avatar"
+            style={rider.avatarUrl
+              ? { backgroundImage: `url(${rider.avatarUrl})`, backgroundSize: 'cover', width: '40px', height: '40px', backgroundColor: 'transparent' }
+              : { backgroundColor: rider.color || '#F08A4B', width: '40px', height: '40px' }}
+          >
+            {!rider.avatarUrl && <span style={{ color: 'white', fontWeight: 'bold' }}>{rider.initial || name[0]}</span>}
+          </div>
+          <div style={{ display: 'flex', flexDirection: 'column' }}>
+            <p className="gr-card-name" style={{ fontSize: '16px' }}>{name}</p>
+            <p className="gr-card-sub" style={{ fontSize: '14px', color: '#707072' }}>{age}</p>
+          </div>
         </div>
-        <div>
-          <p className="gr-card-name">{rider.name}</p>
-          <p className="gr-card-sub">
-            {rider.age ? `${rider.age} Years Old` : rider.timeframe || 'Needs ride now'}
-          </p>
-        </div>
+
+        {showCancel && (
+          <button className="gr-btn-cancel-ride" onClick={(e) => { e.stopPropagation(); onCancel && onCancel(rider.id); }}>
+            Cancel Ride
+          </button>
+        )}
       </div>
 
-      {/* Badges */}
-      {rider.badges && rider.badges.length > 0 && (
-        <div className="gr-badges">
-          {rider.badges.map((b, i) => <NeedBadge key={i} badge={b} />)}
-        </div>
-      )}
+      <div className="gr-card-divider" />
 
-      {/* Route — "Today" section */}
-      <div className="gr-card-today">
-        <p className="gr-card-today-label">Today</p>
-        <div className="gr-card-timeline">
-          {/* Pickup row */}
-          <div className="gr-timeline-row">
-            <div className="gr-timeline-track">
-              <div className="gr-dot gr-dot--pickup" />
-              <div className="gr-timeline-dash" />
-            </div>
-            <div className="gr-route-text">
-              <p className="gr-route-label">{rider.pickupTime || '08:30'} &mdash; <span style={{ fontWeight: 400, color: '#707072' }}>{rider.pickup || 'Kortenhoef center'}</span></p>
-            </div>
+      {/* Badges */}
+      <div className="gr-badges" style={{ gap: '4px' }}>
+        {badges.map((b, i) => <NeedBadge key={i} badge={b} />)}
+      </div>
+
+      {/* Date */}
+      <div className="gr-card-date">
+        {dateStr}
+      </div>
+
+      {/* Location */}
+      <div className="gr-card-location">
+        <div className="gr-loc-dashed-line" />
+        
+        <div className="gr-loc-row">
+          <div className="gr-loc-start" />
+          <div className="gr-loc-text">
+            <p className="gr-loc-title">{pickupDuration}</p>
+            <p className="gr-loc-address">{pickupAddress}</p>
           </div>
-          {/* Dropoff row */}
-          <div className="gr-timeline-row">
-            <div className="gr-timeline-track">
-              <div className="gr-dot gr-dot--dropoff" />
-            </div>
-            <div className="gr-route-text">
-              <p className="gr-route-label">{rider.dropoffTime || '09:00'} &mdash; <span style={{ fontWeight: 400, color: '#707072' }}>{rider.destination || 'Destination'}</span></p>
-            </div>
+        </div>
+
+        <div className="gr-loc-row">
+          <div className="gr-loc-dest">
+            <svg width="10" height="10" viewBox="0 0 10 10" fill="none">
+              <path d="M5 10C5 10 9 6.5 9 4C9 1.79086 7.20914 0 5 0C2.79086 0 1 1.79086 1 4C1 6.5 5 10 5 10ZM5 5.5C4.17157 5.5 3.5 4.82843 3.5 4C3.5 3.17157 4.17157 2.5 5 2.5C5.82843 2.5 6.5 3.17157 6.5 4C6.5 4.82843 5.82843 5.5 5 5.5Z" fill="#141A34"/>
+            </svg>
+          </div>
+          <div className="gr-loc-text">
+            <p className="gr-loc-title">{dropoffDuration}</p>
+            <p className="gr-loc-address">{dropoffAddress}</p>
           </div>
         </div>
       </div>
@@ -166,7 +194,7 @@ const createRiderIcon = (color, initial, avatarUrl) => new L.DivIcon({
 });
 
 // ── GiveRideScreen ────────────────────────────────────────────
-export function GiveRideScreen({ onBack, riders, onOfferRide }) {
+export function GiveRideScreen({ onBack, riders, onOfferRide, userProfile }) {
   const [selectedRider, setSelectedRider] = useState(null);
   const MAP_CENTER = [52.2331, 5.0760]; // Kortenhoef
 
@@ -178,7 +206,12 @@ export function GiveRideScreen({ onBack, riders, onOfferRide }) {
     }
   }, [selectedRider]);
 
-  const pendingRiders = riders.filter(r => r.status === 'pending' || !r.status);
+  const pendingRiders = riders.filter(r => 
+    (r.status === 'pending' || !r.status) && r.name !== userProfile?.name
+  );
+  const mapBounds = pendingRiders.length > 0
+    ? pendingRiders.flatMap(r => [r.location, r.destinationLocation]).filter(Boolean)
+    : null;
 
   return (
     <div className="ride-screen redesign" style={{ overflowY: 'auto', overflowX: 'hidden' }}>
@@ -238,6 +271,7 @@ export function GiveRideScreen({ onBack, riders, onOfferRide }) {
                 />
               ) : null
             )}
+            <MapRecenter bounds={mapBounds} />
           </MapContainer>
           <div className="map-badge" style={{ background: 'white', color: '#2D3320' }}>Kortenhoef Area</div>
         </div>

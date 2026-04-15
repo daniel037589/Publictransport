@@ -14,7 +14,8 @@ const INITIAL_RIDERS = [
   // Keeping initial mockup data ...
   {
     id: 'sarah',
-    name: 'Sarah',
+    name: 'Sara de Jong',
+    age: 35,
     initial: 'S',
     distance: '1 km away',
     timeframe: 'Needs ride now',
@@ -22,10 +23,8 @@ const INITIAL_RIDERS = [
     location: [52.3094, 5.0392],
     destinationLocation: [52.3134, 5.0425],
     color: '#1164fd',
-    badges: [
-      { icon: '👶', text: 'With Stroller', color: 'blue' },
-      { icon: '💺', text: '2 Seats Needed', color: 'grey' }
-    ]
+    avatarUrl: 'https://i.pravatar.cc/150?img=47',
+    badges: ['Has newborn', 'Needs walker space']
   }
 ];
 
@@ -169,7 +168,7 @@ function App() {
   return (
     <div className="app-shell">
       <div className={`screen ${activeTab === 'home' ? 'screen--active' : 'screen--hidden-left'}`}>
-        <HomePage onNavigate={handleNavigate} />
+        <HomePage onNavigate={handleNavigate} riders={riders} />
       </div>
 
       <div className={`screen ${activeTab === 'get-ride' ? 'screen--active' : 'screen--hidden-right'}`} style={{ zIndex: 100 }}>
@@ -177,7 +176,7 @@ function App() {
       </div>
 
       <div className={`screen ${activeTab === 'give-ride' ? 'screen--active' : 'screen--hidden-right'}`} style={{ zIndex: 100 }}>
-        {activeTab === 'give-ride' && <GiveRideScreen onBack={() => setActiveTab('home')} riders={riders} onOfferRide={handleOfferRide} />}
+        {activeTab === 'give-ride' && <GiveRideScreen onBack={() => setActiveTab('home')} riders={riders} onOfferRide={handleOfferRide} userProfile={userProfile} />}
       </div>
 
       <div className={`screen ${activeTab === 'trips' ? 'screen--active' : 'screen--hidden-right'}`}>

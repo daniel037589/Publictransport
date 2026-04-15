@@ -8,16 +8,11 @@ export function MyTripsScreen({ riders, onDeleteRide, onCancelOffer, userProfile
   // Map existing data to UI categories
   // "Active" = Requested by user + Driver accepted OR User is driving
   const activeTrips = riders.filter(r => 
-    (r.name === userProfile?.name && r.status === 'ongoing') || 
-    (r.driverName === userProfile?.name)
+    (r.name === userProfile?.name && r.status !== 'completed' && r.status !== 'cancelled') || 
+    (r.driverName === userProfile?.name && r.status !== 'completed' && r.status !== 'cancelled')
   );
 
-  // "Scheduled" = Requested by user + Waiting for driver
-  const scheduledTrips = riders.filter(r => 
-    r.name === userProfile?.name && r.status !== 'ongoing'
-  );
-
-  // "History" = Mock history for design purposes
+  const scheduledTrips = riders.filter(r => false); // Disable scheduled if we just show everything active
   const historyTrips = []; // Empty for now
 
   const tabs = ['Active', 'Scheduled', 'History'];
@@ -32,6 +27,8 @@ export function MyTripsScreen({ riders, onDeleteRide, onCancelOffer, userProfile
   };
 
   const visibleTrips = getVisibleTrips();
+  const myRequests = visibleTrips.filter(t => t.name === userProfile?.name);
+  const ridesIHelp = visibleTrips.filter(t => t.driverName === userProfile?.name);
 
   return (
     <motion.div 
@@ -70,84 +67,74 @@ export function MyTripsScreen({ riders, onDeleteRide, onCancelOffer, userProfile
             <p>No {activeTab.toLowerCase()} trips found.</p>
           </div>
         ) : (
-          <div className="trips-date-group">
-            <h2 className="trips-date-header">Today</h2>
-            <AnimatePresence>
-              {visibleTrips.map(trip => (
-                <TripCard 
-                  key={trip.id} 
-                  trip={trip} 
-                  isDriving={trip.driverName === userProfile?.name}
-                  onAction={() => trip.driverName === userProfile?.name ? onCancelOffer(trip.id) : onDeleteRide(trip.id)}
-                />
-              ))}
-            </AnimatePresence>
-          </div>
+          <>
+            {myRequests.length > 0 && (
+              <div className="trips-date-group">
+                <h2 className="trips-date-header" style={{ marginBottom: '12px' }}>Your Requests</h2>
+                <AnimatePresence>
+                  {myRequests.map(trip => (
+                    <TripCard 
+                      key={trip.id} 
+                      trip={trip} 
+                      isDriving={trip.driverName === userProfile?.name}
+                      onAction={() => onDeleteRide(trip.id)}
+                    />
+                  ))}
+                </AnimatePresence>
+              </div>
+            )}
+
+            {ridesIHelp.length > 0 && (
+              <div className="trips-date-group" style={{ marginTop: '24px' }}>
+                <h2 className="trips-date-header" style={{ marginBottom: '12px' }}>Rides you help with</h2>
+                <AnimatePresence>
+                  {ridesIHelp.map(trip => (
+                    <TripCard 
+                      key={trip.id} 
+                      trip={trip} 
+                      isDriving={trip.driverName === userProfile?.name}
+                      onAction={() => onCancelOffer(trip.id)}
+                    />
+                  ))}
+                </AnimatePresence>
+              </div>
+            )}
+          </>
         )}
       </div>
     </motion.div>
   );
 }
 
+import { GiveRideCard } from './GiveRide';
+
 export function TripCard({ trip, isDriving, onAction, actionLabel = 'Cancel Ride', actionClassName = 'trip-cancel-btn' }) {
+  // Determine title for the trip (Wait securely mapped to driver or requester)
+  const title = isDriving ? `Ride for ${trip.name}` : (trip.driverName ? `Ride with ${trip.driverName}` : trip.name || 'Ride Request');
+
+  // We map the correct title into a duplicate object specifically for GiveRideCard
+  const formattedTrip = {
+    ...trip,
+    name: title,
+    // Add realistic durations and locations just like GetRide / GiveRide would map
+    pickupDuration: trip.timeframe || '10:30 - 11:00',
+    pickupAddress: trip.pickup || trip.location || 'Kortenhoef Center',
+  };
+
   return (
     <motion.div 
-      className="trip-card"
       layout
       initial={{ opacity: 0, scale: 0.95 }}
       animate={{ opacity: 1, scale: 1 }}
       exit={{ opacity: 0, scale: 0.95 }}
       transition={{ duration: 0.3 }}
+      style={{ marginBottom: '16px' }}
     >
-      <div className="trip-card-header">
-        <div className="trip-user-info">
-          <div 
-            className="trip-avatar" 
-            style={{ backgroundImage: trip.avatarUrl ? `url(${trip.avatarUrl})` : 'none', backgroundColor: trip.avatarUrl ? 'transparent' : (trip.color || '#F08A4B') }}
-          >
-            {!trip.avatarUrl && <span style={{ color: 'white', fontWeight: '700', fontSize: '14px', display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100%' }}>{trip.initial || (trip.name ? trip.name[0] : '?')}</span>}
-          </div>
-          <div className="trip-user-details">
-            <h3>{isDriving ? `Ride for ${trip.name}` : (trip.driverName ? `Ride with ${trip.driverName}` : 'Ride Request')}</h3>
-            <p>{trip.timeframe || trip.time || '10:30 - 11:00'}</p>
-          </div>
-        </div>
-        <button className={actionClassName} onClick={onAction}>
-          {actionLabel}
-        </button>
-      </div>
-
-      <div className="trip-details">
-        <div className="trip-location">
-          <div className="location-dot start"></div>
-          <div className="location-line"></div>
-          <div className="location-info">
-            <p>{trip.pickup || 'School bus stop Kortenhoef'}</p>
-          </div>
-        </div>
-        <div className="trip-location">
-          <div className="location-dot end"></div>
-          <div className="location-info">
-            <p>{trip.destination}</p>
-          </div>
-        </div>
-      </div>
-
-      {trip.badges && trip.badges.length > 0 && (
-        <div className="trip-badges">
-          {trip.badges.map((badge, idx) => (
-            <span key={idx} className={`trip-badge ${badge.color ? 'trip-badge--' + badge.color : ''}`}>
-              {typeof badge === 'string' ? badge : `${badge.icon || ''} ${badge.text || ''}`.trim()}
-            </span>
-          ))}
-        </div>
-      )}
-      {!trip.badges && (
-        <div className="trip-badges">
-          <span className="trip-badge">Vehicle entry help</span>
-          {isDriving && <span className="trip-badge">High seating</span>}
-        </div>
-      )}
+      <GiveRideCard 
+        rider={formattedTrip} 
+        showCancel={true} 
+        onCancel={onAction} 
+      />
     </motion.div>
   );
 }
