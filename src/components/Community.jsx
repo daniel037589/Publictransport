@@ -94,7 +94,7 @@ function MapPinIcon({ size = 10 }) {
 }
 
 export function CommunitiesScreen() {
-  const [range, setRange] = useState(15);
+  const [range, setRange] = useState(1);
   const [selectedCommunity, setSelectedCommunity] = useState(null);
 
   // Filter communities based on selected range
