@@ -6,18 +6,14 @@ const ALL_LANGUAGES = [
   { id: 'nl', label: 'Nederlands', flag: '🇳🇱' },
   { id: 'en', label: 'English', flag: '🇬🇧' },
   { id: 'de', label: 'Deutsch', flag: '🇩🇪' },
-  { id: 'fr', label: 'Français', flag: '🇫🇷' },
-  { id: 'es', label: 'Español', flag: '🇪🇸' },
-  { id: 'tr', label: 'Türkçe', flag: '🇹🇷' },
-  { id: 'ar', label: 'العربية', flag: '🇸🇦' },
-  { id: 'pl', label: 'Polski', flag: '🇵🇱' },
+  { id: 'fa', label: 'Farsi فارسی', flag: '🇮🇷' },
 ];
 
 const PREFS_CONFIG = [
-  { id: 'entry', label: 'Vehicle entry help' },
-  { id: 'stroller', label: 'Needs stroller space' },
-  { id: 'newborn', label: 'Has newborn' },
-  { id: 'walker', label: 'Needs walker space' },
+  { id: 'entry', label: 'Vehicle entry help', icon: '♿️' },
+  { id: 'stroller', label: 'Needs stroller space', icon: '👶' },
+  { id: 'newborn', label: 'Has newborn', icon: '🍼' },
+  { id: 'walker', label: 'Needs walker space', icon: '🦯' },
 ];
 
 export function ProfileScreen({ userProfile, onUpdateProfile, onLogout, riders = [] }) {
@@ -147,10 +143,13 @@ export function ProfileScreen({ userProfile, onUpdateProfile, onLogout, riders =
                     style={{ 
                       cursor: 'pointer',
                       border: isActive ? '2px solid #1a1a1a' : '1px solid #e1e1e3',
-                      background: isActive ? '#f0f0f0' : 'white'
+                      background: isActive ? '#f0f0f0' : 'white',
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: '4px'
                     }}
                   >
-                    {p.label}
+                    <span style={{fontSize: '14px'}}>{p.icon}</span> {p.label}
                   </span>
                 )
               })}
@@ -160,7 +159,11 @@ export function ProfileScreen({ userProfile, onUpdateProfile, onLogout, riders =
               {prefs.length === 0 && <span style={{ fontSize: 13, color: '#1a1a1a', opacity: 0.7 }}>No specific needs defined</span>}
               {prefs.map(pId => {
                 const conf = PREFS_CONFIG.find(c => c.id === pId);
-                return conf ? <span key={pId} className="profile-pill">{conf.label}</span> : null;
+                return conf ? (
+                  <span key={pId} className="profile-pill" style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
+                    <span style={{fontSize: '14px'}}>{conf.icon}</span> {conf.label}
+                  </span>
+                ) : null;
               })}
             </div>
           )}

@@ -13,11 +13,7 @@ const LANGUAGES = [
   { id: 'nl', label: 'Nederlands', flag: '🇳🇱' },
   { id: 'en', label: 'English', flag: '🇬🇧' },
   { id: 'de', label: 'Deutsch', flag: '🇩🇪' },
-  { id: 'fr', label: 'Français', flag: '🇫🇷' },
-  { id: 'es', label: 'Español', flag: '🇪🇸' },
-  { id: 'tr', label: 'Türkçe', flag: '🇹🇷' },
-  { id: 'ar', label: 'العربية', flag: '🇸🇦' },
-  { id: 'pl', label: 'Polski', flag: '🇵🇱' },
+  { id: 'fa', label: 'Farsi فارسی', flag: '🇮🇷' },
 ];
 
 function calculateAge(birthdate) {
