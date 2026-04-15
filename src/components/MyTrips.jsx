@@ -136,7 +136,9 @@ export function TripCard({ trip, isDriving, onAction, actionLabel = 'Cancel Ride
       {trip.badges && trip.badges.length > 0 && (
         <div className="trip-badges">
           {trip.badges.map((badge, idx) => (
-            <span key={idx} className="trip-badge">{badge}</span>
+            <span key={idx} className={`trip-badge ${badge.color ? 'trip-badge--' + badge.color : ''}`}>
+              {typeof badge === 'string' ? badge : `${badge.icon || ''} ${badge.text || ''}`.trim()}
+            </span>
           ))}
         </div>
       )}
