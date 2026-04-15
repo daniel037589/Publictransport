@@ -3,10 +3,10 @@ import { motion } from 'framer-motion';
 import './Onboarding.css';
 
 const PREFERENCES = [
-  { id: 'wheelchair', label: 'Wheelchair Assist', icon: '♿️' },
-  { id: 'stroller', label: 'Stroller Space', icon: '👶' },
-  { id: 'pets', label: 'Pet Friendly', icon: '🐾' },
-  { id: 'quiet', label: 'Quiet Ride', icon: '🤫' },
+  { id: 'entry', label: 'Vehicle entry help', icon: '♿️' },
+  { id: 'stroller', label: 'Needs stroller space', icon: '👶' },
+  { id: 'newborn', label: 'Has newborn', icon: '🍼' },
+  { id: 'walker', label: 'Needs walker space', icon: '🦯' },
 ];
 
 const LANGUAGES = [

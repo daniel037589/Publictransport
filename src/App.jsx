@@ -188,10 +188,19 @@ function App() {
       </div>
 
       <div className={`screen ${activeTab === 'profile' ? 'screen--active' : 'screen--hidden-right'}`}>
-        <ProfileScreen userProfile={userProfile} riders={riders} onLogout={() => {
-          localStorage.removeItem('weesp_user_profile');
-          setUserProfile(null);
-        }} />
+        <ProfileScreen 
+          userProfile={userProfile} 
+          riders={riders} 
+          onUpdateProfile={(updates) => {
+            const newProfile = { ...userProfile, ...updates };
+            setUserProfile(newProfile);
+            localStorage.setItem('weesp_user_profile', JSON.stringify(newProfile));
+          }}
+          onLogout={() => {
+            localStorage.removeItem('weesp_user_profile');
+            setUserProfile(null);
+          }} 
+        />
       </div>
 
       {activeTab !== 'get-ride' && activeTab !== 'give-ride' && <Navbar activeTab={activeTab} onTabChange={setActiveTab} />}
