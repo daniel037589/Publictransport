@@ -125,7 +125,7 @@ function App() {
 
   const handleAddRider = async (newRider) => {
     setRiders(prev => [...prev, newRider]);
-    setActiveTab('give-ride'); 
+    setActiveTab('trips'); 
     const record = serializeForDb(newRider);
     const { error } = await supabase.from('ride_requests').insert([record]);
     if (error) console.error("Failed to push request to Supabase!", error.message);
