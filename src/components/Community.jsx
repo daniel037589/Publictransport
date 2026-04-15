@@ -111,7 +111,7 @@ export function CommunitiesScreen() {
     >
       <header className="communities-header">
         <div className="communities-header__icon">
-          <img src="/favicon.svg" alt="Weesp logo" draggable={false} />
+          <img src="/logo.png" alt="Weesp logo" draggable={false} />
         </div>
         <div className="communities-header__text">
           <span className="communities-header__label">Your Community</span>
