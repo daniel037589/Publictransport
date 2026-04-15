@@ -1,5 +1,4 @@
 import { motion } from 'framer-motion';
-import { WaveIcon, CarIcon } from './Icons';
 import './Profile.css';
 
 const ALL_LANGUAGES = [
@@ -23,151 +22,150 @@ function calculateAge(birthdate) {
   return age;
 }
 
-export function ProfileScreen({ userProfile, onLogout }) {
-  const profileName = userProfile?.name || 'You';
+export function ProfileScreen({ userProfile, onLogout, riders = [] }) {
+  const profileName = userProfile?.name || 'Mahsa';
   const profileInitial = profileName.charAt(0).toUpperCase();
-  const prefs = userProfile?.preferences || [];
-  const userLanguages = ALL_LANGUAGES.filter(l => (userProfile?.languages || []).includes(l.id));
-  const age = userProfile?.birthdate ? calculateAge(userProfile.birthdate) : userProfile?.age;
+  const prefs = userProfile?.preferences || ['stroller', 'quiet', 'pets'];
+  const userLanguages = ALL_LANGUAGES.filter(l => (userProfile?.languages || ['en', 'de']).includes(l.id));
+  const age = userProfile?.birthdate ? calculateAge(userProfile.birthdate) : (userProfile?.age || 28);
 
-  const ALL_PREFS = [
-    { id: 'wheelchair', label: 'Needs Wheelchair Assist', icon: '♿️' },
-    { id: 'stroller', label: 'Needs Stroller Space', icon: '👶' },
-    { id: 'pets', label: 'Pet Friendly', icon: '🐾' },
-    { id: 'quiet', label: 'Quiet Ride Preferred', icon: '🤫' },
-  ];
+  // Derive stats
+  const tripsTaken = riders?.filter(r => r.name === profileName && r.status === 'completed').length || 21;
+  const ridesGiven = riders?.filter(r => r.driverName === profileName).length || 32;
+
+  const prefLabels = {
+    'wheelchair': 'Needs Wheelchair Assist',
+    'stroller': 'Need Stroller space',
+    'pets': 'Pet Friendly',
+    'quiet': 'Quiet Ride'
+  };
+
+  const vehicleSpecs = ['Air Conditioning', 'Up to 4 Passengers', 'Space for Baggage', 'Pets Friendly'];
 
   return (
     <motion.div 
-      className="profile-container"
-      initial={{ opacity: 0, scale: 0.95 }}
-      animate={{ opacity: 1, scale: 1 }}
+      className="profile-screen-new"
+      initial={{ opacity: 0, x: 20 }}
+      animate={{ opacity: 1, x: 0 }}
       transition={{ duration: 0.4, ease: "easeOut" }}
     >
-      <div className="profile-header">
-        <motion.div 
-          className="profile-avatar-wrapper"
-          initial={{ scale: 0 }}
-          animate={{ scale: 1 }}
-          transition={{ type: "spring", stiffness: 300, damping: 20, delay: 0.1 }}
-        >
-          <div 
-            className="profile-avatar"
-            style={userProfile?.avatarUrl ? { backgroundImage: `url(${userProfile.avatarUrl})`, backgroundSize: 'cover', backgroundPosition: 'center', color: 'transparent' } : {}}
-          >
-            {userProfile?.avatarUrl ? '' : profileInitial}
-          </div>
-          <div className="profile-verified-badge">✓</div>
-        </motion.div>
+      <div className="profile-content-new">
         
-        <motion.div 
-          style={{ textAlign: 'center' }}
-          initial={{ opacity: 0, y: 10 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.2 }}
-        >
-          <h2 className="profile-name">{profileName}</h2>
-          <p className="profile-status">
-            <span style={{ color: 'var(--color-brand-blue)' }}>★ 5.0</span> • {age ? `${age} y/o • ` : ''}Weesp Neighbor
-          </p>
-        </motion.div>
-      </div>
-
-      <motion.div 
-        className="profile-stats"
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ delay: 0.3 }}
-      >
-        <div className="stat-card">
-          <span className="stat-value">0</span>
-          <span className="stat-label">Rides Given</span>
-        </div>
-        <div className="stat-card">
-          <span className="stat-value">0</span>
-          <span className="stat-label">Rides Taken</span>
-        </div>
-      </motion.div>
-
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ delay: 0.35 }}
-      >
-        <h3 className="profile-section-title">Languages I Speak</h3>
-        <div className="profile-card">
-          {userLanguages.length > 0 ? (
-            <div style={{ display: 'flex', flexWrap: 'wrap', gap: '10px' }}>
-              {userLanguages.map(lang => (
-                <div key={lang.id} className="language-pill">
-                  <span style={{ fontSize: '20px' }}>{lang.flag}</span>
-                  {lang.label}
+        {/* Main Info Card */}
+        <div className="profile-info-card">
+          <div className="profile-info-header">
+            <div className="profile-identity">
+              <div className="profile-avatar-stack">
+                <div 
+                  className="profile-avatar-circle"
+                  style={userProfile?.avatarUrl ? { backgroundImage: `url(${userProfile.avatarUrl})` } : { backgroundImage: `url(https://i.pravatar.cc/150?img=47)` }}
+                >
+                  {!userProfile && !userProfile?.avatarUrl ? profileInitial : ''}
                 </div>
-              ))}
-            </div>
-          ) : (
-            <p style={{ color: '#8A8A7A', fontSize: '14px' }}>No languages selected</p>
-          )}
-        </div>
-      </motion.div>
-
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ delay: 0.4 }}
-      >
-        <h3 className="profile-section-title">My Preferences</h3>
-        <div className="profile-card">
-          {ALL_PREFS.map((pref, index) => (
-            <div key={pref.id}>
-              <div className="profile-row">
-                <div className="profile-row-label">
-                  <span style={{ fontSize: '20px' }}>{pref.icon}</span> {pref.label}
-                </div>
-                <div className="toggle-switch" style={!prefs.includes(pref.id) ? { background: 'var(--color-bg-gray)' } : {}}>
-                  <div className="toggle-knob" style={!prefs.includes(pref.id) ? { left: '2px', right: 'auto' } : {}}></div>
+                <div className="profile-verified-pill">
+                  <svg width="10" height="10" viewBox="0 0 24 24" fill="none"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z" fill="currentColor"/></svg>
+                  Verified
                 </div>
               </div>
-              {index < ALL_PREFS.length - 1 && (
-                <hr style={{ borderTop: '1px solid var(--color-bg-gray)', borderBottom: 'none', margin: '14px 0' }} />
-              )}
-            </div>
-          ))}
-        </div>
-      </motion.div>
 
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ delay: 0.5 }}
-      >
-        <h3 className="profile-section-title">My Vehicle</h3>
-        <div className="profile-card">
-          <div className="profile-row">
-            <div className="profile-row-label">
-              <div style={{ width: 24, height: 24, color: 'var(--color-bg-gray)' }}>
-                <CarIcon />
-              </div>
-              <div>
-                <div style={{ color: 'var(--color-text-nav)' }}>No Vehicle Added</div>
+              <div className="profile-text-info">
+                <h2 className="profile-name-text">{profileName}</h2>
+                <div className="profile-age-row">
+                  <span>{age} Years Old</span>
+                </div>
+                <div className="profile-flags">
+                  {userLanguages.slice(0, 3).map(lang => (
+                    <span key={lang.id} className="flag-emoji">{lang.flag}</span>
+                  ))}
+                </div>
               </div>
             </div>
-            <div style={{ color: 'var(--color-brand-blue)', fontWeight: 'bold' }}>Add</div>
+
+            <button className="profile-edit-btn">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34c-.39-.39-1.02-.39-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z" fill="currentColor"/></svg>
+              Edit
+            </button>
+          </div>
+
+          <div className="profile-stats-grid">
+            <div className="profile-stat-box">
+              <div className="stat-number">{tripsTaken}</div>
+              <div className="stat-text">Trips Taken</div>
+            </div>
+            <div className="profile-stat-box">
+              <div className="stat-number">{ridesGiven}</div>
+              <div className="stat-text">Rides Given</div>
+            </div>
           </div>
         </div>
-      </motion.div>
 
-      <motion.button 
-        className="btn-primary" 
-        onClick={onLogout}
-        style={{ marginTop: '16px', background: 'var(--color-bg-gray)', color: '#ff3b30' }}
-        whileTap={{ scale: 0.98 }}
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ delay: 0.6 }}
-      >
-        Delete Device Profile
-      </motion.button>
+        {/* My Needs Card */}
+        <div className="profile-needs-card">
+          <div className="profile-card-header">
+            <h3>My Needs</h3>
+            <button className="profile-edit-btn orange-edit">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34c-.39-.39-1.02-.39-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z" fill="currentColor"/></svg>
+              Edit
+            </button>
+          </div>
+          <div className="profile-pill-wrap">
+            {prefs.map(p => (
+              <span key={p} className="profile-pill">{prefLabels[p] || p}</span>
+            ))}
+          </div>
+        </div>
+
+        {/* Vehicle Details Card */}
+        <div className="profile-vehicle-card">
+          <div className="profile-card-header">
+            <h3>Vehicle Details</h3>
+            <button className="profile-edit-btn">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34c-.39-.39-1.02-.39-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z" fill="currentColor"/></svg>
+              Edit
+            </button>
+          </div>
+          <div className="vehicle-details-body">
+            <div className="vehicle-image-container">
+              <img src="https://images.unsplash.com/photo-1549317661-bd32c8ce0db2?auto=format&fit=crop&q=80&w=300" alt="White SUV" />
+            </div>
+            <div className="vehicle-specs-table">
+              <div className="spec-row">
+                <span className="spec-label">Vehicle</span>
+                <span className="spec-val">Car</span>
+              </div>
+              <div className="spec-row">
+                <span className="spec-label">Brand</span>
+                <span className="spec-val">Toyota</span>
+              </div>
+              <div className="spec-row">
+                <span className="spec-label">Color</span>
+                <span className="spec-val">Dark Gray</span>
+              </div>
+              <div className="spec-row" style={{borderBottom: 'none', paddingBottom: 0}}>
+                <span className="spec-label">Model</span>
+                <span className="spec-val">Sienna 2025 V1</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Vehicle Specifications */}
+        <div className="profile-specs-card">
+          <div className="profile-card-header">
+            <h3>Vehicle Specifications</h3>
+            <button className="profile-edit-btn">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34c-.39-.39-1.02-.39-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z" fill="currentColor"/></svg>
+              Edit
+            </button>
+          </div>
+          <div className="profile-pill-wrap">
+            {vehicleSpecs.map(s => (
+              <span key={s} className="profile-pill">{s}</span>
+            ))}
+          </div>
+        </div>
+
+      </div>
     </motion.div>
   );
 }

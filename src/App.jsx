@@ -188,7 +188,7 @@ function App() {
       </div>
 
       <div className={`screen ${activeTab === 'profile' ? 'screen--active' : 'screen--hidden-right'}`}>
-        <ProfileScreen userProfile={userProfile} onLogout={() => {
+        <ProfileScreen userProfile={userProfile} riders={riders} onLogout={() => {
           localStorage.removeItem('weesp_user_profile');
           setUserProfile(null);
         }} />
