@@ -13,7 +13,7 @@ const LANGUAGES = [
   { id: 'nl', label: 'Nederlands', flag: '🇳🇱' },
   { id: 'en', label: 'English', flag: '🇬🇧' },
   { id: 'de', label: 'Deutsch', flag: '🇩🇪' },
-  { id: 'fa', label: 'Farsi فارسی', flag: '🇮🇷' },
+  { id: 'fa', label: 'Farsi فارسی', flag: <span style={{ fontSize: '8px', opacity: 0.8, maxWidth: '100px', display: 'inline-block', textAlign: 'center', lineHeight: '1.2' }}>ببخشید، نتونستم ایموجی درست رو پیدا کنم. با عشق و بهترین آرزوها از طرف دنیل.</span> },
 ];
 
 function calculateAge(birthdate) {
