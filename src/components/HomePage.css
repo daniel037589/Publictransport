@@ -145,7 +145,7 @@
   color: #2D3320;
   text-align: left;
   padding: 16px 0 16px 22px;
-  max-width: 160px;          /* force text to wrap to 2 lines */
+  max-width: 110px;          /* force text to wrap to 2 lines */
   display: flex;
   align-items: center;
   z-index: 2;
@@ -191,7 +191,7 @@
 /* New icon container for the Figma POI icons */
 .home-action-card__icon-new {
   position: absolute;
-  right: 17px;
+  right: 12px;
   width: 94px;
   height: auto;
   z-index: 2;
@@ -201,11 +201,11 @@
 }
 
 .home-action-card--need .home-action-card__icon-new {
-  top: 27px;
+  top: 22px;
 }
 
 .home-action-card--help .home-action-card__icon-new {
-  top: 36px;
+  top: 32px;
 }
 
 .home-action-card__icon-new img {

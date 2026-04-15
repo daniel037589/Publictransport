@@ -208,7 +208,7 @@ button {
   gap: 2px;
 }
 
-/* Each nav item — inactive = column (icon + label stacked) */
+/* Navbar each nav item — keep column layout for all items */
 .navbar__item {
   display: flex;
   flex-direction: column;
@@ -225,6 +225,8 @@ button {
   border: none;
   transition: color 0.2s ease;
   min-width: 0;
+  position: relative;
+  z-index: 1;
 }
 
 .navbar__item svg {
@@ -233,33 +235,32 @@ button {
   height: 20px;
 }
 
-/* Active item — horizontal row layout, yellow-green pill handled by Framer Motion */
+/* Active item color only, no layout change */
 .navbar__item--active {
-  flex-direction: row;
-  flex: 0 0 auto;
-  padding: 0 20px;
-  gap: 8px;
-  color: #2D3320;
+  color: var(--color-brand-white);
 }
 
+/* The sliding green indicator (circle thing) */
 .navbar__pill-bg {
   position: absolute;
-  inset: 0;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 42px;
+  height: 42px;
   background: #BBCD2F;
-  border-radius: 100px;
+  border-radius: 50%; /* Circle thing */
   z-index: 0;
 }
 
-.navbar__item svg, 
-.navbar__label {
-  position: relative;
-  z-index: 1;
+.navbar__item--active svg {
+  fill: #2D3320;
 }
 
-/* Icon color for active item */
 .navbar__item--active svg path {
   fill: #2D3320;
 }
+
 .navbar__item--active svg path[stroke]:not([fill]) {
   stroke: #2D3320;
   fill: none;

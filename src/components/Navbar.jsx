@@ -38,15 +38,13 @@ export default function Navbar({ activeTab, onTabChange }) {
                     initial={false}
                     transition={{
                       type: "spring",
-                      stiffness: 500,
-                      damping: 35
+                      stiffness: 400,
+                      damping: 30
                     }}
                   />
                 )}
-                <div style={{ position: 'relative', display: 'flex', alignItems: 'center', justifyContent: 'center', flexDirection: 'inherit', gap: 'inherit' }}>
-                   <Icon />
-                   <motion.span layout className="navbar__label">{label}</motion.span>
-                </div>
+                <Icon />
+                <span className="navbar__label">{label}</span>
               </motion.button>
             );
           })}
