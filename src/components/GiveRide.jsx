@@ -3,19 +3,20 @@ import { MapContainer, TileLayer, Marker, Popup, Polyline } from 'react-leaflet'
 import 'leaflet/dist/leaflet.css';
 import L from 'leaflet';
 import './RideScreens.css';
+import { TripCard } from './MyTrips';
 
 // User Location Glowing Dot
 const customUserIcon = new L.divIcon({
   className: 'custom-user-icon',
-  html: "<div class='user-location-dot'></div>",
-  iconSize: [16, 16],
-  iconAnchor: [8, 8]
+  html: "<div class='marker-current'></div>",
+  iconSize: [20, 20],
+  iconAnchor: [10, 10]
 });
 
 // Helper for colored rider markers
-const createRiderIcon = (color, initial) => new L.divIcon({
+const createRiderIcon = (color, initial, avatarUrl) => new L.divIcon({
   className: 'custom-rider-icon',
-  html: `<div class='rider-marker' style='background-color: ${color}'>${initial}</div>`,
+  html: `<div class='rider-marker' ${avatarUrl ? `style='background-image: url(${avatarUrl}); background-size: cover; color: transparent;'` : `style='background-color: ${color};'`}>${avatarUrl ? '' : initial}</div>`,
   iconSize: [28, 28],
   iconAnchor: [14, 14]
 });
@@ -40,8 +41,8 @@ function CloseIcon() {
 export function GiveRideScreen({ onBack, riders, onOfferRide }) {
   const [selectedRider, setSelectedRider] = useState(null);
   
-  // Weesp center coordinates (User)
-  const MAP_CENTER = [52.3082, 5.0416];
+  // Kortenhoef center coordinates
+  const MAP_CENTER = [52.2331, 5.0760];
 
   const handleSelectRider = (rider) => setSelectedRider(rider);
   const handleClose = () => setSelectedRider(null);
@@ -50,111 +51,81 @@ export function GiveRideScreen({ onBack, riders, onOfferRide }) {
   const pendingRiders = riders.filter(r => r.status === 'pending' || !r.status);
 
   return (
-    <div className="ride-screen" style={{ overflow: selectedRider ? 'hidden' : 'auto' }}>
-      <header className="ride-header">
-        <button className="btn-back" onClick={onBack} aria-label="Go back">
+    <div className="ride-screen redesign" style={{ overflowY: 'auto' }}>
+      <header className="ride-header-new">
+        <button className="btn-back-circle" type="button" onClick={onBack} aria-label="Go back">
           <BackIcon />
         </button>
-        <h1 className="ride-title">Offer a Ride</h1>
       </header>
-      
-      <p className="ride-subtitle">
-        Driving to work or the city? Pick up a neighbor along your route.
-      </p>
 
-      {/* Live Map visualization */}
-      <div className="map-section">
-        <MapContainer 
-          center={MAP_CENTER} 
-          zoom={13} 
-          scrollWheelZoom={false} 
-          zoomControl={false}
-          style={{ height: '100%', width: '100%', zIndex: 1 }}
-        >
-          <TileLayer
-            url="https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png"
-            attribution='&copy; CARTO'
-          />
-          
-          {/* Glowing user dot */}
-          <Marker position={MAP_CENTER} icon={customUserIcon}>
-            <Popup>You are here</Popup>
-          </Marker>
-
-          {/* Interactive rider pins & routes */}
-          {pendingRiders.map(rider => (
-            <div key={rider.id}>
-              {rider.routeGeometry && rider.routeGeometry.length > 0 ? (
-                <Polyline 
-                  positions={rider.routeGeometry} 
-                  pathOptions={{ color: rider.color, weight: 5, lineCap: 'round', opacity: 0.9 }} 
-                />
-              ) : rider.destinationLocation ? (
-                <Polyline 
-                  positions={[rider.location, rider.destinationLocation]} 
-                  pathOptions={{ color: rider.color, weight: 4, dashArray: '8, 8', lineCap: 'round', opacity: 0.8 }} 
-                />
-              ) : null}
-              <Marker 
-                position={rider.location} 
-                icon={new L.divIcon({
-                  className: 'custom-rider-icon',
-                  html: `<div class='rider-marker' ${rider.avatarUrl ? `style='background-image: url(${rider.avatarUrl}); background-size: cover; color: transparent;'` : `style='background-color: ${rider.color};'`}>${rider.avatarUrl ? '' : rider.initial}</div>`,
-                  iconSize: [28, 28],
-                  iconAnchor: [14, 14]
-                })}
-                eventHandlers={{ click: () => handleSelectRider(rider) }}
-              />
-            </div>
-          ))}
-        </MapContainer>
-      </div>
-
-      <div className="requests-container">
-        <h2 className="requests-title">Nearby Requests (Weesp)</h2>
-
-        {pendingRiders.map(rider => (
-          <div className="request-card" key={rider.id} onClick={() => handleSelectRider(rider)}>
-            <div className="request-card-header">
-              <div className="request-profile">
-                <div 
-                  className="request-avatar" 
-                  style={rider.avatarUrl ? { backgroundImage: `url(${rider.avatarUrl})`, backgroundSize: 'cover', color: 'transparent' } : { background: rider.color }}
-                >
-                  {rider.avatarUrl ? '' : rider.initial}
-                </div>
-                <div className="request-info">
-                  <h3>{rider.name}</h3>
-                  <p>{rider.distance} • {rider.timeframe}</p>
-                </div>
-              </div>
-            </div>
-            
-            <div className="request-route">
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <circle cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-                <path d="M12 8L16 12L12 16M8 12H16" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-              </svg>
-              <span>Going to: <strong>{rider.destination}</strong></span>
-            </div>
-
-            <div className="request-badges">
-              {rider.badges.map((b, i) => (
-                <span key={i} className={`request-badge request-badge--${b.color}`}>
-                  {b.icon} {b.text}
-                </span>
-              ))}
-            </div>
+      <div className="ride-redesign-card orange">
+        <div className="card-header">
+          <div className="card-title-group">
+            <h1 className="card-title">I'm here to help</h1>
+            <p className="card-subtitle">Connect with a neighbour driver</p>
           </div>
-        ))}
-        {pendingRiders.length === 0 && (
-          <p style={{ textAlign: 'center', margin: '24px 0', color: 'var(--color-text-nav)' }}>No pending requests at the moment.</p>
-        )}
+        </div>
+
+        <div className="card-handheart-icon">
+          <svg xmlns="http://www.w3.org/2000/svg" width="108" height="90" viewBox="0 0 24 24" fill="#2D3320">
+            <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/>
+          </svg>
+        </div>
+
+        <div className="card-map-container">
+          <MapContainer 
+            center={MAP_CENTER} 
+            zoom={13} 
+            scrollWheelZoom={false} 
+            zoomControl={false}
+            attributionControl={false}
+            style={{ width: '100%', height: '100%', zIndex: 1 }}
+          >
+            <TileLayer url="https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png" />
+            
+            {/* Glowing user dot - using current location style from get-ride */}
+            <Marker position={MAP_CENTER} icon={customUserIcon}>
+              <Popup>You are here</Popup>
+            </Marker>
+
+            {/* Interactive rider pins & routes */}
+            {pendingRiders.map(rider => (
+              <div key={rider.id}>
+                {rider.routeGeometry && rider.routeGeometry.length > 0 ? (
+                  <Polyline 
+                    positions={rider.routeGeometry} 
+                    pathOptions={{ color: rider.color || '#F08A4B', weight: 4, opacity: 0.8 }} 
+                  />
+                ) : null}
+                <Marker 
+                  position={rider.location} 
+                  icon={createRiderIcon(rider.color || '#F08A4B', rider.initial, rider.avatarUrl)}
+                  eventHandlers={{ click: () => handleSelectRider(rider) }}
+                />
+              </div>
+            ))}
+          </MapContainer>
+          <div className="map-badge" style={{ background: 'white', color: '#2D3320' }}>Kortenhoef Area</div>
+        </div>
       </div>
 
-      <button className="btn-primary" style={{ marginTop: '32px' }}>
-        Create Custom Route Instead
-      </button>
+      <div className="trips-content" style={{ padding: '0 24px', width: '100%', boxSizing: 'border-box', marginBottom: '40px' }}>
+        <h2 className="trips-date-header" style={{ marginBottom: '16px', color: '#2D3320' }}>Nearby Requests</h2>
+        <div className="trips-date-group">
+          {pendingRiders.map(trip => (
+            <TripCard 
+              key={trip.id} 
+              trip={trip} 
+              actionLabel="Pick Up"
+              actionClassName="trip-pickup-btn"
+              onAction={() => handleSelectRider(trip)} 
+            />
+          ))}
+          {pendingRiders.length === 0 && (
+            <p style={{ textAlign: 'center', margin: '24px 0', color: 'var(--color-text-nav)' }}>No pending requests at the moment.</p>
+          )}
+        </div>
+      </div>
 
       {/* Rider Detail Sliding Overlay */}
       {selectedRider && (

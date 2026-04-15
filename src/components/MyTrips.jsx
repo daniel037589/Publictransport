@@ -78,7 +78,7 @@ export function MyTripsScreen({ riders, onDeleteRide, onCancelOffer, userProfile
                   key={trip.id} 
                   trip={trip} 
                   isDriving={trip.driverName === userProfile?.name}
-                  onCancel={() => trip.driverName === userProfile?.name ? onCancelOffer(trip.id) : onDeleteRide(trip.id)}
+                  onAction={() => trip.driverName === userProfile?.name ? onCancelOffer(trip.id) : onDeleteRide(trip.id)}
                 />
               ))}
             </AnimatePresence>
@@ -89,7 +89,7 @@ export function MyTripsScreen({ riders, onDeleteRide, onCancelOffer, userProfile
   );
 }
 
-function TripCard({ trip, isDriving, onCancel }) {
+export function TripCard({ trip, isDriving, onAction, actionLabel = 'Cancel Ride', actionClassName = 'trip-cancel-btn' }) {
   return (
     <motion.div 
       className="trip-card"
@@ -112,8 +112,8 @@ function TripCard({ trip, isDriving, onCancel }) {
             <p>{trip.timeframe || trip.time || '10:30 - 11:00'}</p>
           </div>
         </div>
-        <button className="trip-cancel-btn" onClick={onCancel}>
-          Cancel Ride
+        <button className={actionClassName} onClick={onAction}>
+          {actionLabel}
         </button>
       </div>
 

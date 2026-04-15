@@ -55,7 +55,7 @@ function LocationAutocomplete({ id, name, placeholder, disabled, required, onSel
       }
       setIsSearching(true);
       try {
-        const url = `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(query + ', Weesp, Netherlands')}&limit=5`;
+        const url = `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(query)}&countrycodes=nl&limit=5`;
         const resp = await fetch(url, { headers: { 'Accept-Language': 'en-US' } });
         const data = await resp.json();
         setResults(data || []);
@@ -110,7 +110,7 @@ function LocationAutocomplete({ id, name, placeholder, disabled, required, onSel
                 key={i} 
                 className="autocomplete-item"
                 onClick={() => {
-                  const displayName = r.display_name.includes('Weesp') ? r.display_name.split(', Weesp')[0] : r.display_name.split(',')[0];
+                  const displayName = r.display_name.split(',')[0];
                   setQuery(displayName);
                   setIsOpen(false);
                   if (onSelect) {
@@ -196,12 +196,12 @@ export function GetRideScreen({ onBack, onRequestRide, userProfile }) {
     e.preventDefault();
     setIsLoading(true);
     const formData = new FormData(e.target);
-    const pickupInput = formData.get('pickup') || 'Weesp Station';
-    const destinationInput = formData.get('dropoff') || 'Somewhere in Weesp';
+    const pickupInput = formData.get('pickup') || 'Ons Kortenhoef';
+    const destinationInput = formData.get('dropoff') || 'Somewhere in Kortenhoef';
     
     try {
       const fetchCoords = async (query) => {
-        const url = `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(query + ', Weesp, Netherlands')}`;
+        const url = `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(query)}&countrycodes=nl&limit=1`;
         const resp = await fetch(url);
         const data = await resp.json();
         if (data && data.length > 0) return [parseFloat(data[0].lat), parseFloat(data[0].lon)];
@@ -211,8 +211,8 @@ export function GetRideScreen({ onBack, onRequestRide, userProfile }) {
       let pickupCoords = await fetchCoords(pickupInput);
       let dropoffCoords = await fetchCoords(destinationInput);
 
-      if (!pickupCoords) pickupCoords = [52.3082 + (Math.random() - 0.5)*0.015, 5.0416 + (Math.random() - 0.5)*0.015];
-      if (!dropoffCoords) dropoffCoords = [52.3082 + (Math.random() - 0.5)*0.015, 5.0416 + (Math.random() - 0.5)*0.015];
+      if (!pickupCoords) pickupCoords = [52.2331 + (Math.random() - 0.5)*0.015, 5.0760 + (Math.random() - 0.5)*0.015];
+      if (!dropoffCoords) dropoffCoords = [52.2331 + (Math.random() - 0.5)*0.015, 5.0760 + (Math.random() - 0.5)*0.015];
 
       let routeGeometry = null;
       const routeUrl = `https://router.project-osrm.org/route/v1/driving/${pickupCoords[1]},${pickupCoords[0]};${dropoffCoords[1]},${dropoffCoords[0]}?overview=full&geometries=geojson`;
@@ -277,7 +277,7 @@ export function GetRideScreen({ onBack, onRequestRide, userProfile }) {
         <div className="card-map-container">
           <MapContainer 
             center={center} 
-            zoom={13} 
+            zoom={15} 
             style={{ width: '100%', height: '100%' }}
             zoomControl={false}
             attributionControl={false}
