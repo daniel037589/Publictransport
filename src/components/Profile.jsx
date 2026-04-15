@@ -180,7 +180,7 @@ export function ProfileScreen({ userProfile, onUpdateProfile, onLogout, riders =
           </div>
           <div className="vehicle-details-body">
             <div className="vehicle-image-container">
-              <img src="https://images.unsplash.com/photo-1549317661-bd32c8ce0db2?auto=format&fit=crop&q=80&w=300" alt="White SUV" />
+              <img src="/car-profile.png" alt="Vehicle" />
             </div>
             <div className="vehicle-specs-table">
               <div className="spec-row">

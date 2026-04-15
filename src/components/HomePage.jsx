@@ -233,8 +233,11 @@ export default function HomePage({ onNavigate, riders = [] }) {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.4, delay: 0.2 }}
           >
+            <img src="/icons/card-bg-lines.svg" className="home-action-card__bg-lines" alt="" />
             <span className="home-action-card__text">I need a ride</span>
-            <div className="home-action-card__icon"><TaxiIcon /></div>
+            <div className="home-action-card__icon-new">
+              <img src="/icons/poi-car.svg" alt="" />
+            </div>
           </motion.button>
 
           <motion.button
@@ -246,6 +249,7 @@ export default function HomePage({ onNavigate, riders = [] }) {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.4, delay: 0.3 }}
           >
+            <img src="/icons/card-bg-lines.svg" className="home-action-card__bg-lines" alt="" />
             <span className="home-action-card__text">I'm here to help</span>
             <div className="home-action-card__icon"><HandHeartIcon /></div>
           </motion.button>

@@ -172,35 +172,38 @@
 
 /* 
   ── "I need a ride" card — green #BBCD2F
-  3 decorative shapes: main bg + 2 lighter ellipses top-right area
 */
 .home-action-card--need {
   background-color: var(--color-secondary);
 }
 
-/* lighter blob shapes as pseudo-elements */
-.home-action-card--need::before {
-  content: '';
+.home-action-card__bg-lines {
   position: absolute;
   top: -30px;
-  right: -20px;
-  width: 170px;
-  height: 170px;
-  background: rgba(255, 255, 255, 0.18);
-  border-radius: 50%;
+  left: -48px;
+  width: 305px;
+  height: auto;
+  pointer-events: none;
   z-index: 1;
+  opacity: 0.25; /* Subtle as in Figma */
 }
 
-.home-action-card--need::after {
-  content: '';
+/* New icon container for the Figma POI car */
+.home-action-card__icon-new {
   position: absolute;
-  top: -10px;
-  right: 40px;
-  width: 100px;
-  height: 100px;
-  background: rgba(255, 255, 255, 0.12);
-  border-radius: 50%;
-  z-index: 1;
+  top: 27px;
+  right: 18px; /* adjusted from 259px left */
+  width: 94px;
+  height: auto;
+  z-index: 2;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.home-action-card__icon-new img {
+  width: 100%;
+  height: auto;
 }
 
 /* 
@@ -210,29 +213,6 @@
   background-color: var(--color-primary);
 }
 
-.home-action-card--help::before {
-  content: '';
-  position: absolute;
-  top: -30px;
-  right: -20px;
-  width: 170px;
-  height: 170px;
-  background: rgba(255, 255, 255, 0.18);
-  border-radius: 50%;
-  z-index: 1;
-}
-
-.home-action-card--help::after {
-  content: '';
-  position: absolute;
-  top: -10px;
-  right: 40px;
-  width: 100px;
-  height: 100px;
-  background: rgba(255, 255, 255, 0.12);
-  border-radius: 50%;
-  z-index: 1;
-}
 
 /* ── Map Pins — orange circles like Figma markers ── */
 .home-map-pin {
