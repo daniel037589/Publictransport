@@ -11,7 +11,7 @@ import './HomePage.css';
  */
 
 // Community member pins (orange circles)
-const communityPinIcon = new L.divIcon({
+const communityPinIcon = new L.DivIcon({
   className: '',
   html: '<div class="home-map-pin"></div>',
   iconSize: [22, 22],
@@ -19,7 +19,7 @@ const communityPinIcon = new L.divIcon({
 });
 
 // Invisible anchor for the town name tooltip
-const townLabelIcon = new L.divIcon({
+const townLabelIcon = new L.DivIcon({
   className: '',
   html: '',
   iconSize: [0, 0],
