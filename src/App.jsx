@@ -172,8 +172,11 @@ function App() {
         <HomePage onNavigate={handleNavigate} />
       </div>
 
-      <div className={`screen ${(activeTab === 'get-ride' || activeTab === 'give-ride') ? 'screen--active' : 'screen--hidden-right'}`} style={{ zIndex: 100 }}>
+      <div className={`screen ${activeTab === 'get-ride' ? 'screen--active' : 'screen--hidden-right'}`} style={{ zIndex: 100 }}>
         {activeTab === 'get-ride' && <GetRideScreen onBack={() => setActiveTab('home')} onRequestRide={handleAddRider} userProfile={userProfile} />}
+      </div>
+
+      <div className={`screen ${activeTab === 'give-ride' ? 'screen--active' : 'screen--hidden-right'}`} style={{ zIndex: 100 }}>
         {activeTab === 'give-ride' && <GiveRideScreen onBack={() => setActiveTab('home')} riders={riders} onOfferRide={handleOfferRide} />}
       </div>
 
