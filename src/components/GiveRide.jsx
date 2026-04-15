@@ -193,8 +193,10 @@ export function GiveRideCard({ rider, onClick, showCancel, onCancel }) {
             </svg>
           </div>
           <div className="gr-loc-text">
-            <p className="gr-loc-title">{dropoffDuration}</p>
-            <p className="gr-loc-address">{dropoffAddress}</p>
+            <p className="gr-loc-title">{dropoffAddress}</p>
+            {dropoffDuration && dropoffDuration !== '—' && (
+              <p className="gr-loc-address">{dropoffDuration}</p>
+            )}
           </div>
         </div>
       </div>

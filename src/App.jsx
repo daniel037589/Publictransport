@@ -129,7 +129,25 @@ function App() {
     return () => supabase.removeChannel(channel);
   }, []);
 
-  const handleNavigate = (path) => setActiveTab(path);
+  const TAB_ORDER = ['home', 'trips', 'community', 'profile'];
+  const [previousTab, setPreviousTab] = useState('home');
+
+  const handleNavigate = (path) => {
+    setPreviousTab(activeTab);
+    setActiveTab(path);
+  };
+
+  // Compute slide direction for a given screen tab
+  const slideClass = (tab) => {
+    if (tab === activeTab) return 'screen--active';
+    const prevIdx = TAB_ORDER.indexOf(previousTab);
+    const curIdx = TAB_ORDER.indexOf(activeTab);
+    const tabIdx = TAB_ORDER.indexOf(tab);
+    // If navigating right (higher index), off-screen tabs to the right slide right, left slide left
+    const goingRight = curIdx > prevIdx;
+    // A tab that is to the right of the active one hides right; to the left hides left
+    return tabIdx > curIdx ? 'screen--hidden-right' : 'screen--hidden-left';
+  };
 
   const handleAddRider = async (newRider) => {
     setRiders(prev => [...prev, newRider]);
@@ -177,27 +195,27 @@ function App() {
 
   return (
     <div className="app-shell">
-      <div className={`screen ${activeTab === 'home' ? 'screen--active' : 'screen--hidden-left'}`}>
+      <div className={`screen ${slideClass('home')}`}>
         <HomePage onNavigate={handleNavigate} riders={riders} />
       </div>
 
       <div className={`screen ${activeTab === 'get-ride' ? 'screen--active' : 'screen--hidden-right'}`} style={{ zIndex: 100 }}>
-        {activeTab === 'get-ride' && <GetRideScreen onBack={() => setActiveTab('home')} onRequestRide={handleAddRider} userProfile={userProfile} />}
+        {activeTab === 'get-ride' && <GetRideScreen onBack={() => { setPreviousTab('get-ride'); setActiveTab('home'); }} onRequestRide={handleAddRider} userProfile={userProfile} />}
       </div>
 
       <div className={`screen ${activeTab === 'give-ride' ? 'screen--active' : 'screen--hidden-right'}`} style={{ zIndex: 100 }}>
-        {activeTab === 'give-ride' && <GiveRideScreen onBack={() => setActiveTab('home')} riders={riders} onOfferRide={handleOfferRide} userProfile={userProfile} />}
+        {activeTab === 'give-ride' && <GiveRideScreen onBack={() => { setPreviousTab('give-ride'); setActiveTab('home'); }} riders={riders} onOfferRide={handleOfferRide} userProfile={userProfile} />}
       </div>
 
-      <div className={`screen ${activeTab === 'trips' ? 'screen--active' : 'screen--hidden-right'}`}>
+      <div className={`screen ${slideClass('trips')}`}>
         <MyTripsScreen riders={riders} onDeleteRide={handleDeleteRide} onCancelOffer={handleCancelOffer} userProfile={userProfile} />
       </div>
 
-      <div className={`screen ${activeTab === 'community' ? 'screen--active' : 'screen--hidden-right'}`}>
+      <div className={`screen ${slideClass('community')}`}>
         <CommunitiesScreen />
       </div>
 
-      <div className={`screen ${activeTab === 'profile' ? 'screen--active' : 'screen--hidden-right'}`}>
+      <div className={`screen ${slideClass('profile')}`}>
         <ProfileScreen 
           userProfile={userProfile} 
           riders={riders} 
