@@ -6,7 +6,7 @@ import './RideScreens.css';
 import { TripCard } from './MyTrips';
 
 // User Location Glowing Dot
-const customUserIcon = new L.divIcon({
+const customUserIcon = new L.DivIcon({
   className: 'custom-user-icon',
   html: "<div class='marker-current'></div>",
   iconSize: [20, 20],
@@ -14,7 +14,7 @@ const customUserIcon = new L.divIcon({
 });
 
 // Helper for colored rider markers
-const createRiderIcon = (color, initial, avatarUrl) => new L.divIcon({
+const createRiderIcon = (color, initial, avatarUrl) => new L.DivIcon({
   className: 'custom-rider-icon',
   html: `<div class='rider-marker' ${avatarUrl ? `style='background-image: url(${avatarUrl}); background-size: cover; color: transparent;'` : `style='background-color: ${color};'`}>${avatarUrl ? '' : initial}</div>`,
   iconSize: [28, 28],
