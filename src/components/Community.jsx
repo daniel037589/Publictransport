@@ -18,6 +18,7 @@ const COMMUNITIES_DATA = [
     memberCount: 842,
     status: 'joined',
     logoClass: 'ons',
+    image: '/Kortenhoef.jpg',
     members: ['https://i.pravatar.cc/150?u=1', 'https://i.pravatar.cc/150?u=2', 'https://i.pravatar.cc/150?u=3']
   },
   { 
@@ -29,6 +30,7 @@ const COMMUNITIES_DATA = [
     memberCount: 312,
     status: 'explore',
     logoClass: 'nederhorst',
+    image: 'https://images.unsplash.com/photo-1590483736622-39da8caf3501?auto=format&fit=crop&q=80&w=1000',
     members: ['https://i.pravatar.cc/150?u=10', 'https://i.pravatar.cc/150?u=11']
   },
   { 
@@ -40,6 +42,7 @@ const COMMUNITIES_DATA = [
     memberCount: '2.4k',
     status: 'explore',
     logoClass: 'hilversum',
+    image: 'https://images.unsplash.com/photo-1449824913935-59a10b8d2000?auto=format&fit=crop&q=80&w=1000',
     members: ['https://i.pravatar.cc/150?u=4', 'https://i.pravatar.cc/150?u=5', 'https://i.pravatar.cc/150?u=6']
   },
   { 
@@ -51,6 +54,7 @@ const COMMUNITIES_DATA = [
     memberCount: '1.2k',
     status: 'explore',
     logoClass: 'weesp',
+    image: 'https://images.unsplash.com/photo-1554619379-371295327246?auto=format&fit=crop&q=80&w=1000',
     members: ['https://i.pravatar.cc/150?u=7', 'https://i.pravatar.cc/150?u=8', 'https://i.pravatar.cc/150?u=9']
   },
   {
