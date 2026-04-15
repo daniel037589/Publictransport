@@ -120,8 +120,8 @@ export function GiveRideCard({ rider, onClick, showCancel, onCancel }) {
 
   const pickupAddress = rider.pickupAddress || rider.pickup || 'Kortenhoef';
   const dropoffAddress = rider.dropoffAddress || rider.destination || 'Destination';
-  const pickupDuration = rider.pickupDuration || (stats ? `${stats.mins} min (${stats.km} km)` : rider.distance || '—');
-  const dropoffDuration = rider.dropoffDuration || (stats ? `${stats.mins} min total` : '—');
+  const pickupDuration = rider.pickupDuration || (stats ? `${stats.mins} min (${stats.km.replace('.', ',')} km)` : rider.distance || '—');
+  const dropoffDuration = rider.dropoffDuration || (stats ? `${stats.km.replace('.', ',')} km (${stats.mins} min)` : '—');
   const badges = rider.badges && rider.badges.length > 0 ? rider.badges : [];
 
   return (
