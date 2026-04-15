@@ -1033,3 +1033,48 @@
   border-radius: 100px;
   line-height: 1.4;
 }
+
+/* ── GiveRideCard timeline section (Figma 661-4304) ─────────── */
+.gr-card-today {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.gr-card-today-label {
+  font-family: var(--font-family-button);
+  font-size: 11px;
+  font-weight: 600;
+  color: #B0B0B0;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin: 0;
+}
+
+.gr-card-timeline {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+}
+
+.gr-timeline-row {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+}
+
+.gr-timeline-track {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  flex-shrink: 0;
+  width: 12px;
+  padding-top: 3px;
+}
+
+.gr-timeline-dash {
+  width: 2px;
+  height: 20px;
+  border-left: 2px dashed #D0D0D0;
+  margin-top: 2px;
+}

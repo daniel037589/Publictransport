@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { createPortal } from 'react-dom';
 import { MapContainer, TileLayer, Marker, Polyline, Popup } from 'react-leaflet';
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
@@ -69,11 +70,12 @@ function NeedBadge({ badge }) {
   );
 }
 
-// ── GiveRideCard — tappable, no button, Figma-accurate ────────
+// ── GiveRideCard — Figma 661-4304 ───────────────────────────
 function GiveRideCard({ rider, onClick }) {
   return (
     <div className="gr-card" onClick={() => onClick(rider)}>
-      {/* Profile row */}
+
+      {/* Profile */}
       <div className="gr-card-profile">
         <div
           className="gr-card-avatar"
@@ -85,7 +87,9 @@ function GiveRideCard({ rider, onClick }) {
         </div>
         <div>
           <p className="gr-card-name">{rider.name}</p>
-          <p className="gr-card-sub">{rider.timeframe || 'Needs ride now'}</p>
+          <p className="gr-card-sub">
+            {rider.age ? `${rider.age} Years Old` : rider.timeframe || 'Needs ride now'}
+          </p>
         </div>
       </div>
 
@@ -96,24 +100,32 @@ function GiveRideCard({ rider, onClick }) {
         </div>
       )}
 
-      {/* Route */}
-      <div className="gr-route">
-        <div className="gr-route-row">
-          <div className="gr-dot gr-dot--pickup" />
-          <div className="gr-route-text">
-            <p className="gr-route-label">Pick up</p>
-            <p className="gr-route-address">{rider.pickup || 'Kortenhoef center'}</p>
+      {/* Route — "Today" section */}
+      <div className="gr-card-today">
+        <p className="gr-card-today-label">Today</p>
+        <div className="gr-card-timeline">
+          {/* Pickup row */}
+          <div className="gr-timeline-row">
+            <div className="gr-timeline-track">
+              <div className="gr-dot gr-dot--pickup" />
+              <div className="gr-timeline-dash" />
+            </div>
+            <div className="gr-route-text">
+              <p className="gr-route-label">{rider.pickupTime || '08:30'} &mdash; <span style={{ fontWeight: 400, color: '#707072' }}>{rider.pickup || 'Kortenhoef center'}</span></p>
+            </div>
           </div>
-        </div>
-        <div className="gr-route-line" />
-        <div className="gr-route-row">
-          <div className="gr-dot gr-dot--dropoff" />
-          <div className="gr-route-text">
-            <p className="gr-route-label">Drop off</p>
-            <p className="gr-route-address">{rider.destination || 'Destination'}</p>
+          {/* Dropoff row */}
+          <div className="gr-timeline-row">
+            <div className="gr-timeline-track">
+              <div className="gr-dot gr-dot--dropoff" />
+            </div>
+            <div className="gr-route-text">
+              <p className="gr-route-label">{rider.dropoffTime || '09:00'} &mdash; <span style={{ fontWeight: 400, color: '#707072' }}>{rider.destination || 'Destination'}</span></p>
+            </div>
           </div>
         </div>
       </div>
+
     </div>
   );
 }
@@ -252,8 +264,8 @@ export function GiveRideScreen({ onBack, riders, onOfferRide }) {
         </div>
       </div>
 
-      {/* ── Rider Detail Bottom Sheet ─────────────────────── */}
-      {selectedRider && (
+      {/* ── Rider Detail Bottom Sheet — portalled to document.body ── */}
+      {selectedRider && createPortal(
         <div className="gr-overlay" onClick={() => setSelectedRider(null)}>
           <div className="gr-sheet" onClick={e => e.stopPropagation()}>
 
@@ -281,11 +293,7 @@ export function GiveRideScreen({ onBack, riders, onOfferRide }) {
             {/* Badges */}
             {selectedRider.badges && selectedRider.badges.length > 0 && (
               <div className="gr-badges">
-                {selectedRider.badges.map((b, i) => (
-                  <span key={i} className="gr-badge">
-                    {typeof b === 'string' ? b : `${b.icon || ''} ${b.text || ''}`.trim()}
-                  </span>
-                ))}
+                {selectedRider.badges.map((b, i) => <NeedBadge key={i} badge={b} />)}
               </div>
             )}
 
@@ -321,7 +329,8 @@ export function GiveRideScreen({ onBack, riders, onOfferRide }) {
               </button>
             </div>
           </div>
-        </div>
+        </div>,
+        document.body
       )}
     </div>
   );
