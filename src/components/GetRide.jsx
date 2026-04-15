@@ -231,6 +231,7 @@ export function GetRideScreen({ onBack, onRequestRide, userProfile }) {
         initial: userProfile ? userProfile.name.charAt(0).toUpperCase() : 'Y',
         distance: '0 km away',
         timeframe: 'Needs ride now',
+        pickup: pickupInput,
         destination: destinationInput,
         location: pickupCoords,
         destinationLocation: dropoffCoords,
