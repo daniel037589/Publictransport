@@ -40,7 +40,7 @@ export function MyTripsScreen({ riders, onDeleteRide, onCancelOffer, userProfile
       <header className="trips-header">
         <div className="trips-community">
           <div className="trips-community-icon">
-            <img src="/logo.png" alt="Community logo" />
+            <img src="/favicon.svg" alt="Community logo" />
           </div>
           <div className="trips-community-info">
             <span className="trips-community-label">Your Community</span>
