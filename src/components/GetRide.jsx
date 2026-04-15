@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef } from 'react';
 import { MapContainer, TileLayer, Polyline, Marker, useMap } from 'react-leaflet';
 import L from 'leaflet';
+import 'leaflet/dist/leaflet.css';
 import './RideScreens.css';
 
 // Fix Leaflet icon issue
@@ -97,6 +98,16 @@ function LocationAutocomplete({ id, name, placeholder, disabled, required, onSel
           setIsOpen(true);
         }}
         onFocus={() => setIsOpen(true)}
+        onKeyDown={(e) => {
+          if (e.key === 'Enter' && isOpen && results.length > 0) {
+            e.preventDefault();
+            const r = results[0];
+            const displayName = r.display_name.split(',')[0];
+            setQuery(displayName);
+            setIsOpen(false);
+            if (onSelect) onSelect({ lat: parseFloat(r.lat), lng: parseFloat(r.lon), name: displayName });
+          }
+        }}
       />
       {isOpen && (query.trim().length >= 3) && (
         <ul className="autocomplete-popup">
