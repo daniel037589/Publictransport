@@ -579,6 +579,25 @@
   font-weight: 500;
 }
 
+.btn-use-location {
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: #F08A4B;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 8px;
+  border-radius: 50%;
+  transition: all 0.2s ease;
+  margin-left: auto;
+}
+
+.btn-use-location:hover {
+  background: rgba(240, 138, 75, 0.1);
+  transform: scale(1.1);
+}
+
 .btn-find-neighbour {
   background-color: #F08A4B;
   color: #2D3320;
