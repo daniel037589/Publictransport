@@ -380,3 +380,188 @@
     transform: translateY(0);
   }
 }
+
+/* ── I Need a Ride Redesign ── */
+.ride-screen.redesign {
+  padding: 24px;
+  background-color: white;
+  min-height: 100vh;
+}
+
+.ride-header-new {
+  margin-bottom: 24px;
+}
+
+.btn-back-circle {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  background: white;
+  border: none;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  color: #1A1A1A;
+}
+
+.ride-redesign-card {
+  background-color: #BBCD2F;
+  border-radius: 32px;
+  padding: 24px;
+  margin-bottom: 32px;
+}
+
+.card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 20px;
+}
+
+.card-title {
+  font-family: var(--font-family-button);
+  font-size: 32px;
+  font-weight: 700;
+  color: #2D3320;
+  margin: 0;
+  letter-spacing: -0.5px;
+}
+
+.card-subtitle {
+  font-family: var(--font-family-body);
+  font-size: 14px;
+  font-weight: 500;
+  color: #4A4A4A;
+  margin: 4px 0 0 0;
+  opacity: 0.8;
+}
+
+.card-map-container {
+  height: 200px;
+  border-radius: 24px;
+  overflow: hidden;
+  position: relative;
+  background: #f0f0f0;
+}
+
+.card-map-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.map-badge {
+  position: absolute;
+  top: 54%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background: #F08A4B;
+  color: white;
+  padding: 8px 16px;
+  border-radius: 12px;
+  font-weight: 700;
+  font-size: 13px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+  font-family: var(--font-family-button);
+}
+
+.ride-form-new {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.form-inputs-row {
+  display: flex;
+  gap: 12px;
+}
+
+.form-field {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  flex: 1;
+}
+
+.form-label-new {
+  font-family: var(--font-family-button);
+  font-size: 13px;
+  font-weight: 700;
+  color: #2D3320;
+  margin-left: 8px;
+}
+
+.input-field-new {
+  background-color: #EFF0F2;
+  border-radius: 50px;
+  height: 52px;
+  padding: 0 16px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  border: 1.5px solid transparent;
+  transition: border-color 0.2s ease;
+}
+
+.input-field-new.highlight {
+  border-color: #F08A4B;
+}
+
+.input-icon-new {
+  font-size: 16px;
+  flex-shrink: 0;
+}
+
+.form-input-clean {
+  background: transparent !important;
+  border: none !important;
+  padding: 0 !important;
+  font-size: 14px !important;
+  width: 100%;
+  height: 100%;
+  font-family: var(--font-family-body);
+  color: #2D3320;
+}
+
+.form-input-clean:focus {
+  outline: none;
+}
+
+.community-notice-clean {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 16px;
+  background: #F5F7E8;
+  border-radius: 16px;
+  margin-top: 4px;
+}
+
+.community-notice-clean p {
+  font-size: 12px;
+  color: #5D5D5D;
+  margin: 0;
+  font-weight: 500;
+}
+
+.btn-find-neighbour {
+  background-color: #F08A4B;
+  color: white;
+  border-radius: 50px;
+  height: 60px;
+  font-family: var(--font-family-button);
+  font-size: 18px;
+  font-weight: 700;
+  border: none;
+  cursor: pointer;
+  margin-top: 12px;
+  box-shadow: 0 4px 12px rgba(240, 138, 75, 0.2);
+  transition: transform 0.2s ease, background 0.2s ease;
+}
+
+.btn-find-neighbour:active {
+  transform: scale(0.97);
+  background-color: #D87B40;
+}

@@ -190,41 +190,89 @@ export function GetRideScreen({ onBack, onRequestRide, userProfile }) {
   };
 
   return (
-    <div className="ride-screen">
-      <header className="ride-header">
-        <button className="btn-back" type="button" onClick={onBack} aria-label="Go back" disabled={isLoading}>
+    <div className="ride-screen redesign">
+      <header className="ride-header-new">
+        <button className="btn-back-circle" type="button" onClick={onBack} aria-label="Go back" disabled={isLoading}>
           <BackIcon />
         </button>
-        <h1 className="ride-title">Get a Ride</h1>
       </header>
-      
-      <p className="ride-subtitle">
-        Heading somewhere? Connect with neighbors who are already driving your way.
-      </p>
 
-      <form className="ride-form" onSubmit={handleSubmit}>
-        <div className="form-group">
-          <label className="form-label" htmlFor="pickup">Pick-up Location</label>
-          <LocationAutocomplete id="pickup" name="pickup" placeholder="e.g. Town Hall or your address" disabled={isLoading} required={false} />
+      <div className="ride-redesign-card">
+        <div className="card-header">
+          <div className="card-title-group">
+            <h1 className="card-title">I need a ride</h1>
+            <p className="card-subtitle">Connect with a neighbour driver</p>
+          </div>
+          <div className="card-car-icon">
+            <svg width="40" height="30" viewBox="0 0 108 90" fill="none">
+              <path d="M10 50H98V75H10V50Z" fill="#1A1A1A" opacity="0.3" />
+              <path d="M20 50L35 25H73L88 50H20Z" fill="#1A1A1A" opacity="0.3" />
+            </svg>
+          </div>
         </div>
 
-        <div className="form-group">
-          <label className="form-label" htmlFor="dropoff">Where to?</label>
-          <LocationAutocomplete id="dropoff" name="dropoff" placeholder="Destination address" disabled={isLoading} required={true} />
+        <div className="card-map-container">
+          <img 
+            src="https://images.unsplash.com/photo-1526778548025-fa2f459cd5c1?auto=format&fit=crop&q=80&w=1000" 
+            alt="Kortenhoef Map" 
+            className="card-map-img"
+          />
+          <div className="map-badge">Kortenhoef</div>
+        </div>
+      </div>
+
+      <form className="ride-form-new" onSubmit={handleSubmit}>
+        <div className="form-inputs-row">
+          <div className="form-field">
+            <label className="form-label-new">Pick up location</label>
+            <div className="input-field-new">
+              <span className="input-icon-new">📍</span>
+              <LocationAutocomplete 
+                id="pickup" 
+                name="pickup" 
+                placeholder="Pick Up" 
+                disabled={isLoading} 
+              />
+            </div>
+          </div>
+          <div className="form-field">
+            <label className="form-label-new">Where to?</label>
+            <div className="input-field-new highlight">
+              <span className="input-icon-new">🚩</span>
+              <LocationAutocomplete 
+                id="dropoff" 
+                name="dropoff" 
+                placeholder="Drop Off" 
+                disabled={isLoading} 
+                required 
+              />
+            </div>
+          </div>
         </div>
 
-        <div className="form-group">
-          <label className="form-label" htmlFor="time">When</label>
-          <input className="form-input" id="time" name="time" type="time" defaultValue="08:30" disabled={isLoading} />
+        <div className="form-field">
+          <label className="form-label-new">What time?</label>
+          <div className="input-field-new">
+            <span className="input-icon-new">🕒</span>
+            <input 
+              className="form-input-clean" 
+              id="time" 
+              name="time" 
+              type="text" 
+              placeholder="When do you have to leave?" 
+              defaultValue="08:30" 
+              disabled={isLoading} 
+            />
+          </div>
         </div>
 
-        <div className="community-notice">
+        <div className="community-notice-clean">
           <CommunityShieldIcon />
-          <p><strong>Community Trust:</strong> You match with verified locals and neighbors. It’s about sharing, not just riding.</p>
+          <p>Community matching with verified locals.</p>
         </div>
 
-        <button className="btn-primary" type="submit" style={{ marginTop: '32px' }} disabled={isLoading}>
-          {isLoading ? 'Calculating Route...' : 'Find a Neighbor'}
+        <button className="btn-find-neighbour" type="submit" disabled={isLoading}>
+          {isLoading ? 'Searching...' : 'Find a neighbour'}
         </button>
       </form>
     </div>
