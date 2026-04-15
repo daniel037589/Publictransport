@@ -43,8 +43,20 @@ export default function Navbar({ activeTab, onTabChange }) {
                     }}
                   />
                 )}
-                <Icon />
-                <span className="navbar__label">{label}</span>
+                <div className="navbar__item-content">
+                  <Icon />
+                  {isActive && (
+                    <motion.span 
+                      layout
+                      initial={{ opacity: 0, x: -10 }}
+                      animate={{ opacity: 1, x: 0 }}
+                      className="navbar__label"
+                    >
+                      {label}
+                    </motion.span>
+                  )}
+                  {!isActive && <span className="navbar__label">{label}</span>}
+                </div>
               </motion.button>
             );
           })}

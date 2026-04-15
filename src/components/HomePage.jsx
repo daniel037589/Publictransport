@@ -250,7 +250,9 @@ export default function HomePage({ onNavigate, riders = [] }) {
             transition={{ duration: 0.4, delay: 0.3 }}
           >
             <img src="/icons/card-bg-lines.svg" className="home-action-card__bg-lines" alt="" />
-            <span className="home-action-card__text">I'm here to help</span>
+            <span className="home-action-card__text" style={{ maxWidth: '100px' }}>
+              I’m here to help
+            </span>
             <div className="home-action-card__icon-new">
               <img src="/icons/poi-hand-heart.svg" alt="" />
             </div>

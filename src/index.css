@@ -208,7 +208,7 @@ button {
   gap: 2px;
 }
 
-/* Navbar each nav item — keep column layout for all items */
+/* Navbar each nav item — keep column layout for inactive */
 .navbar__item {
   display: flex;
   flex-direction: column;
@@ -223,10 +223,20 @@ button {
   background: transparent;
   color: rgba(255, 255, 255, 0.5);
   border: none;
-  transition: color 0.2s ease;
+  transition: color 0.2s ease, flex 0.3s ease;
   min-width: 0;
   position: relative;
   z-index: 1;
+}
+
+.navbar__item-content {
+  display: flex;
+  flex-direction: inherit;
+  align-items: center;
+  justify-content: center;
+  gap: inherit;
+  width: 100%;
+  height: 100%;
 }
 
 .navbar__item svg {
@@ -235,35 +245,43 @@ button {
   height: 20px;
 }
 
-/* Active item color only, no layout change */
+/* Active item expansion — horizontal row layout */
 .navbar__item--active {
-  color: var(--color-brand-white);
+  flex-direction: row;
+  flex: 2; /* Take more space when active */
+  color: #2D3320;
+  padding: 0 16px;
+  gap: 8px;
 }
 
-/* The sliding green indicator (circle thing) */
+.navbar__item--active .navbar__label {
+  display: block;
+}
+
+.navbar__label {
+  font-size: 11px;
+  font-weight: 500;
+}
+
+/* For inactive items, hide labels or keep them as in Figma */
+/* Figma node 585:7148 shows inactive labels below icon. */
+.navbar__item:not(.navbar__item--active) .navbar__label {
+  font-size: 10px;
+  margin-top: 2px;
+}
+
+/* The sliding green indicator (pill) */
 .navbar__pill-bg {
   position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  width: 42px;
-  height: 42px;
+  inset: 5px; /* Added padding to look like a pill inside */
   background: #BBCD2F;
-  border-radius: 50%; /* Circle thing */
+  border-radius: 40px;
   z-index: 0;
 }
 
-.navbar__item--active svg {
-  fill: #2D3320;
-}
-
+.navbar__item--active svg,
 .navbar__item--active svg path {
-  fill: #2D3320;
-}
-
-.navbar__item--active svg path[stroke]:not([fill]) {
-  stroke: #2D3320;
-  fill: none;
+  fill: #2D3320 !important;
 }
 
 /* Labels — always visible */
