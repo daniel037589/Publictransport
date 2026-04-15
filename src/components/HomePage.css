@@ -185,20 +185,27 @@
   height: auto;
   pointer-events: none;
   z-index: 1;
-  opacity: 0.25; /* Subtle as in Figma */
+  opacity: 0.6; /* Increased visibility as requested */
 }
 
-/* New icon container for the Figma POI car */
+/* New icon container for the Figma POI icons */
 .home-action-card__icon-new {
   position: absolute;
-  top: 27px;
-  right: 18px; /* adjusted from 259px left */
+  right: 17px;
   width: 94px;
   height: auto;
   z-index: 2;
   display: flex;
   align-items: center;
   justify-content: center;
+}
+
+.home-action-card--need .home-action-card__icon-new {
+  top: 27px;
+}
+
+.home-action-card--help .home-action-card__icon-new {
+  top: 36px;
 }
 
 .home-action-card__icon-new img {

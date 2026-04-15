@@ -251,7 +251,9 @@ export default function HomePage({ onNavigate, riders = [] }) {
           >
             <img src="/icons/card-bg-lines.svg" className="home-action-card__bg-lines" alt="" />
             <span className="home-action-card__text">I'm here to help</span>
-            <div className="home-action-card__icon"><HandHeartIcon /></div>
+            <div className="home-action-card__icon-new">
+              <img src="/icons/poi-hand-heart.svg" alt="" />
+            </div>
           </motion.button>
         </div>
       </main>
