@@ -1,0 +1,17 @@
+{
+  "name": "Uit & Thuis - Kortenhoef",
+  "short_name": "Uit & Thuis",
+  "start_url": ".",
+  "display": "standalone",
+  "background_color": "#F3F2E7",
+  "theme_color": "#F08A4B",
+  "description": "Community Ride Sharing for Kortenhoef",
+  "icons": [
+    {
+      "src": "/logo.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ]
+}
