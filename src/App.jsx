@@ -19,7 +19,7 @@ const INITIAL_RIDERS = [
     initial: 'S',
     distance: '1 km away',
     timeframe: 'Needs ride now',
-    destination: 'Weesp Train Station',
+    destination: 'Hilversum Train Station',
     location: [52.3094, 5.0392],
     destinationLocation: [52.3134, 5.0425],
     color: '#1164fd',
@@ -80,7 +80,7 @@ function App() {
 
   useEffect(() => {
     // Check if user has executed local boarding flow before
-    const stored = localStorage.getItem('weesp_user_profile');
+    const stored = localStorage.getItem('ons_kortenhoef_profile');
     if (stored) {
       setUserProfile(JSON.parse(stored));
     }
@@ -222,14 +222,14 @@ function App() {
           onUpdateProfile={(updates) => {
             const newProfile = { ...userProfile, ...updates };
             setUserProfile(newProfile);
-            localStorage.setItem('weesp_user_profile', JSON.stringify(newProfile));
+            localStorage.setItem('ons_kortenhoef_profile', JSON.stringify(newProfile));
             supabase.from('profiles').upsert({
               name: newProfile.name,
               profile_data: newProfile
             }).then();
           }}
           onLogout={() => {
-            localStorage.removeItem('weesp_user_profile');
+            localStorage.removeItem('ons_kortenhoef_profile');
             setUserProfile(null);
           }} 
         />

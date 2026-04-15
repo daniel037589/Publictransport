@@ -46,9 +46,9 @@ const COMMUNITIES_DATA = [
     members: ['https://i.pravatar.cc/150?u=4', 'https://i.pravatar.cc/150?u=5', 'https://i.pravatar.cc/150?u=6']
   },
   { 
-    id: 'weesp-central',
-    name: 'Weesp Central', 
-    location: 'Weesp, NL', 
+    id: 'kortenhoef-central',
+    name: 'Kortenhoef Central', 
+    location: 'Kortenhoef, NL', 
     pos: [52.3094, 5.0392], 
     dist: 11,
     memberCount: '1.2k',
@@ -111,7 +111,7 @@ export function CommunitiesScreen() {
     >
       <header className="communities-header">
         <div className="communities-header__icon">
-          <img src="/logo.png" alt="Weesp logo" draggable={false} />
+          <img src="/logo.png" alt="Ons Kortenhoef logo" draggable={false} />
         </div>
         <div className="communities-header__text">
           <span className="communities-header__label">Your Community</span>

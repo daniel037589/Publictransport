@@ -182,7 +182,7 @@ export default function HomePage({ onNavigate, riders = [] }) {
           transition={{ duration: 0.4 }}
         >
           <div className="home-header__icon">
-            <img src="/logo.png" alt="Weesp logo" draggable={false} />
+            <img src="/logo.png" alt="Ons Kortenhoef logo" draggable={false} />
           </div>
           <div className="home-header__text">
             <span className="home-header__label">Your Community</span>

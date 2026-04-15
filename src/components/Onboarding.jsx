@@ -85,7 +85,7 @@ export function OnboardingScreen({ onComplete }) {
 
     if (existing && existing.profile_data) {
       // Restore profile from cloud across devices!
-      localStorage.setItem('weesp_user_profile', JSON.stringify(existing.profile_data));
+      localStorage.setItem('ons_kortenhoef_profile', JSON.stringify(existing.profile_data));
       onComplete(existing.profile_data);
       return;
     }
@@ -97,7 +97,7 @@ export function OnboardingScreen({ onComplete }) {
       age: formData.birthdate ? calculateAge(formData.birthdate) : null,
     };
     
-    localStorage.setItem('weesp_user_profile', JSON.stringify(profileData));
+    localStorage.setItem('ons_kortenhoef_profile', JSON.stringify(profileData));
     
     // Persist to Supabase
     await supabase.from('profiles').upsert({
