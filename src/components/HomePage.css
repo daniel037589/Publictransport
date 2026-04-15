@@ -145,7 +145,6 @@
   color: #2D3320;
   text-align: left;
   padding: 16px 0 16px 22px;
-  max-width: 110px;          /* force text to wrap to 2 lines */
   display: flex;
   align-items: center;
   z-index: 2;

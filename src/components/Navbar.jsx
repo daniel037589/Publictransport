@@ -43,7 +43,7 @@ export default function Navbar({ activeTab, onTabChange }) {
                     }}
                   />
                 )}
-                <div className="navbar__item-content">
+                <div className="navbar__item-content" style={{ position: 'relative', zIndex: 5 }}>
                   <Icon />
                   {isActive && (
                     <motion.span 

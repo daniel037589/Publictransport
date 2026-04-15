@@ -234,12 +234,14 @@ export default function HomePage({ onNavigate, riders = [] }) {
             transition={{ duration: 0.4, delay: 0.2 }}
           >
             <img src="/icons/card-bg-lines.svg" className="home-action-card__bg-lines" alt="" />
-            <span className="home-action-card__text">I need a ride</span>
-            <div className="home-action-card__icon-new">
+            <span className="home-action-card__text">
+              I need <br /> a ride
+            </span>
+            <div className="home-action-card__icon-new" style={{ top: 'auto', bottom: '-15px' }}>
               <img src="/icons/poi-car.svg" alt="" />
             </div>
           </motion.button>
-
+          
           <motion.button
             className="home-action-card home-action-card--help"
             onClick={() => onNavigate('give-ride')}
@@ -250,8 +252,8 @@ export default function HomePage({ onNavigate, riders = [] }) {
             transition={{ duration: 0.4, delay: 0.3 }}
           >
             <img src="/icons/card-bg-lines.svg" className="home-action-card__bg-lines" alt="" />
-            <span className="home-action-card__text" style={{ maxWidth: '100px' }}>
-              I’m here to help
+            <span className="home-action-card__text">
+              I’m here <br /> to help
             </span>
             <div className="home-action-card__icon-new">
               <img src="/icons/poi-hand-heart.svg" alt="" />
