@@ -621,12 +621,12 @@
 }
 
 .btn-find-neighbour:active {
-  transform: scale(0.97);
+  transform: translateX(-50%) scale(0.97);
   background-color: #D87B40;
 }
 
 .btn-find-neighbour:hover {
-  transform: translateY(-2px);
+  transform: translate(-50%, -2px);
   box-shadow: 0 6px 16px rgba(240, 138, 75, 0.3);
 }
 

@@ -124,9 +124,21 @@ export function GiveRideCard({ rider, onClick, showCancel, onCancel }) {
         {badges.map((b, i) => <NeedBadge key={i} badge={b} />)}
       </div>
 
-      {/* Date */}
-      <div className="gr-card-date">
-        {dateStr}
+      {/* Date + Time */}
+      <div className="gr-card-date" style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+        <span>{dateStr}</span>
+        {rider.time && (
+          <span style={{ 
+            background: '#F08A4B20', 
+            color: '#F08A4B', 
+            borderRadius: '20px', 
+            padding: '2px 10px', 
+            fontWeight: 600, 
+            fontSize: '13px' 
+          }}>
+            {rider.time}
+          </span>
+        )}
       </div>
 
       {/* Location */}

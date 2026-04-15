@@ -22,6 +22,16 @@ function MapRecenter({ bounds }) {
   return null;
 }
 
+function MapFlyTo({ position }) {
+  const map = useMap();
+  useEffect(() => {
+    if (position) {
+      map.flyTo(position, 15, { animate: true, duration: 0.8 });
+    }
+  }, [position, map]);
+  return null;
+}
+
 function BackIcon() {
   return (
     <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -209,6 +219,9 @@ export function GetRideScreen({ onBack, onRequestRide, userProfile }) {
     const formData = new FormData(e.target);
     const pickupInput = formData.get('pickup') || 'Ons Kortenhoef';
     const destinationInput = formData.get('dropoff') || 'Somewhere in Kortenhoef';
+    const timeInput = formData.get('time') || '08:30';
+    const dateInput = formData.get('date') || new Date().toLocaleDateString('nl-NL', { weekday: 'short', day: 'numeric', month: 'short' });
+    const timeframe = `${dateInput} ${timeInput}`;
     
     try {
       const fetchCoords = async (query) => {
@@ -219,8 +232,8 @@ export function GetRideScreen({ onBack, onRequestRide, userProfile }) {
         return null;
       };
 
-      let pickupCoords = await fetchCoords(pickupInput);
-      let dropoffCoords = await fetchCoords(destinationInput);
+      let pickupCoords = pickup ? [pickup.lat, pickup.lng] : await fetchCoords(pickupInput);
+      let dropoffCoords = dropoff ? [dropoff.lat, dropoff.lng] : await fetchCoords(destinationInput);
 
       if (!pickupCoords) pickupCoords = [52.2331 + (Math.random() - 0.5)*0.015, 5.0760 + (Math.random() - 0.5)*0.015];
       if (!dropoffCoords) dropoffCoords = [52.2331 + (Math.random() - 0.5)*0.015, 5.0760 + (Math.random() - 0.5)*0.015];
@@ -234,24 +247,24 @@ export function GetRideScreen({ onBack, onRequestRide, userProfile }) {
         routeGeometry = routeData.routes[0].geometry.coordinates.map(c => [c[1], c[0]]);
       }
 
-      const mappedBadges = (userProfile?.preferences || []).map(p => PREF_MAP[p]).filter(Boolean);
+      const mappedBadges = (userProfile?.needs || []).map(n => ({ text: n }));
 
       const newRider = {
         id: 'you-' + Date.now(),
         name: userProfile ? userProfile.name : 'You',
+        age: userProfile?.age,
         initial: userProfile ? userProfile.name.charAt(0).toUpperCase() : 'Y',
         distance: '0 km away',
-        timeframe: 'Needs ride now',
+        timeframe,
+        date: dateInput,
+        time: timeInput,
         pickup: pickupInput,
         destination: destinationInput,
         location: pickupCoords,
         destinationLocation: dropoffCoords,
-        routeGeometry: routeGeometry,
+        routeGeometry,
         color: '#ffc085',
-        badges: [
-          { icon: '📍', text: 'Ready', color: 'blue' },
-          ...mappedBadges
-        ],
+        badges: mappedBadges,
         avatarUrl: userProfile?.avatarUrl,
         status: 'pending'
       };
@@ -295,11 +308,10 @@ export function GetRideScreen({ onBack, onRequestRide, userProfile }) {
             attributionControl={false}
           >
             <TileLayer url="https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png" />
-            <Marker position={center} icon={currentLocationIcon} />
-            {pickup && <Marker position={[pickup.lat, pickup.lng]} icon={orangePinIcon} />}
+            <Marker position={pickup ? [pickup.lat, pickup.lng] : center} icon={currentLocationIcon} />
             {dropoff && <Marker position={[dropoff.lat, dropoff.lng]} icon={orangePinIcon} />}
             {route && <Polyline positions={route} color="#F08A4B" weight={4} opacity={0.8} />}
-            <MapRecenter bounds={mapBounds} />
+            {mapBounds ? <MapRecenter bounds={mapBounds} /> : <MapFlyTo position={pickup ? [pickup.lat, pickup.lng] : null} />}
           </MapContainer>
           <div className="map-badge">Kortenhoef Area</div>
         </div>
@@ -373,12 +385,21 @@ export function GetRideScreen({ onBack, onRequestRide, userProfile }) {
             </span>
             <input 
               className="form-input-clean" 
+              id="date" 
+              name="date" 
+              type="date" 
+              defaultValue={new Date().toISOString().split('T')[0]}
+              disabled={isLoading} 
+              style={{ flex: 1 }}
+            />
+            <input 
+              className="form-input-clean" 
               id="time" 
               name="time" 
-              type="text" 
-              placeholder="When do you have to leave?" 
+              type="time" 
               defaultValue="08:30" 
               disabled={isLoading} 
+              style={{ flex: 1 }}
             />
           </div>
         </div>
