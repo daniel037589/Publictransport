@@ -3,10 +3,10 @@ import { motion } from 'framer-motion';
 import './Onboarding.css';
 
 const PREFERENCES = [
-  { id: 'entry', label: 'Vehicle entry help', icon: '♿️' },
-  { id: 'stroller', label: 'Needs stroller space', icon: '👶' },
-  { id: 'newborn', label: 'Has newborn', icon: '🍼' },
-  { id: 'walker', label: 'Needs walker space', icon: '🦯' },
+  { id: 'entry', label: 'Vehicle entry help', icon: <img src="/icons/entry.svg" style={{width: 24, height: 24}} alt="Entry" /> },
+  { id: 'stroller', label: 'Needs stroller space', icon: <img src="/icons/stroller.svg" style={{width: 24, height: 24}} alt="Stroller" /> },
+  { id: 'newborn', label: 'Has newborn', icon: <img src="/icons/newborn.svg" style={{width: 24, height: 24}} alt="Newborn" /> },
+  { id: 'walker', label: 'Needs walker space', icon: <img src="/icons/walker.svg" style={{width: 24, height: 24}} alt="Walker" /> },
 ];
 
 const LANGUAGES = [
@@ -30,7 +30,7 @@ function calculateAge(birthdate) {
 export function OnboardingScreen({ onComplete }) {
   const [formData, setFormData] = useState({
     name: '',
-    birthdate: '',
+    birthdate: '1990-01-01',
     languages: [],
     preferences: [],
     avatarUrl: null,
@@ -95,7 +95,7 @@ export function OnboardingScreen({ onComplete }) {
       transition={{ duration: 0.5, ease: "easeOut" }}
     >
       <div className="onboarding-header">
-        <h1 className="onboarding-title">Welcome to Weesp</h1>
+        <h1 className="onboarding-title">Welcome to Uit & thuis</h1>
         <p className="onboarding-subtitle">Let's map out your community profile.</p>
       </div>
 
@@ -170,7 +170,7 @@ export function OnboardingScreen({ onComplete }) {
         </div>
 
         <div className="onboarding-card">
-          <label className="form-label" style={{ marginBottom: '16px' }}>Ride Preferences</label>
+          <label className="form-label" style={{ marginBottom: '16px' }}>Needs</label>
           <div className="preferences-grid">
             {PREFERENCES.map(pref => (
               <div 

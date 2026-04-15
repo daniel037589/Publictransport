@@ -10,10 +10,10 @@ const ALL_LANGUAGES = [
 ];
 
 const PREFS_CONFIG = [
-  { id: 'entry', label: 'Vehicle entry help', icon: '♿️' },
-  { id: 'stroller', label: 'Needs stroller space', icon: '👶' },
-  { id: 'newborn', label: 'Has newborn', icon: '🍼' },
-  { id: 'walker', label: 'Needs walker space', icon: '🦯' },
+  { id: 'entry', label: 'Vehicle entry help', icon: <img src="/icons/entry.svg" style={{width: 16, height: 16}} alt="Entry" /> },
+  { id: 'stroller', label: 'Needs stroller space', icon: <img src="/icons/stroller.svg" style={{width: 16, height: 16}} alt="Stroller" /> },
+  { id: 'newborn', label: 'Has newborn', icon: <img src="/icons/newborn.svg" style={{width: 16, height: 16}} alt="Newborn" /> },
+  { id: 'walker', label: 'Needs walker space', icon: <img src="/icons/walker.svg" style={{width: 16, height: 16}} alt="Walker" /> },
 ];
 
 export function ProfileScreen({ userProfile, onUpdateProfile, onLogout, riders = [] }) {
