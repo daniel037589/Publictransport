@@ -182,12 +182,11 @@ export function GiveRideCard({ rider, onClick, showCancel, onCancel }) {
         <div className="gr-loc-row">
           <div className="gr-loc-start" />
           <div className="gr-loc-text">
-            <p className="gr-loc-title">{pickupDuration}</p>
-            <p className="gr-loc-address">{pickupAddress}</p>
+            <p className="gr-loc-title">{pickupAddress}</p>
           </div>
         </div>
 
-        <div className="gr-loc-row">
+          <div className="gr-loc-row">
           <div className="gr-loc-dest">
             <svg width="10" height="10" viewBox="0 0 10 10" fill="none">
               <path d="M5 10C5 10 9 6.5 9 4C9 1.79086 7.20914 0 5 0C2.79086 0 1 1.79086 1 4C1 6.5 5 10 5 10ZM5 5.5C4.17157 5.5 3.5 4.82843 3.5 4C3.5 3.17157 4.17157 2.5 5 2.5C5.82843 2.5 6.5 3.17157 6.5 4C6.5 4.82843 5.82843 5.5 5 5.5Z" fill="#141A34"/>

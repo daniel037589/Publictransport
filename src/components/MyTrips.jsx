@@ -127,17 +127,17 @@ export function MyTripsScreen({ riders, onDeleteRide, onCancelOffer, userProfile
 
 import { GiveRideCard } from './GiveRide';
 
-export function TripCard({ trip, isDriving, onAction, actionLabel = 'Cancel Ride', actionClassName = 'trip-cancel-btn' }) {
-  // Determine title for the trip (Wait securely mapped to driver or requester)
-  const title = isDriving ? `Ride for ${trip.name}` : (trip.driverName ? `Ride with ${trip.driverName}` : trip.name || 'Ride Request');
+export function TripCard({ trip, isDriving, onAction }) {
+  // Build a display label without clobbering the original rider identity fields
+  const displayName = isDriving
+    ? `Ride for ${trip.name}`
+    : (trip.driverName ? `Ride with ${trip.driverName}` : trip.name || 'Ride Request');
 
-  // We map the correct title into a duplicate object specifically for GiveRideCard
+  // Pass ALL original fields through untouched — only override the visible display name
   const formattedTrip = {
     ...trip,
-    name: title,
-    // Add realistic durations and locations just like GetRide / GiveRide would map
-    pickupDuration: trip.timeframe || '10:30 - 11:00',
-    pickupAddress: trip.pickup || trip.location || 'Kortenhoef Center',
+    name: displayName,
+    // avatarUrl, age, birthdate, initial, color, routeGeometry all come from trip spread above
   };
 
   return (
