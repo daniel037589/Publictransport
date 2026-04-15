@@ -83,7 +83,7 @@ function LocationAutocomplete({ id, name, placeholder, disabled, required, onSel
   return (
     <div style={{ position: 'relative', zIndex: isOpen ? 1000 : 1 }} ref={wrapperRef}>
       <input 
-        className="form-input" 
+        className="form-input-clean" 
         id={id} 
         name={name} 
         type="text" 
@@ -99,25 +99,16 @@ function LocationAutocomplete({ id, name, placeholder, disabled, required, onSel
         onFocus={() => setIsOpen(true)}
       />
       {isOpen && (query.trim().length >= 3) && (
-        <ul style={{
-          position: 'absolute', top: 'calc(100% + 4px)', left: 0, right: 0, 
-          background: 'var(--color-brand-white)',
-          border: '1px solid #eaeaea', borderRadius: '12px', zIndex: 10000,
-          listStyle: 'none', margin: 0, padding: '8px 0', 
-          boxShadow: '0 8px 24px rgba(0,0,0,0.15)',
-          maxHeight: '260px', overflowY: 'auto'
-        }}>
+        <ul className="autocomplete-popup">
           {isSearching && results.length === 0 ? (
-             <li style={{ padding: '12px 16px', fontSize: '14px', color: 'var(--color-text-nav)' }}>Searching streets...</li>
+             <li style={{ padding: '12px 16px', fontSize: '14px', color: '#8A8A7A' }}>Searching streets...</li>
           ) : results.length === 0 ? (
-             <li style={{ padding: '12px 16px', fontSize: '14px', color: 'var(--color-text-nav)' }}>No results found in Weesp</li>
+             <li style={{ padding: '12px 16px', fontSize: '14px', color: '#8A8A7A' }}>No results found</li>
           ) : (
             results.map((r, i) => (
               <li 
                 key={i} 
-                style={{ padding: '12px 16px', borderBottom: i < results.length - 1 ? '1px solid #eaeaea' : 'none', cursor: 'pointer', fontSize: '14px', color: 'var(--color-text-black)', display: 'flex', flexDirection: 'column', gap: '4px', background: 'var(--color-brand-white)' }}
-                onMouseEnter={(e) => e.currentTarget.style.background = 'var(--color-bg-gray)'}
-                onMouseLeave={(e) => e.currentTarget.style.background = 'var(--color-brand-white)'}
+                className="autocomplete-item"
                 onClick={() => {
                   const displayName = r.display_name.includes('Weesp') ? r.display_name.split(', Weesp')[0] : r.display_name.split(',')[0];
                   setQuery(displayName);
@@ -131,8 +122,15 @@ function LocationAutocomplete({ id, name, placeholder, disabled, required, onSel
                   }
                 }}
               >
-                <strong style={{ fontFamily: 'var(--font-family-button)', color: 'var(--color-brand-blue)' }}>{r.name || r.display_name.split(',')[0]}</strong>
-                <span style={{ fontSize: '12px', color: 'var(--color-text-nav)' }}>{r.display_name}</span>
+                <div className="autocomplete-icon-box">
+                  <svg width="14" height="18" viewBox="0 0 14 18" fill="none">
+                    <path d="M7 3.85718C6.3707 3.85718 5.75552 4.0457 5.23228 4.39889C4.70903 4.75209 4.30121 5.25409 4.06038 5.84143C3.81956 6.42877 3.75655 7.07506 3.87932 7.69858C4.00209 8.3221 4.30513 8.89483 4.75011 9.34437C5.1951 9.7939 5.76205 10.1 6.37926 10.2241C6.99647 10.3481 7.63623 10.2844 8.21763 10.0411C8.79903 9.79786 9.29596 9.38587 9.64559 8.85728C9.99521 8.32869 10.1818 7.70723 10.1818 7.0715C10.1818 6.21901 9.84659 5.40143 9.24989 4.79863C8.65318 4.19583 7.84387 3.85718 7 3.85718ZM7 9.00009C6.62242 9.00009 6.25331 8.88698 5.93937 8.67506C5.62542 8.46315 5.38072 8.16194 5.23623 7.80954C5.09174 7.45714 5.05393 7.06936 5.12759 6.69525C5.20125 6.32114 5.38308 5.9775 5.65007 5.70778C5.91706 5.43806 6.25723 5.25438 6.62755 5.17997C6.99788 5.10555 7.38174 5.14374 7.73058 5.28971C8.07942 5.43568 8.37758 5.68288 8.58735 6.00003C8.79903 6.31719 8.90909 6.69006 8.90909 7.0715C8.90909 7.58299 8.70796 8.07354 8.34993 8.43522C7.99191 8.7969 7.50632 9.00009 7 9.00009ZM7 0C5.14413 0.00212686 3.36488 0.747841 2.05258 2.07354C0.740279 3.39925 0.00210536 5.19667 0 7.0715C0 9.59474 1.1542 12.2691 3.34091 14.806C4.32347 15.9523 5.42934 16.9846 6.63807 17.8837C6.74507 17.9594 6.87254 18 7.00318 18C7.13382 18 7.2613 17.9594 7.3683 17.8837C8.5748 16.9842 9.67852 15.9519 10.6591 14.806C12.8426 12.2691 14 9.59474 14 7.0715C13.9979 5.19667 13.2597 3.39925 11.9474 2.07354C10.6351 0.747841 8.85587 0.00212686 7 0ZM7 16.5537C5.68511 15.5091 1.27273 11.672 1.27273 7.0715C1.27273 5.53702 1.87613 4.06538 2.95021 2.98034C4.02428 1.8953 5.48103 1.28573 7 1.28573C8.51897 1.28573 9.97572 1.8953 11.0498 2.98034C12.1239 4.06538 12.7273 5.53702 12.7273 7.0715C12.7273 11.6704 8.31489 15.5091 7 16.5537Z" fill="currentColor"/>
+                  </svg>
+                </div>
+                <div className="autocomplete-text">
+                  <span className="autocomplete-name">{r.name || r.display_name.split(',')[0]}</span>
+                  <span className="autocomplete-address">{r.display_name}</span>
+                </div>
               </li>
             ))
           )}
