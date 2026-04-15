@@ -1,3 +1,4 @@
+import { motion, LayoutGroup } from 'framer-motion';
 import { HomeIcon, MyTripsIcon, CommunityIcon, ProfileIcon } from './Icons';
 import './Navbar.css';
 
@@ -12,18 +13,44 @@ export default function Navbar({ activeTab, onTabChange }) {
   return (
     <nav className="navbar" role="navigation" aria-label="Main navigation">
       <div className="navbar__inner">
-        {NAV_ITEMS.map(({ id, label, Icon }) => (
-          <button
-            key={id}
-            className={`navbar__item${activeTab === id ? ' navbar__item--active' : ''}`}
-            onClick={() => onTabChange(id)}
-            aria-label={label}
-            aria-current={activeTab === id ? 'page' : undefined}
-          >
-            <Icon />
-            <span className="navbar__label">{label}</span>
-          </button>
-        ))}
+        <LayoutGroup>
+          {NAV_ITEMS.map(({ id, label, Icon }) => {
+            const isActive = activeTab === id;
+            return (
+              <motion.button
+                key={id}
+                layout
+                className={`navbar__item${isActive ? ' navbar__item--active' : ''}`}
+                onClick={() => onTabChange(id)}
+                aria-label={label}
+                aria-current={isActive ? 'page' : undefined}
+                transition={{
+                  type: "spring",
+                  stiffness: 500,
+                  damping: 35,
+                  mass: 1
+                }}
+              >
+                {isActive && (
+                  <motion.div
+                    layoutId="navbar-pill"
+                    className="navbar__pill-bg"
+                    initial={false}
+                    transition={{
+                      type: "spring",
+                      stiffness: 500,
+                      damping: 35
+                    }}
+                  />
+                )}
+                <div style={{ position: 'relative', display: 'flex', alignItems: 'center', justifyContent: 'center', flexDirection: 'inherit', gap: 'inherit' }}>
+                   <Icon />
+                   <motion.span layout className="navbar__label">{label}</motion.span>
+                </div>
+              </motion.button>
+            );
+          })}
+        </LayoutGroup>
       </div>
     </nav>
   );

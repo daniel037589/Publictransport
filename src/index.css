@@ -233,15 +233,27 @@ button {
   height: 20px;
 }
 
-/* Active item — horizontal row layout, yellow-green pill */
+/* Active item — horizontal row layout, yellow-green pill handled by Framer Motion */
 .navbar__item--active {
   flex-direction: row;
   flex: 0 0 auto;
   padding: 0 20px;
   gap: 8px;
-  background: #BBCD2F;
   color: #2D3320;
+}
+
+.navbar__pill-bg {
+  position: absolute;
+  inset: 0;
+  background: #BBCD2F;
   border-radius: 100px;
+  z-index: 0;
+}
+
+.navbar__item svg, 
+.navbar__label {
+  position: relative;
+  z-index: 1;
 }
 
 /* Icon color for active item */
