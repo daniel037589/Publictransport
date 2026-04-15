@@ -5,12 +5,14 @@ import './MyTrips.css';
 export function MyTripsScreen({ riders, onDeleteRide, onCancelOffer, userProfile }) {
   const [activeTab, setActiveTab] = useState('Active');
 
+  const isAdmin = userProfile?.name && userProfile.name.toLowerCase() === 'admin';
+
   // Map existing data to UI categories
-  // "Active" = Requested by user + Driver accepted OR User is driving
-  const activeTrips = riders.filter(r => 
-    (r.name === userProfile?.name && r.status !== 'completed' && r.status !== 'cancelled') || 
-    (r.driverName === userProfile?.name && r.status !== 'completed' && r.status !== 'cancelled')
-  );
+  const activeTrips = riders.filter(r => {
+    if (r.status === 'completed' || r.status === 'cancelled') return false;
+    if (isAdmin) return true;
+    return r.name === userProfile?.name || r.driverName === userProfile?.name;
+  });
 
   const scheduledTrips = riders.filter(r => false); // Disable scheduled if we just show everything active
   const historyTrips = []; // Empty for now
@@ -27,8 +29,9 @@ export function MyTripsScreen({ riders, onDeleteRide, onCancelOffer, userProfile
   };
 
   const visibleTrips = getVisibleTrips();
-  const myRequests = visibleTrips.filter(t => t.name === userProfile?.name);
-  const ridesIHelp = visibleTrips.filter(t => t.driverName === userProfile?.name);
+  const adminTrips = isAdmin ? visibleTrips : [];
+  const myRequests = isAdmin ? [] : visibleTrips.filter(t => t.name === userProfile?.name);
+  const ridesIHelp = isAdmin ? [] : visibleTrips.filter(t => t.driverName === userProfile?.name && t.name !== userProfile?.name);
 
   return (
     <motion.div 
@@ -68,6 +71,22 @@ export function MyTripsScreen({ riders, onDeleteRide, onCancelOffer, userProfile
           </div>
         ) : (
           <>
+            {isAdmin && adminTrips.length > 0 && (
+              <div className="trips-date-group">
+                <h2 className="trips-date-header" style={{ marginBottom: '12px' }}>Admin Overview (All Rides)</h2>
+                <AnimatePresence>
+                  {adminTrips.map(trip => (
+                    <TripCard 
+                      key={trip.id} 
+                      trip={trip} 
+                      isDriving={trip.driverName === userProfile?.name}
+                      onAction={() => onDeleteRide(trip.id)}
+                    />
+                  ))}
+                </AnimatePresence>
+              </div>
+            )}
+
             {myRequests.length > 0 && (
               <div className="trips-date-group">
                 <h2 className="trips-date-header" style={{ marginBottom: '12px' }}>Your Requests</h2>
