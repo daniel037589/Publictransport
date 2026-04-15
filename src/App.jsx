@@ -192,7 +192,7 @@ function App() {
         }} />
       </div>
 
-      <Navbar activeTab={activeTab} onTabChange={setActiveTab} />
+      {activeTab !== 'get-ride' && activeTab !== 'give-ride' && <Navbar activeTab={activeTab} onTabChange={setActiveTab} />}
     </div>
   );
 }

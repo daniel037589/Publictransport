@@ -381,16 +381,15 @@
   }
 }
 
-/* ── I Need a Ride Redesign ── */
 .ride-screen.redesign {
   width: 402px;
   height: 874px;
   margin: 0 auto;
-  background-color: white;
+  background-color: #F2F2EB; /* Soft beige background */
   display: flex;
   flex-direction: column;
   align-items: center;
-  overflow: hidden; /* No scrolling */
+  overflow: hidden; 
   position: relative;
   font-family: var(--font-family-body);
 }
@@ -453,16 +452,16 @@
 
 .card-car-icon {
   position: absolute;
-  top: 10px;
-  right: 14px;
-  width: 108px !important;
-  height: 90px !important;
+  top: -15px; 
+  right: -15px; 
+  width: 150px !important; 
+  height: 125px !important;
   z-index: 1;
 }
 
 .card-car-icon svg {
-  width: 108px !important;
-  height: 90px !important;
+  width: 150px !important;
+  height: 125px !important;
   display: block;
 }
 
@@ -589,7 +588,7 @@
   font-weight: 700;
   border: none;
   cursor: pointer;
-  margin: 32px auto 0;
+  margin: 20px auto 0;
   display: flex;
   align-items: center;
   justify-content: center;
