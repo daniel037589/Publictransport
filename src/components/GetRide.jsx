@@ -163,8 +163,27 @@ export function GetRideScreen({ onBack, onRequestRide, userProfile }) {
     fetchRoute();
   }, [pickup, dropoff]);
 
+  // Custom Leaflet Icons
+  const orangePinIcon = new L.DivIcon({
+    className: '',
+    html: `
+      <svg width="32" height="32" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M16 2C10.477 2 6 6.477 6 12C6 19.5 16 30 16 30C16 30 26 19.5 26 12C26 6.477 21.523 2 16 2ZM16 16C13.791 16 12 14.209 12 12C12 9.791 13.791 8 16 8C18.209 8 20 9.791 20 12C20 14.209 18.209 16 16 16Z" fill="#F08A4B"/>
+        <circle cx="16" cy="12" r="4" fill="white"/>
+      </svg>`,
+    iconSize: [32, 32],
+    iconAnchor: [16, 32],
+  });
+
+  const currentLocationIcon = new L.DivIcon({
+    className: '',
+    html: `<div class="marker-current"></div>`,
+    iconSize: [20, 20],
+    iconAnchor: [10, 10],
+  });
+
+  const center = [52.2331, 5.0760]; // Kortenhoef center
   const mapBounds = pickup && dropoff ? [ [pickup.lat, pickup.lng], [dropoff.lat, dropoff.lng] ] : null;
-  const center = pickup ? [pickup.lat, pickup.lng] : [52.3082, 5.0416]; // Weesp center
 
   const PREF_MAP = {
     'wheelchair': { icon: '♿️', text: 'Wheelchair Assist', color: 'blue' },
@@ -181,7 +200,6 @@ export function GetRideScreen({ onBack, onRequestRide, userProfile }) {
     const destinationInput = formData.get('dropoff') || 'Somewhere in Weesp';
     
     try {
-      // 1. Convert Text Addresses into Lat/Lng
       const fetchCoords = async (query) => {
         const url = `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(query + ', Weesp, Netherlands')}`;
         const resp = await fetch(url);
@@ -193,18 +211,15 @@ export function GetRideScreen({ onBack, onRequestRide, userProfile }) {
       let pickupCoords = await fetchCoords(pickupInput);
       let dropoffCoords = await fetchCoords(destinationInput);
 
-      // Fallbacks if Nominatim fails to find the exact street
       if (!pickupCoords) pickupCoords = [52.3082 + (Math.random() - 0.5)*0.015, 5.0416 + (Math.random() - 0.5)*0.015];
       if (!dropoffCoords) dropoffCoords = [52.3082 + (Math.random() - 0.5)*0.015, 5.0416 + (Math.random() - 0.5)*0.015];
 
-      // 2. Fetch Turn-by-Turn OSRM Graph Routing
       let routeGeometry = null;
       const routeUrl = `https://router.project-osrm.org/route/v1/driving/${pickupCoords[1]},${pickupCoords[0]};${dropoffCoords[1]},${dropoffCoords[0]}?overview=full&geometries=geojson`;
       const routeResp = await fetch(routeUrl);
       const routeData = await routeResp.json();
 
       if (routeData.code === 'Ok' && routeData.routes.length > 0) {
-        // GeoJSON uses [lng, lat], Leaflet uses [lat, lng]. Map it properly.
         routeGeometry = routeData.routes[0].geometry.coordinates.map(c => [c[1], c[0]]);
       }
 
@@ -219,7 +234,7 @@ export function GetRideScreen({ onBack, onRequestRide, userProfile }) {
         destination: destinationInput,
         location: pickupCoords,
         destinationLocation: dropoffCoords,
-        routeGeometry: routeGeometry, // Map arrays natively
+        routeGeometry: routeGeometry,
         color: '#ffc085',
         badges: [
           { icon: '📍', text: 'Ready', color: 'blue' },
@@ -254,8 +269,8 @@ export function GetRideScreen({ onBack, onRequestRide, userProfile }) {
         </div>
 
         <div className="card-car-icon">
-          <svg width="108" height="90" viewBox="0 0 108 90" fill="none">
-            <path d="M39.6 3.6C39.6 2.64522 39.9793 1.72955 40.6544 1.05442C41.3295 0.379284 42.2452 0 43.2 0H64.8C65.7548 0 66.6705 0.379284 67.3456 1.05442C68.0207 1.72955 68.4 2.64522 68.4 3.6C68.4 4.55478 68.0207 5.47045 67.3456 6.14558C66.6705 6.82072 65.7548 7.2 64.8 7.2H43.2C42.2452 7.2 41.3295 6.82072 40.6544 6.14558C39.9793 5.47045 39.6 4.55478 39.6 3.6ZM108 43.2C108 44.1548 107.621 45.0705 106.946 45.7456C106.27 46.4207 105.355 46.8 104.4 46.8H100.8V82.8C100.8 84.7096 100.041 86.5409 98.6912 87.8912C97.3409 89.2414 95.5096 90 93.6 90H82.8C80.8904 90 79.0591 89.2414 77.7088 87.8912C76.3586 86.5409 75.6 84.7096 75.6 82.8V79.2H32.4V82.8C32.4 84.7096 31.6414 86.5409 30.2912 87.8912C28.9409 89.2414 27.1096 90 25.2 90H14.4C12.4904 90 10.6591 89.2414 9.30883 87.8912C7.95857 86.5409 7.2 84.7096 7.2 82.8V46.8H3.6C2.64522 46.8 1.72955 46.4207 1.05442 45.7456C0.379284 45.0705 0 44.1548 0 43.2C0 42.2452 0.379284 41.3295 1.05442 40.6544C1.72955 39.9793 2.64522 39.6 3.6 39.6H8.712L21.0375 18.027C21.6673 16.9252 22.5771 16.0095 23.6747 15.3725C24.7724 14.7356 26.0189 14.4001 27.288 14.4H80.712C81.9811 14.4001 83.2276 14.7356 84.3253 15.3725C85.4229 16.0095 86.3327 16.9252 86.9625 18.027L99.288 39.6H104.4C105.355 39.6 106.27 39.9793 106.946 40.6544C107.621 41.3295 108 42.2452 108 43.2ZM36 57.6C36 56.6452 35.6207 55.7295 34.9456 55.0544C34.2705 54.3793 33.3548 54 32.4 54H21.6C20.6452 54 19.7295 54.3793 19.0544 55.0544C18.3793 55.7295 18 56.6452 18 57.6C18 58.5548 18.3793 59.4705 19.0544 60.1456C19.7295 60.8207 20.6452 61.2 21.6 61.2H32.4C33.3548 61.2 34.2705 60.8207 34.9456 60.1456C35.6207 59.4705 36 57.6ZM90 57.6C90 56.6452 89.6207 55.7295 88.9456 55.0544C88.2705 54.3793 87.3548 54 86.4 54H75.6C74.6452 54 73.7295 54.3793 73.0544 55.0544C72.3793 55.7295 72 56.6452 72 57.6C72 58.5548 72.3793 59.4705 73.0544 60.1456C73.7295 60.8207 74.6452 61.2 75.6 61.2H86.4C87.3548 61.2 88.2705 60.8207 88.9456 60.1456C89.6207 59.4705 90 58.5548 90 57.6ZM90.9945 39.6L80.712 21.6H27.288L17.0055 39.6H90.9945Z" fill="#2D3320"/>
+          <svg xmlns="http://www.w3.org/2000/svg" width="108" height="90" viewBox="0 0 108 90" fill="none">
+            <path d="M39.6 3.6C39.6 2.64522 39.9793 1.72955 40.6544 1.05442C41.3295 0.379284 42.2452 0 43.2 0H64.8C65.7548 0 66.6705 0.379284 67.3456 1.05442C68.0207 1.72955 68.4 2.64522 68.4 3.6C68.4 4.55478 68.0207 5.47045 67.3456 6.14558C66.6705 6.82072 65.7548 7.2 64.8 7.2H43.2C42.2452 7.2 41.3295 6.82072 40.6544 6.14558C39.9793 5.47045 39.6 4.55478 39.6 3.6ZM108 43.2C108 44.1548 107.621 45.0705 106.946 45.7456C106.27 46.4207 105.355 46.8 104.4 46.8H100.8V82.8C100.8 84.7096 100.041 86.5409 98.6912 87.8912C97.3409 89.2414 95.5096 90 93.6 90H82.8C80.8904 90 79.0591 89.2414 77.7088 87.8912C76.3586 86.5409 75.6 84.7096 75.6 82.8V79.2H32.4V82.8C32.4 84.7096 31.6414 86.5409 30.2912 87.8912C28.9409 89.2414 27.1096 90 25.2 90H14.4C12.4904 90 10.6591 89.2414 9.30883 87.8912C7.95857 86.5409 7.2 84.7096 7.2 82.8V46.8H3.6C2.64522 46.8 1.72955 46.4207 1.05442 45.7456C0.379284 45.0705 0 44.1548 0 43.2C0 42.2452 0.379284 41.3295 1.05442 40.6544C1.72955 39.9793 2.64522 39.6 3.6 39.6H8.712L21.0375 18.027C21.6673 16.9252 22.5771 16.0095 23.6747 15.3725C24.7724 14.7356 26.0189 14.4001 27.288 14.4H80.712C81.9811 14.4001 83.2276 14.7356 84.3253 15.3725C85.4229 16.0095 86.3327 16.9252 86.9625 18.027L99.288 39.6H104.4C105.355 39.6 106.27 39.9793 106.946 40.6544C107.621 41.3295 108 42.2452 108 43.2ZM36 57.6C36 56.6452 35.6207 55.7295 34.9456 55.0544C34.2705 54.3793 33.3548 54 32.4 54H21.6C20.6452 54 19.7295 54.3793 19.0544 55.0544C18.3793 55.7295 18 56.6452 18 57.6C18 58.5548 18.3793 59.4705 19.0544 60.1456C19.7295 60.8207 20.6452 61.2 21.6 61.2H32.4C33.3548 61.2 34.2705 60.8207 34.9456 60.1456C35.6207 59.4705 36 58.5548 36 57.6ZM90 57.6C90 56.6452 89.6207 55.7295 88.9456 55.0544C88.2705 54.3793 87.3548 54 86.4 54H75.6C74.6452 54 73.7295 54.3793 73.0544 55.0544C72.3793 55.7295 72 56.6452 72 57.6C72 58.5548 72.3793 59.4705 73.0544 60.1456C73.7295 60.8207 74.6452 61.2 75.6 61.2H86.4C87.3548 61.2 88.2705 60.8207 88.9456 60.1456C89.6207 59.4705 90 58.5548 90 57.6ZM90.9945 39.6L80.712 21.6H27.288L17.0055 39.6H90.9945Z" fill="#2D3320"/>
           </svg>
         </div>
 
@@ -268,8 +283,9 @@ export function GetRideScreen({ onBack, onRequestRide, userProfile }) {
             attributionControl={false}
           >
             <TileLayer url="https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png" />
-            {pickup && <Marker position={[pickup.lat, pickup.lng]} />}
-            {dropoff && <Marker position={[dropoff.lat, dropoff.lng]} />}
+            <Marker position={center} icon={currentLocationIcon} />
+            {pickup && <Marker position={[pickup.lat, pickup.lng]} icon={orangePinIcon} />}
+            {dropoff && <Marker position={[dropoff.lat, dropoff.lng]} icon={orangePinIcon} />}
             {route && <Polyline positions={route} color="#F08A4B" weight={4} opacity={0.8} />}
             <MapRecenter bounds={mapBounds} />
           </MapContainer>

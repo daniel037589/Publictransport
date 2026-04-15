@@ -527,14 +527,14 @@
 }
 
 .input-field-new {
-  background-color: #EFF0F2;
+  background-color: #FAFAFA;
   border-radius: 50px;
   height: 52px;
   padding: 0 16px;
   display: flex;
   align-items: center;
   gap: 10px;
-  border: 1.5px solid transparent;
+  border: 1px solid #707072;
   transition: border-color 0.2s ease;
 }
 
