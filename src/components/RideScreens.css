@@ -1006,3 +1006,30 @@
   margin-right: 4px;
   color: #707072;
 }
+
+/* Fix overlay to stick fixed to viewport bottom */
+.gr-overlay {
+  position: fixed !important;
+  inset: 0 !important;
+  background: rgba(0, 0, 0, 0.48);
+  z-index: 9999;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+}
+
+/* White pill badge (Figma 732-5089 style) */
+.gr-badge-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  background: #ffffff;
+  border: 1px solid #E1E1E3;
+  color: #1A1A1A;
+  font-family: var(--font-family-button);
+  font-size: 12px;
+  font-weight: 500;
+  padding: 4px 10px;
+  border-radius: 100px;
+  line-height: 1.4;
+}
