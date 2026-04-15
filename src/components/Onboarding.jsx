@@ -1,5 +1,6 @@
 import { useState, useRef } from 'react';
 import { motion } from 'framer-motion';
+import { supabase } from '../supabaseClient';
 import './Onboarding.css';
 
 const PREFERENCES = [
@@ -71,18 +72,39 @@ export function OnboardingScreen({ onComplete }) {
     }
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     if (!formData.name.trim()) return alert("Please enter your name!");
     
-    // Calculate age from birthdate and store both
+    // Check if user exists in the cloud to sync down
+    const { data: existing } = await supabase
+      .from('profiles')
+      .select('profile_data')
+      .eq('name', formData.name.trim())
+      .single();
+
+    if (existing && existing.profile_data) {
+      // Restore profile from cloud across devices!
+      localStorage.setItem('weesp_user_profile', JSON.stringify(existing.profile_data));
+      onComplete(existing.profile_data);
+      return;
+    }
+
+    // New profile logic
     const profileData = {
       ...formData,
+      name: formData.name.trim(),
       age: formData.birthdate ? calculateAge(formData.birthdate) : null,
     };
     
-    // Save to device local storage securely
     localStorage.setItem('weesp_user_profile', JSON.stringify(profileData));
+    
+    // Persist to Supabase
+    await supabase.from('profiles').upsert({
+      name: profileData.name,
+      profile_data: profileData
+    });
+
     onComplete(profileData);
   };
 

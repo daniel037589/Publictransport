@@ -195,6 +195,10 @@ function App() {
             const newProfile = { ...userProfile, ...updates };
             setUserProfile(newProfile);
             localStorage.setItem('weesp_user_profile', JSON.stringify(newProfile));
+            supabase.from('profiles').upsert({
+              name: newProfile.name,
+              profile_data: newProfile
+            }).then();
           }}
           onLogout={() => {
             localStorage.removeItem('weesp_user_profile');
