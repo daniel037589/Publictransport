@@ -14,7 +14,7 @@
   /* ── Semantic aliases ── */
   --color-brand-blue: #2D3320;
   --color-brand-black: #2D3320;
-  --color-brand-white: #ffffff;
+  --color-brand-white: #F3F2E7;
   --color-bg-primary: #F3F2E7;
   --color-bg-gray: #F3F2E7;
   --color-text-blue: #2D3320;
@@ -156,7 +156,7 @@ button {
 .screen {
   position: absolute;
   inset: 0;
-  background: var(--color-brand-white);
+  background: var(--color-bg-primary);
   transition: transform 0.35s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.35s ease;
 }
 
@@ -251,7 +251,7 @@ button {
 .navbar__item--active {
   flex-direction: row;
   flex: 2; /* Take more space when active */
-  color: #2D3320;
+  color: #1A1A1A; /* Darker than olive */
   padding: 0 16px;
   gap: 8px;
 }
@@ -283,7 +283,7 @@ button {
 
 .navbar__item--active svg,
 .navbar__item--active svg path {
-  fill: #2D3320 !important;
+  fill: #1A1A1A !important;
 }
 
 /* Labels — always visible */
