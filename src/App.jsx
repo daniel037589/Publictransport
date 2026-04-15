@@ -31,6 +31,8 @@ const INITIAL_RIDERS = [
 const serializeForDb = (rider) => ({
   id: String(rider.id),
   name: rider.name,
+  age: rider.age || null,
+  birthdate: rider.birthdate || null,
   initial: rider.initial,
   distance: rider.distance,
   timeframe: rider.timeframe,
@@ -51,6 +53,8 @@ const serializeForDb = (rider) => ({
 const deserializeFromDb = (row) => ({
   id: row.id,
   name: row.name,
+  age: row.age || null,
+  birthdate: row.birthdate || null,
   initial: row.initial,
   distance: row.distance,
   timeframe: row.timeframe,

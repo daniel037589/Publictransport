@@ -79,16 +79,50 @@ function NeedBadge({ badge }) {
 
 // ── GiveRideCard — Figma 661-4342 ───────────────────────────
 export function GiveRideCard({ rider, onClick, showCancel, onCancel }) {
-  // Using real data from the rider object with realistic fallbacks if missing
   const name = rider.name || 'Sara de Jong';
-  const age = rider.age ? `${rider.age} Years Old` : '35 Years Old';
+
+  // Robustly derive age: prefer explicit age field, then calculate from birthdate
+  const calcAge = (birthdate) => {
+    if (!birthdate) return null;
+    const today = new Date();
+    const bd = new Date(birthdate);
+    if (isNaN(bd)) return null;
+    let age = today.getFullYear() - bd.getFullYear();
+    if (today < new Date(today.getFullYear(), bd.getMonth(), bd.getDate())) age--;
+    return age > 0 && age < 120 ? age : null;
+  };
+  const ageNum = rider.age != null && rider.age !== '' ? Number(rider.age) : calcAge(rider.birthdate);
+  const age = ageNum ? `${ageNum} years old` : null;
+
   // Use current date as mock if missing
-  const dateStr = rider.date || new Date().toLocaleDateString('en-GB', { weekday: 'short', day: 'numeric', month: 'short' });
-  const pickupDuration = rider.pickupDuration || rider.distance || '7 min (3.2 km)';
-  const pickupAddress = rider.pickupAddress || rider.pickup || 'Beukenlaan 9\n1341 UT Kortenhoef';
-  const dropoffDuration = rider.dropoffDuration || '30 min (9 km)';
-  const dropoffAddress = rider.dropoffAddress || rider.destination || 'Dorpsstraat 42\n1231 AB Loosdrecht';
-  const badges = rider.badges && rider.badges.length > 0 ? rider.badges : ['Has newborn', 'Needs walker space'];
+  const dateStr = rider.date
+    ? new Date(rider.date).toLocaleDateString('en-GB', { weekday: 'short', day: 'numeric', month: 'short' })
+    : new Date().toLocaleDateString('en-GB', { weekday: 'short', day: 'numeric', month: 'short' });
+
+  // Calculate real distance + time from route geometry (Haversine sum)
+  const calcRouteStats = (geometry) => {
+    if (!geometry || geometry.length < 2) return null;
+    const toRad = d => d * Math.PI / 180;
+    let totalKm = 0;
+    for (let i = 0; i < geometry.length - 1; i++) {
+      const [lat1, lon1] = geometry[i];
+      const [lat2, lon2] = geometry[i + 1];
+      const R = 6371;
+      const dLat = toRad(lat2 - lat1);
+      const dLon = toRad(lon2 - lon1);
+      const a = Math.sin(dLat/2)**2 + Math.cos(toRad(lat1)) * Math.cos(toRad(lat2)) * Math.sin(dLon/2)**2;
+      totalKm += R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+    }
+    const mins = Math.round(totalKm / 40 * 60); // ~40 km/h average
+    return { km: totalKm.toFixed(1), mins };
+  };
+  const stats = calcRouteStats(rider.routeGeometry);
+
+  const pickupAddress = rider.pickupAddress || rider.pickup || 'Kortenhoef';
+  const dropoffAddress = rider.dropoffAddress || rider.destination || 'Destination';
+  const pickupDuration = rider.pickupDuration || (stats ? `${stats.mins} min (${stats.km} km)` : rider.distance || '—');
+  const dropoffDuration = rider.dropoffDuration || (stats ? `${stats.mins} min total` : '—');
+  const badges = rider.badges && rider.badges.length > 0 ? rider.badges : [];
 
   return (
     <div className="gr-card-redesign" onClick={() => onClick && onClick(rider)}>
@@ -106,7 +140,7 @@ export function GiveRideCard({ rider, onClick, showCancel, onCancel }) {
           </div>
           <div style={{ display: 'flex', flexDirection: 'column' }}>
             <p className="gr-card-name" style={{ fontSize: '16px' }}>{name}</p>
-            <p className="gr-card-sub" style={{ fontSize: '14px', color: '#707072' }}>{age}</p>
+            {age && <p className="gr-card-sub" style={{ fontSize: '14px', color: '#707072' }}>{age}</p>}
           </div>
         </div>
 
