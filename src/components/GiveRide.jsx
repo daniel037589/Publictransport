@@ -3,7 +3,118 @@ import { MapContainer, TileLayer, Marker, Polyline, Popup } from 'react-leaflet'
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
 import './RideScreens.css';
-import { TripCard } from './MyTrips';
+
+// ── Badge icon helpers (SVG, not emojis) ──────────────────────
+function WheelchairIcon() {
+  return (
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+      <circle cx="12" cy="4" r="2"/>
+      <path d="M10 10l2 8 4-4"/>
+      <path d="M8 14h6"/>
+      <path d="M12 18l2 4"/>
+      <circle cx="8" cy="20" r="2"/>
+    </svg>
+  );
+}
+function StrollerIcon() {
+  return (
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M3 6h18"/>
+      <path d="M3 6l3 9h9l3-9"/>
+      <circle cx="9" cy="19" r="2"/>
+      <circle cx="17" cy="19" r="2"/>
+    </svg>
+  );
+}
+function PetIcon() {
+  return (
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M11 20a2 2 0 0 1-2-2v-3H7a2 2 0 0 1-2-2V9a4 4 0 0 1 4-4h6a4 4 0 0 1 4 4v4a2 2 0 0 1-2 2h-2v3a2 2 0 0 1-2 2z"/>
+      <line x1="9" y1="7" x2="9" y2="7"/><line x1="15" y1="7" x2="15" y2="7"/>
+    </svg>
+  );
+}
+function QuietIcon() {
+  return (
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/>
+    </svg>
+  );
+}
+function ReadyIcon() {
+  return (
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M12 2L15.09 8.26L22 9.27L17 14.14L18.18 21.02L12 17.77L5.82 21.02L7 14.14L2 9.27L8.91 8.26L12 2Z"/>
+    </svg>
+  );
+}
+
+const BADGE_ICONS = {
+  wheelchair: <WheelchairIcon />,
+  stroller: <StrollerIcon />,
+  pets: <PetIcon />,
+  quiet: <QuietIcon />,
+  ready: <ReadyIcon />,
+};
+
+// ── GiveRideCard — tappable, no button, Figma-accurate ────────
+function GiveRideCard({ rider, onClick }) {
+  return (
+    <div className="gr-card" onClick={() => onClick(rider)}>
+      {/* Profile row */}
+      <div className="gr-card-profile">
+        <div
+          className="gr-card-avatar"
+          style={rider.avatarUrl
+            ? { backgroundImage: `url(${rider.avatarUrl})`, backgroundSize: 'cover' }
+            : { backgroundColor: rider.color || '#F08A4B' }}
+        >
+          {!rider.avatarUrl && <span>{rider.initial || (rider.name ? rider.name[0] : '?')}</span>}
+        </div>
+        <div>
+          <p className="gr-card-name">{rider.name}</p>
+          <p className="gr-card-sub">{rider.timeframe || 'Needs ride now'}</p>
+        </div>
+      </div>
+
+      {/* Badges */}
+      {rider.badges && rider.badges.length > 0 && (
+        <div className="gr-badges">
+          {rider.badges.map((b, i) => {
+            const text = typeof b === 'string' ? b : b.text || '';
+            const key = typeof b === 'string' ? b.toLowerCase() : b.text?.toLowerCase();
+            const icon = BADGE_ICONS[key] || BADGE_ICONS[Object.keys(BADGE_ICONS).find(k => text.toLowerCase().includes(k))] || null;
+            return (
+              <span key={i} className="gr-badge">
+                {icon && <span className="gr-badge-icon">{icon}</span>}
+                {text}
+              </span>
+            );
+          })}
+        </div>
+      )}
+
+      {/* Route */}
+      <div className="gr-route">
+        <div className="gr-route-row">
+          <div className="gr-dot gr-dot--pickup" />
+          <div className="gr-route-text">
+            <p className="gr-route-label">Pick up</p>
+            <p className="gr-route-address">{rider.pickup || 'Kortenhoef center'}</p>
+          </div>
+        </div>
+        <div className="gr-route-line" />
+        <div className="gr-route-row">
+          <div className="gr-dot gr-dot--dropoff" />
+          <div className="gr-route-text">
+            <p className="gr-route-label">Drop off</p>
+            <p className="gr-route-address">{rider.destination || 'Destination'}</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
 
 // ── Icons ─────────────────────────────────────────────────────
 function BackIcon() {
@@ -111,18 +222,16 @@ export function GiveRideScreen({ onBack, riders, onOfferRide }) {
       </div>
 
       {/* ── Nearby Requests ───────────────────────────────── */}
-      <div className="ride-form-new" style={{ paddingBottom: '40px', flexShrink: 0 }}>
+      <div className="ride-form-new" style={{ paddingBottom: '24px', flexShrink: 0 }}>
         <h2 style={{ fontFamily: 'var(--font-family-button)', fontSize: '18px', fontWeight: 700, color: '#2D3320', margin: '20px 0 12px 0' }}>
           Nearby Requests
         </h2>
         <div className="trips-date-group">
           {pendingRiders.map(rider => (
-            <TripCard
+            <GiveRideCard
               key={rider.id}
-              trip={rider}
-              actionLabel="Pick Up"
-              actionClassName="trip-pickup-btn"
-              onAction={() => setSelectedRider(rider)}
+              rider={rider}
+              onClick={setSelectedRider}
             />
           ))}
           {pendingRiders.length === 0 && (
