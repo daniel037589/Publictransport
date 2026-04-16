@@ -109,12 +109,6 @@ export default function DesktopScreen({ supabase }) {
         {connectionStatus === 'SUBSCRIBED' ? '● Live' : '○ Connecting...'}
         <button onClick={testAnimation} className="debug-btn">Test Animation</button>
       </div>
-      
-      <div style={{ position: 'absolute', top: 60, right: 40, background: '#ffeb3b', padding: '8px 16px', borderRadius: 8, fontSize: 13, zIndex: 10002, border: '1px solid #e0c000', boxShadow: '0 4px 12px rgba(0,0,0,0.1)' }}>
-        <p style={{ margin: 0, fontWeight: 'bold' }}>Fetch Status:</p>
-        <p style={{ margin: 0 }}>{debugText}</p>
-        <p style={{ margin: 0, marginTop: 4 }}>Displayed Grid Members: {members.length}</p>
-      </div>
 
       <div className={`desktop-main-content ${showOverlay ? 'blur' : ''}`}>
         <header className="desktop-header">
