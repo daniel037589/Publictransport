@@ -223,15 +223,33 @@ export function OnboardingScreen({ onComplete }) {
           </div>
         </div>
 
-        <motion.button 
-          className="btn-primary"
-          type="submit"
-          whileHover={{ scale: 1.02 }}
-          whileTap={{ scale: 0.98 }}
-          style={{ marginTop: '16px' }}
+          <motion.button 
+            className="btn-primary"
+            type="submit"
+            whileHover={{ scale: 1.02 }}
+            whileTap={{ scale: 0.98 }}
+            style={{ marginTop: '16px' }}
+          >
+            Join Community
+          </motion.button>
+
+        <button 
+          type="button"
+          onClick={async () => {
+            const restoredName = prompt("Enter existing profile name:");
+            if (!restoredName) return;
+            const { data } = await supabase.from('profiles').select('profile_data').eq('name', restoredName.trim()).single();
+            if (data && data.profile_data) {
+              localStorage.setItem('ons_kortenhoef_profile', JSON.stringify(data.profile_data));
+              onComplete(data.profile_data);
+            } else {
+              alert("Could not find a profile with that exact name.");
+            }
+          }}
+          style={{ width: '100%', marginTop: '24px', background: 'none', border: 'none', color: '#8e8e93', fontSize: '14px', cursor: 'pointer', textDecoration: 'underline' }}
         >
-          Join Community
-        </motion.button>
+          Sign back into existing profile
+        </button>
       </form>
     </motion.div>
   );
