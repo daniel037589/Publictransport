@@ -114,13 +114,14 @@ export default function DesktopScreen({ supabase }) {
 
         <main className="desktop-content">
           <div className="member-grid">
+            {/* Show a placeholder if the grid is totally empty */}
             {members.length === 0 && (
-               <div className="member-avatar-large empty-state" style={{ backgroundImage: `url(${EMPTY_AVATAR})` }} />
+               <div className="member-avatar-large empty-state" style={{ backgroundImage: `url("${EMPTY_AVATAR}")` }} />
             )}
             
             {members.map((member, idx) => (
               <motion.div 
-                key={member.name || idx}
+                key={`${member.name}-${idx}`}
                 layout
                 initial={{ scale: 0, opacity: 0 }}
                 animate={{ scale: 1, opacity: 1 }}
