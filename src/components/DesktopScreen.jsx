@@ -23,8 +23,7 @@ export default function DesktopScreen({ supabase }) {
       console.log("Fetching existing community members...");
       const { data, error } = await supabase
         .from('profiles')
-        .select('*')
-        .order('id', { ascending: false });
+        .select('*');
       
       if (error) {
         console.error("Initial Fetch Error:", error.message, error.details);
@@ -35,7 +34,8 @@ export default function DesktopScreen({ supabase }) {
         console.log("Fetched raw data:", data);
         const fetchedMembers = data
           .map(m => m.profile_data)
-          .filter(m => m && m.name && !isIgnored(m.name));
+          .filter(m => m && m.name && !isIgnored(m.name))
+          .reverse();
         
         console.log("Setting members after filter:", fetchedMembers);
         setMembers(fetchedMembers);
