@@ -2,8 +2,10 @@ import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import './DesktopScreen.css';
 
+const STANDARD_MEMBER = { id: 'admin', name: 'Johan G.', age: 42, avatarUrl: 'https://i.pravatar.cc/150?img=12' };
+
 export default function DesktopScreen({ supabase }) {
-  const [members, setMembers] = useState([]);
+  const [members, setMembers] = useState([STANDARD_MEMBER]);
   const [newMember, setNewMember] = useState(null);
   const [showOverlay, setShowOverlay] = useState(false);
 
@@ -16,7 +18,14 @@ export default function DesktopScreen({ supabase }) {
         .order('id', { ascending: false });
       
       if (!error && data) {
-        setMembers(data.map(m => m.profile_data));
+        const dbMembers = data.map(m => m.profile_data);
+        setMembers(prev => {
+          const merged = [...prev];
+          dbMembers.forEach(m => {
+            if (!merged.some(p => p.id === m.id)) merged.push(m);
+          });
+          return merged;
+        });
       }
     };
     fetchMembers();
