@@ -145,26 +145,33 @@ export default function DesktopScreen({ supabase }) {
             )}
             
             {members.map((member, idx) => {
-              // Dynamic scaling logic based on how many people are active
-              let scaleTransform = 1;
-              if (members.length > 5) scaleTransform = 0.85;
-              if (members.length > 10) scaleTransform = 0.7;
-              if (members.length > 15) scaleTransform = 0.55;
+              // Create a consistent pseudo-random hash based on their exact name
+              const nameHash = member.name.split('').reduce((acc, char) => acc + char.charCodeAt(0), 0);
+              
+              // Map the hash to a scale strictly between 0.65 and 1.25
+              let baseScale = 0.65 + ((nameHash % 60) / 100); 
+
+              // If the grid gets incredibly huge, compress the max scale slightly
+              if (members.length > 12) baseScale *= 0.8;
+              if (members.length > 25) baseScale *= 0.6;
+
+              const floatDuration = 4 + (nameHash % 4); // Randomize their natural float speed
+              const floatHeight = 5 + (nameHash % 15); // Randomize how high they bounce
 
               return (
                 <motion.div 
                   key={`${member.name}-${idx}`}
-                  initial={{ scale: 0, opacity: 0, y: 20 }}
+                  initial={{ scale: 0, opacity: 0, y: 30 }}
                   animate={{ 
-                    scale: scaleTransform, 
+                    scale: baseScale, 
                     opacity: 1, 
-                    y: [0, -10, 5, -5, 0] // Floating bubble sequence
+                    y: [0, -floatHeight, floatHeight / 2, -(floatHeight / 2), 0] 
                   }}
                   transition={{ 
-                    scale: { duration: 0.5, type: "spring" },
-                    opacity: { duration: 0.5 },
+                    scale: { duration: 0.6, type: "spring", bounce: 0.4 },
+                    opacity: { duration: 0.6 },
                     y: { 
-                      duration: 4 + (idx % 3), // Varied duration per bubble
+                      duration: floatDuration,
                       repeat: Infinity,
                       ease: "easeInOut"
                     }
