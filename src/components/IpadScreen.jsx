@@ -17,19 +17,25 @@ const townLabelIcon = new L.DivIcon({
 function MapRecenter({ bounds }) {
   const map = useMap();
   useEffect(() => {
-    if (bounds && bounds.length > 0) {
-      try {
-        map.fitBounds(bounds, { padding: [50, 50] });
-      } catch (e) {}
+    try {
+      if (bounds && bounds.length > 0) {
+        // Find valid leaflet bounds and fly to it
+        map.flyToBounds(bounds, { padding: [80, 80], duration: 1.5 });
+      } else {
+        // Reset to center smoothly
+        map.flyTo(KORTENHOEF, 13, { duration: 1.5 });
+      }
+    } catch (e) {
+       console.error("Map bounds parsing error", e);
     }
-  }, [bounds, map]);
+  }, [JSON.stringify(bounds), map]);
   return null;
 }
 
 export default function IpadScreen({ riders = [] }) {
   const ongoingRides = riders.filter(r => r.status === 'ongoing');
   const mapBounds = ongoingRides.length > 0 
-    ? ongoingRides.flatMap(r => [r.location, r.destinationLocation]).filter(Boolean)
+    ? ongoingRides.flatMap(r => [r.location, r.destinationLocation]).filter(loc => Array.isArray(loc) && loc.length === 2)
     : null;
 
   return (

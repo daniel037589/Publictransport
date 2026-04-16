@@ -144,19 +144,43 @@ export default function DesktopScreen({ supabase }) {
                <img src={EMPTY_AVATAR} alt="Empty" className="member-avatar-large empty-state" />
             )}
             
-            {members.map((member, idx) => (
-              <div 
-                key={`${member.name}-${idx}`}
-                className="member-card"
-              >
-                <img 
-                  src={member.avatarUrl || EMPTY_AVATAR} 
-                  alt={member.name} 
-                  className={`member-avatar-large ${!member.avatarUrl ? 'empty-state' : ''}`} 
-                />
-                <span className="member-card-name" style={{ marginTop: '12px', fontSize: '18px', fontWeight: '500', color: '#1a1a1a' }}>{member.name}</span>
-              </div>
-            ))}
+            {members.map((member, idx) => {
+              // Dynamic scaling logic based on how many people are active
+              let scaleTransform = 1;
+              if (members.length > 5) scaleTransform = 0.85;
+              if (members.length > 10) scaleTransform = 0.7;
+              if (members.length > 15) scaleTransform = 0.55;
+
+              return (
+                <motion.div 
+                  key={`${member.name}-${idx}`}
+                  initial={{ scale: 0, opacity: 0, y: 20 }}
+                  animate={{ 
+                    scale: scaleTransform, 
+                    opacity: 1, 
+                    y: [0, -10, 5, -5, 0] // Floating bubble sequence
+                  }}
+                  transition={{ 
+                    scale: { duration: 0.5, type: "spring" },
+                    opacity: { duration: 0.5 },
+                    y: { 
+                      duration: 4 + (idx % 3), // Varied duration per bubble
+                      repeat: Infinity,
+                      ease: "easeInOut"
+                    }
+                  }}
+                  className="member-card"
+                  style={{ transformOrigin: 'center' }}
+                >
+                  <img 
+                    src={member.avatarUrl || EMPTY_AVATAR} 
+                    alt={member.name} 
+                    className={`member-avatar-large ${!member.avatarUrl ? 'empty-state' : ''}`} 
+                  />
+                  <span className="member-card-name" style={{ marginTop: '12px', fontSize: '18px', fontWeight: '500', color: '#1a1a1a' }}>{member.name}</span>
+                </motion.div>
+              );
+            })}
           </div>
         </main>
       </div>

@@ -1,11 +1,31 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import './MyTrips.css';
+import { supabase } from '../supabaseClient';
 
 export function MyTripsScreen({ riders, onDeleteRide, onCancelOffer, userProfile }) {
   const [activeTab, setActiveTab] = useState('Active');
+  const [adminProfiles, setAdminProfiles] = useState([]);
 
   const isAdmin = userProfile?.name && userProfile.name.toLowerCase() === 'admin';
+
+  useEffect(() => {
+    if (isAdmin) {
+      const fetchProfiles = async () => {
+        const { data } = await supabase.from('profiles').select('name');
+        if (data) {
+          setAdminProfiles(data.filter(p => !['admin', 'ipad', 'desktop'].includes(p.name?.toLowerCase())));
+        }
+      };
+      fetchProfiles();
+    }
+  }, [isAdmin]);
+
+  const handleDeleteProfile = async (profileName) => {
+    await supabase.from('ride_requests').delete().eq('name', profileName);
+    await supabase.from('profiles').delete().eq('name', profileName);
+    setAdminProfiles(prev => prev.filter(p => p.name !== profileName));
+  };
 
   // Map existing data to UI categories
   const activeTrips = riders.filter(r => {
@@ -71,6 +91,25 @@ export function MyTripsScreen({ riders, onDeleteRide, onCancelOffer, userProfile
           </div>
         ) : (
           <>
+            {isAdmin && (
+              <div className="trips-date-group" style={{ marginBottom: '24px' }}>
+                <h2 className="trips-date-header" style={{ marginBottom: '12px' }}>Admin - Community Profiles</h2>
+                <div style={{ display: 'grid', gap: '8px' }}>
+                  {adminProfiles.length === 0 ? <p style={{opacity: 0.5}}>No community profiles found.</p> : adminProfiles.map(p => (
+                    <div key={p.name} style={{ display: 'flex', justifyContent: 'space-between', padding: '12px', background: 'white', borderRadius: '8px', border: '1px solid #e1e1e3' }}>
+                      <span style={{ fontWeight: 500 }}>{p.name}</span>
+                      <button 
+                        onClick={() => handleDeleteProfile(p.name)}
+                        style={{ color: '#ff3b30', background: 'none', border: 'none', cursor: 'pointer', fontWeight: 600 }}
+                      >
+                        Delete
+                      </button>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+
             {isAdmin && adminTrips.length > 0 && (
               <div className="trips-date-group">
                 <h2 className="trips-date-header" style={{ marginBottom: '12px' }}>Admin Overview (All Rides)</h2>
