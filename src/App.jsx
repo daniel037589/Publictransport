@@ -231,10 +231,9 @@ function App() {
             const newProfile = { ...userProfile, ...updates };
             setUserProfile(newProfile);
             localStorage.setItem('ons_kortenhoef_profile', JSON.stringify(newProfile));
-            supabase.from('profiles').upsert({
-              name: newProfile.name,
+            supabase.from('profiles').update({
               profile_data: newProfile
-            }).then();
+            }).eq('name', newProfile.name).then();
           }}
           onResetDevice={() => {
             localStorage.removeItem('ons_kortenhoef_profile');
