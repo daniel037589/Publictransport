@@ -24,7 +24,7 @@ export default function DesktopScreen({ supabase }) {
       const { data, error } = await supabase
         .from('profiles')
         .select('*')
-        .order('created_at', { ascending: false });
+        .order('id', { ascending: false });
       
       if (error) {
         console.error("Initial Fetch Error:", error.message, error.details);
