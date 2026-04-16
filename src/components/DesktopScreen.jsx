@@ -116,22 +116,22 @@ export default function DesktopScreen({ supabase }) {
           <div className="member-grid">
             {/* Show a placeholder if the grid is totally empty */}
             {members.length === 0 && (
-               <div className="member-avatar-large empty-state" style={{ backgroundImage: `url("${EMPTY_AVATAR}")` }} />
+               <img src={EMPTY_AVATAR} alt="Empty" className="member-avatar-large empty-state" />
             )}
             
             {members.map((member, idx) => (
               <motion.div 
                 key={`${member.name}-${idx}`}
-                layout
                 initial={{ scale: 0, opacity: 0 }}
                 animate={{ scale: 1, opacity: 1 }}
+                transition={{ duration: 0.3, delay: idx * 0.05 }}
                 className="member-card"
               >
-                {member.avatarUrl ? (
-                  <img src={member.avatarUrl} alt={member.name} className="member-avatar-large" />
-                ) : (
-                  <div className="member-avatar-large empty-state" style={{ backgroundImage: `url("${EMPTY_AVATAR}")` }} />
-                )}
+                <img 
+                  src={member.avatarUrl || EMPTY_AVATAR} 
+                  alt={member.name} 
+                  className={`member-avatar-large ${!member.avatarUrl ? 'empty-state' : ''}`} 
+                />
                 <span className="member-card-name" style={{ marginTop: '12px', fontSize: '18px', fontWeight: '500', color: '#1a1a1a' }}>{member.name}</span>
               </motion.div>
             ))}
