@@ -39,14 +39,18 @@ export default function DesktopScreen({ supabase }) {
 
   // 2. Real-time subscription for new members
   useEffect(() => {
+    console.log("Channel: Subscribing to profiles...");
     const channel = supabase
-      .channel('member-updates')
+      .channel('member-updates-v2')
       .on('postgres_changes', 
         { event: '*', schema: 'public', table: 'profiles' }, 
         (payload) => {
+          console.log("REALTIME PAYLOAD ARRIVED:", payload);
+          
           const profile = payload.new ? payload.new.profile_data : null;
           
           if (profile && !isIgnored(profile.name)) {
+            console.log("Triggering overlay for:", profile.name);
             setNewMember(profile);
             setShowOverlay(true);
 
@@ -61,10 +65,13 @@ export default function DesktopScreen({ supabase }) {
             setTimeout(() => {
               setShowOverlay(false);
             }, 6000);
+          } else {
+            console.log("Payload ignored or missing profile_data. New:", payload.new);
           }
         }
       )
       .subscribe((status) => {
+        console.log("Subscription status updated:", status);
         setConnectionStatus(status);
       });
 
@@ -73,10 +80,18 @@ export default function DesktopScreen({ supabase }) {
     };
   }, [supabase]);
 
+  const testAnimation = () => {
+    const testUser = { name: "Test User", age: 25, avatarUrl: EMPTY_AVATAR };
+    setNewMember(testUser);
+    setShowOverlay(true);
+    setTimeout(() => setShowOverlay(false), 6000);
+  };
+
   return (
     <div className="desktop-screen">
       <div className={`connection-status ${connectionStatus}`}>
         {connectionStatus === 'SUBSCRIBED' ? '● Live' : '○ Connecting...'}
+        <button onClick={testAnimation} className="debug-btn">Test Animation</button>
       </div>
 
       <div className={`desktop-main-content ${showOverlay ? 'blur' : ''}`}>
