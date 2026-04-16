@@ -100,10 +100,15 @@ export function OnboardingScreen({ onComplete }) {
     localStorage.setItem('ons_kortenhoef_profile', JSON.stringify(profileData));
     
     // Persist to Supabase
-    await supabase.from('profiles').upsert({
+    const { error: upsertError } = await supabase.from('profiles').upsert({
       name: profileData.name,
       profile_data: profileData
     });
+
+    if (upsertError) {
+      console.error("Supabase Upsert Error:", upsertError.message, upsertError.details);
+      alert("Note: Profile was saved locally, but cloud sync failed: " + upsertError.message);
+    }
 
     onComplete(profileData);
   };

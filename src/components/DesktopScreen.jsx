@@ -33,21 +33,40 @@ export default function DesktopScreen({ supabase }) {
 
   // 2. Real-time subscription for new members
   useEffect(() => {
+    console.log("Setting up Supabase Realtime subscription for 'profiles' table...");
+    
+    // Listen for ALL changes (INSERT/UPDATE/UPSERT)
     const channel = supabase
-      .channel('public:profiles')
-      .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'profiles' }, payload => {
-        const joinedPerson = payload.new.profile_data;
-        
-        setNewMember(joinedPerson);
-        setShowOverlay(true);
+      .channel('schema-db-changes')
+      .on('postgres_changes', 
+        { 
+          event: '*', 
+          schema: 'public', 
+          table: 'profiles' 
+        }, 
+        (payload) => {
+          console.log("Realtime Change Detected:", payload);
+          const joinedPerson = payload.new?.profile_data;
+          
+          if (joinedPerson) {
+            setNewMember(joinedPerson);
+            setShowOverlay(true);
 
-        // Add to list and close overlay after delay
-        setTimeout(() => {
-          setMembers(prev => [joinedPerson, ...prev]);
-          setShowOverlay(false);
-        }, 6000);
-      })
-      .subscribe();
+            // Add to list and close overlay after delay
+            setTimeout(() => {
+              setMembers(prev => {
+                // Prevent duplicates if it was an update
+                if (prev.some(p => p.id === joinedPerson.id)) return prev;
+                return [joinedPerson, ...prev];
+              });
+              setShowOverlay(false);
+            }, 6000);
+          }
+        }
+      )
+      .subscribe((status) => {
+        console.log("Subscription status:", status);
+      });
 
     return () => {
       supabase.removeChannel(channel);
