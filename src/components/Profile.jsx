@@ -16,7 +16,7 @@ const PREFS_CONFIG = [
   { id: 'walker', label: 'Needs walker space', icon: <img src="/icons/walker.svg" style={{width: 16, height: 16}} alt="Walker" /> },
 ];
 
-export function ProfileScreen({ userProfile, onUpdateProfile, onLogout, riders = [] }) {
+export function ProfileScreen({ userProfile, onUpdateProfile, onLogout, onResetDevice, riders = [] }) {
   const [isEditingNeeds, setIsEditingNeeds] = useState(false);
   const fileInputRef = useRef(null);
 
@@ -219,22 +219,40 @@ export function ProfileScreen({ userProfile, onUpdateProfile, onLogout, riders =
           </div>
         </div>
 
-        <button 
-          onClick={onLogout}
-          style={{ 
-            width: '100%', 
-            padding: '16px', 
-            background: 'white', 
-            color: '#ff3b30', 
-            border: '1px solid #e1e1e3', 
-            borderRadius: '16px',
-            fontSize: '16px',
-            fontWeight: '600',
-            cursor: 'pointer'
-          }}
-        >
-          Delete Device Profile
-        </button>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+          <button 
+            onClick={onResetDevice}
+            style={{ 
+              width: '100%', 
+              padding: '16px', 
+              background: '#2D3320', 
+              color: 'white', 
+              border: 'none', 
+              borderRadius: '16px',
+              fontSize: '16px',
+              fontWeight: '600',
+              cursor: 'pointer'
+            }}
+          >
+            Start New Test Session
+          </button>
+          <button 
+            onClick={onLogout}
+            style={{ 
+              width: '100%', 
+              padding: '16px', 
+              background: 'white', 
+              color: '#ff3b30', 
+              border: '1px solid #e1e1e3', 
+              borderRadius: '16px',
+              fontSize: '16px',
+              fontWeight: '600',
+              cursor: 'pointer'
+            }}
+          >
+            Delete Profile from Database
+          </button>
+        </div>
 
       </div>
     </motion.div>

@@ -236,6 +236,10 @@ function App() {
               profile_data: newProfile
             }).then();
           }}
+          onResetDevice={() => {
+            localStorage.removeItem('ons_kortenhoef_profile');
+            setUserProfile(null);
+          }}
           onLogout={async () => {
             // Delete all their requests
             await supabase.from('ride_requests').delete().eq('name', userProfile.name);
