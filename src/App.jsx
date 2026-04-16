@@ -8,6 +8,7 @@ import { ProfileScreen } from './components/Profile';
 import { MyTripsScreen } from './components/MyTrips';
 import { OnboardingScreen } from './components/Onboarding';
 import { CommunitiesScreen } from './components/Community';
+import IpadScreen from './components/IpadScreen';
 import './index.css';
 
 const INITIAL_RIDERS = [
@@ -192,6 +193,9 @@ function App() {
   if (!userProfile) {
     return <OnboardingScreen onComplete={setUserProfile} />;
   }
+
+  const isIpadView = userProfile?.name?.toLowerCase() === 'ipad';
+  if (isIpadView) return <IpadScreen />;
 
   return (
     <div className="app-shell">
