@@ -20,17 +20,24 @@ export default function DesktopScreen({ supabase }) {
   // 1. Fetch ALL existing members from memory (Supabase)
   useEffect(() => {
     const fetchMembers = async () => {
+      console.log("Fetching existing community members...");
       const { data, error } = await supabase
         .from('profiles')
         .select('*')
         .order('created_at', { ascending: false });
       
-      if (!error && data) {
-        // Filter out system accounts from the initial list
+      if (error) {
+        console.error("Initial Fetch Error:", error.message, error.details);
+        return;
+      }
+
+      if (data) {
+        console.log("Fetched raw data:", data);
         const fetchedMembers = data
           .map(m => m.profile_data)
-          .filter(m => !isIgnored(m.name));
+          .filter(m => m && m.name && !isIgnored(m.name));
         
+        console.log("Setting members after filter:", fetchedMembers);
         setMembers(fetchedMembers);
       }
     };
