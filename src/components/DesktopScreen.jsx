@@ -126,10 +126,11 @@ export default function DesktopScreen({ supabase }) {
                 animate={{ scale: 1, opacity: 1 }}
                 className="member-card"
               >
-                <div 
-                  className="member-avatar-large"
-                  style={{ backgroundImage: `url(${member.avatarUrl || EMPTY_AVATAR})` }}
-                />
+                {member.avatarUrl ? (
+                  <img src={member.avatarUrl} alt={member.name} className="member-avatar-large" />
+                ) : (
+                  <div className="member-avatar-large empty-state" style={{ backgroundImage: `url("${EMPTY_AVATAR}")` }} />
+                )}
                 <span className="member-card-name" style={{ marginTop: '12px', fontSize: '18px', fontWeight: '500', color: '#1a1a1a' }}>{member.name}</span>
               </motion.div>
             ))}
