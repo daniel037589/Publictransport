@@ -64,11 +64,22 @@ export function OnboardingScreen({ onComplete }) {
   const handleAvatarUpload = (e) => {
     const file = e.target.files[0];
     if (file) {
-      const reader = new FileReader();
-      reader.onloadend = () => {
-        setFormData(prev => ({ ...prev, avatarUrl: reader.result }));
+      const img = new Image();
+      img.src = URL.createObjectURL(file);
+      img.onload = () => {
+        const canvas = document.createElement('canvas');
+        const MAX_WIDTH = 300;
+        const scaleSize = MAX_WIDTH / img.width;
+        canvas.width = MAX_WIDTH;
+        canvas.height = img.height * scaleSize;
+
+        const ctx = canvas.getContext('2d');
+        ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+        
+        // Compress heavily for the prototype DB
+        const dataUrl = canvas.toDataURL('image/jpeg', 0.6);
+        setFormData(prev => ({ ...prev, avatarUrl: dataUrl }));
       };
-      reader.readAsDataURL(file); // Save as base64 string directly into local storage
     }
   };
 
