@@ -2,48 +2,51 @@ import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import './DesktopScreen.css';
 
-const INITIAL_MEMBERS = [
-  { id: 1, name: 'Sara de Jong', age: 35, avatar: 'https://i.pravatar.cc/150?img=47' },
-  { id: 2, name: 'Johan G.', age: 42, avatar: 'https://i.pravatar.cc/150?img=12' },
-  { id: 3, name: 'Maria S.', age: 28, avatar: 'https://i.pravatar.cc/150?img=25' },
-  { id: 4, name: 'Piet de V.', age: 51, avatar: 'https://i.pravatar.cc/150?img=33' },
-  { id: 5, name: 'Anke K.', age: 31, avatar: 'https://i.pravatar.cc/150?img=19' },
-  { id: 6, name: 'Bram T.', age: 39, avatar: 'https://i.pravatar.cc/150?img=15' },
-];
-
-export default function DesktopScreen() {
-  const [members, setMembers] = useState(INITIAL_MEMBERS);
+export default function DesktopScreen({ supabase }) {
+  const [members, setMembers] = useState([]);
   const [newMember, setNewMember] = useState(null);
   const [showOverlay, setShowOverlay] = useState(false);
 
-  // Simulation: Someone joins every 20 seconds
+  // 1. Fetch existing members
   useEffect(() => {
-    const interval = setInterval(() => {
-      const nextId = members.length + 1;
-      const joinedPerson = {
-        id: nextId,
-        name: `Member ${nextId}`,
-        age: 20 + Math.floor(Math.random() * 40),
-        avatar: `https://i.pravatar.cc/150?img=${(nextId % 70) + 1}`
-      };
+    const fetchMembers = async () => {
+      const { data, error } = await supabase
+        .from('profiles')
+        .select('*')
+        .order('id', { ascending: false });
       
-      setNewMember(joinedPerson);
-      setShowOverlay(true);
+      if (!error && data) {
+        setMembers(data.map(m => m.profile_data));
+      }
+    };
+    fetchMembers();
+  }, [supabase]);
 
-      // Add to list after a short delay
-      setTimeout(() => {
-        setMembers(prev => [joinedPerson, ...prev]);
-        setShowOverlay(false);
-      }, 5000);
+  // 2. Real-time subscription for new members
+  useEffect(() => {
+    const channel = supabase
+      .channel('public:profiles')
+      .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'profiles' }, payload => {
+        const joinedPerson = payload.new.profile_data;
+        
+        setNewMember(joinedPerson);
+        setShowOverlay(true);
 
-    }, 20000);
+        // Add to list and close overlay after delay
+        setTimeout(() => {
+          setMembers(prev => [joinedPerson, ...prev]);
+          setShowOverlay(false);
+        }, 6000);
+      })
+      .subscribe();
 
-    return () => clearInterval(interval);
-  }, [members]);
+    return () => {
+      supabase.removeChannel(channel);
+    };
+  }, [supabase]);
 
   return (
     <div className="desktop-screen">
-      {/* Background Content (Blurred when overlay is active) */}
       <div className={`desktop-main-content ${showOverlay ? 'blur' : ''}`}>
         <header className="desktop-header">
           <div className="desktop-logo-group">
@@ -57,21 +60,21 @@ export default function DesktopScreen() {
 
         <main className="desktop-content">
           <div className="member-grid">
-            {members.map(member => (
+            {members.length === 0 && <p style={{ color: '#707072', fontSize: '24px' }}>Waiting for community members...</p>}
+            {members.map((member, idx) => (
               <motion.div 
-                key={member.id}
+                key={member.id || idx}
                 layout
                 initial={{ scale: 0, opacity: 0 }}
                 animate={{ scale: 1, opacity: 1 }}
                 className="member-avatar-large"
-                style={{ backgroundImage: `url(${member.avatar})` }}
+                style={{ backgroundImage: `url(${member.avatarUrl || 'https://i.pravatar.cc/150?img=1'})` }}
               />
             ))}
           </div>
         </main>
       </div>
 
-      {/* Join Overlay */}
       <AnimatePresence>
         {showOverlay && newMember && (
           <motion.div 
@@ -91,10 +94,10 @@ export default function DesktopScreen() {
               <h2 className="join-announcement-title">A new community member has joined</h2>
               
               <div className="join-profile-card">
-                <div className="join-avatar-massive" style={{ backgroundImage: `url(${newMember.avatar})` }} />
+                <div className="join-avatar-massive" style={{ backgroundImage: `url(${newMember.avatarUrl || 'https://i.pravatar.cc/150?img=1'})` }} />
                 <div className="join-info">
                   <span className="join-name">{newMember.name}</span>
-                  <span className="join-age">{newMember.age} Years Old</span>
+                  <span className="join-age">{newMember.age || '—'} Years Old</span>
                 </div>
               </div>
             </motion.div>

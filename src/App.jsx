@@ -199,7 +199,7 @@ function App() {
   if (isIpadView) return <IpadScreen riders={riders} />;
 
   const isDesktopView = userProfile?.name?.toLowerCase() === 'desktop';
-  if (isDesktopView) return <DesktopScreen />;
+  if (isDesktopView) return <DesktopScreen supabase={supabase} />;
 
   return (
     <div className="app-shell">
