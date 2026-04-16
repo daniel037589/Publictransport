@@ -62,25 +62,41 @@ export default function DesktopScreen({ supabase }) {
         { event: '*', schema: 'public', table: 'profiles' }, 
         (payload) => {
           console.log("REALTIME PAYLOAD ARRIVED:", payload);
-          
+          const eventType = payload.eventType;
+
+          if (eventType === 'DELETE') {
+            const oldName = payload.old?.name;
+            if (oldName) {
+              setMembers(prev => prev.filter(m => m.name !== oldName));
+            }
+            return;
+          }
+
           const profile = payload.new ? payload.new.profile_data : null;
           
           if (profile && !isIgnored(profile.name)) {
-            console.log("Triggering overlay for:", profile.name);
-            setNewMember(profile);
-            setShowOverlay(true);
+            if (eventType === 'INSERT') {
+              console.log("Triggering overlay for new joiner:", profile.name);
+              setNewMember(profile);
+              setShowOverlay(true);
 
-            setMembers(prev => {
-              const exists = prev.some(m => m.name === profile.name);
-              if (exists) {
-                return prev.map(m => m.name === profile.name ? profile : m);
-              }
-              return [profile, ...prev];
-            });
+              setMembers(prev => {
+                const exists = prev.some(m => m.name === profile.name);
+                if (exists) return prev.map(m => m.name === profile.name ? profile : m);
+                return [profile, ...prev];
+              });
 
-            setTimeout(() => {
-              setShowOverlay(false);
-            }, 6000);
+              setTimeout(() => {
+                setShowOverlay(false);
+              }, 6000);
+            } else if (eventType === 'UPDATE') {
+              console.log("Silently updating existing profile:", profile.name);
+              setMembers(prev => {
+                const exists = prev.some(m => m.name === profile.name);
+                if (exists) return prev.map(m => m.name === profile.name ? profile : m);
+                return [profile, ...prev];
+              });
+            }
           } else {
             console.log("Payload ignored or missing profile_data. New:", payload.new);
           }
