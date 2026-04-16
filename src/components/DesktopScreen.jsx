@@ -120,11 +120,8 @@ export default function DesktopScreen({ supabase }) {
             )}
             
             {members.map((member, idx) => (
-              <motion.div 
+              <div 
                 key={`${member.name}-${idx}`}
-                initial={{ scale: 0, opacity: 0 }}
-                animate={{ scale: 1, opacity: 1 }}
-                transition={{ duration: 0.3, delay: idx * 0.05 }}
                 className="member-card"
               >
                 <img 
@@ -133,7 +130,7 @@ export default function DesktopScreen({ supabase }) {
                   className={`member-avatar-large ${!member.avatarUrl ? 'empty-state' : ''}`} 
                 />
                 <span className="member-card-name" style={{ marginTop: '12px', fontSize: '18px', fontWeight: '500', color: '#1a1a1a' }}>{member.name}</span>
-              </motion.div>
+              </div>
             ))}
           </div>
         </main>
