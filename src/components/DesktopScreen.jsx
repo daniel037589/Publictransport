@@ -11,6 +11,7 @@ export default function DesktopScreen({ supabase }) {
   const [newMember, setNewMember] = useState(null);
   const [showOverlay, setShowOverlay] = useState(false);
   const [connectionStatus, setConnectionStatus] = useState('connecting');
+  const [debugText, setDebugText] = useState('Initializing fetch...');
 
   const isIgnored = (name) => {
     if (!name) return false;
@@ -21,23 +22,31 @@ export default function DesktopScreen({ supabase }) {
   useEffect(() => {
     const fetchMembers = async () => {
       console.log("Fetching existing community members...");
+      setDebugText('Fetching from Supabase...');
       const { data, error } = await supabase
         .from('profiles')
         .select('*');
       
       if (error) {
         console.error("Initial Fetch Error:", error.message, error.details);
+        setDebugText(`Fetch Error: ${error.message} - ${error.details}`);
         return;
       }
 
       if (data) {
-        console.log("Fetched raw data:", data);
+        setDebugText(`Fetched ${data.length} rows successfully... Parsing...`);
         const fetchedMembers = data
           .map(m => m.profile_data)
-          .filter(m => m && m.name && !isIgnored(m.name))
+          .filter(m => {
+             // Strict null-checks
+             if (!m) return false;
+             if (!m.name) return false;
+             if (isIgnored(m.name)) return false;
+             return true;
+          })
           .reverse();
         
-        console.log("Setting members after filter:", fetchedMembers);
+        setDebugText(`Success! Parsed ${fetchedMembers.length} valid community members.`);
         setMembers(fetchedMembers);
       }
     };
@@ -99,6 +108,12 @@ export default function DesktopScreen({ supabase }) {
       <div className={`connection-status ${connectionStatus}`}>
         {connectionStatus === 'SUBSCRIBED' ? '● Live' : '○ Connecting...'}
         <button onClick={testAnimation} className="debug-btn">Test Animation</button>
+      </div>
+      
+      <div style={{ position: 'absolute', top: 60, right: 40, background: '#ffeb3b', padding: '8px 16px', borderRadius: 8, fontSize: 13, zIndex: 10002, border: '1px solid #e0c000', boxShadow: '0 4px 12px rgba(0,0,0,0.1)' }}>
+        <p style={{ margin: 0, fontWeight: 'bold' }}>Fetch Status:</p>
+        <p style={{ margin: 0 }}>{debugText}</p>
+        <p style={{ margin: 0, marginTop: 4 }}>Displayed Grid Members: {members.length}</p>
       </div>
 
       <div className={`desktop-main-content ${showOverlay ? 'blur' : ''}`}>
