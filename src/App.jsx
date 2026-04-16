@@ -195,7 +195,7 @@ function App() {
   }
 
   const isIpadView = userProfile?.name?.toLowerCase() === 'ipad';
-  if (isIpadView) return <IpadScreen />;
+  if (isIpadView) return <IpadScreen riders={riders} />;
 
   return (
     <div className="app-shell">
