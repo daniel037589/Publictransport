@@ -1,0 +1,158 @@
+.desktop-screen {
+  position: fixed;
+  inset: 0;
+  background-color: #f3f2e7;
+  display: flex;
+  flex-direction: column;
+  z-index: 9999;
+  overflow: hidden;
+  font-family: 'Onest', sans-serif;
+}
+
+.desktop-main-content {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  transition: filter 0.5s ease;
+}
+
+.desktop-main-content.blur {
+  filter: blur(10px);
+}
+
+/* Header */
+.desktop-header {
+  padding: 60px 0;
+  display: flex;
+  justify-content: center;
+}
+
+.desktop-logo-group {
+  display: flex;
+  align-items: center;
+  gap: 24px;
+}
+
+.desktop-logo-large {
+  width: 120px;
+  height: 122px;
+  object-fit: contain;
+}
+
+.desktop-header-text {
+  display: flex;
+  flex-direction: column;
+}
+
+.desktop-header-label {
+  font-size: 32px;
+  color: #707072;
+  font-weight: 500;
+  margin-bottom: 4px;
+}
+
+.desktop-header-title {
+  font-size: 64px;
+  font-weight: 800;
+  color: #1a1a1a;
+  margin: 0;
+  line-height: 1.1;
+}
+
+/* Member Grid */
+.desktop-content {
+  flex: 1;
+  padding: 0 100px 100px;
+  display: flex;
+  justify-content: center;
+}
+
+.member-grid {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 40px;
+  align-content: flex-start;
+  max-width: 1200px;
+}
+
+.member-avatar-large {
+  width: 200px;
+  height: 200px;
+  border-radius: 50%;
+  background-size: cover;
+  background-position: center;
+  box-shadow: 0 8px 24px rgba(0,0,0,0.1);
+  border: 4px solid white;
+}
+
+/* Overlay & Announcement */
+.desktop-overlay {
+  position: absolute;
+  inset: 0;
+  z-index: 10000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.overlay-bg-dim {
+  position: absolute;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.48);
+}
+
+.join-announcement {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 40px;
+  text-align: center;
+}
+
+.join-announcement-title {
+  font-size: 48px;
+  font-weight: 300;
+  color: white;
+  margin: 0;
+  letter-spacing: -0.5px;
+}
+
+.join-profile-card {
+  display: flex;
+  align-items: center;
+  gap: 32px;
+}
+
+.join-avatar-massive {
+  width: 200px;
+  height: 200px;
+  border-radius: 50%;
+  background-size: cover;
+  background-position: center;
+  border: 6px solid white;
+  box-shadow: 0 0 60px rgba(255,255,255,0.2);
+}
+
+.join-info {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  text-align: left;
+}
+
+.join-name {
+  font-size: 48px;
+  font-weight: 600;
+  color: white;
+  margin-bottom: 8px;
+}
+
+.join-age {
+  font-size: 32px;
+  font-weight: 500;
+  color: #e1e1e3;
+}

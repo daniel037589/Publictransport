@@ -9,6 +9,7 @@ import { MyTripsScreen } from './components/MyTrips';
 import { OnboardingScreen } from './components/Onboarding';
 import { CommunitiesScreen } from './components/Community';
 import IpadScreen from './components/IpadScreen';
+import DesktopScreen from './components/DesktopScreen';
 import './index.css';
 
 const INITIAL_RIDERS = [
@@ -196,6 +197,9 @@ function App() {
 
   const isIpadView = userProfile?.name?.toLowerCase() === 'ipad';
   if (isIpadView) return <IpadScreen riders={riders} />;
+
+  const isDesktopView = userProfile?.name?.toLowerCase() === 'desktop';
+  if (isDesktopView) return <DesktopScreen />;
 
   return (
     <div className="app-shell">
