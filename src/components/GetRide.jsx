@@ -51,7 +51,7 @@ function CommunityShieldIcon() {
   );
 }
 
-function LocationPickerPopup({ isOpen, onClose, title, isPickup, onSelect }) {
+function LocationPickerPopup({ isOpen, onClose, title, isPickup, onSelect, onUseGPS }) {
   const [query, setQuery] = useState('');
   const [results, setResults] = useState([]);
   const [isSearching, setIsSearching] = useState(false);
@@ -110,7 +110,7 @@ function LocationPickerPopup({ isOpen, onClose, title, isPickup, onSelect }) {
             style={{ 
               position: 'fixed', bottom: 0, left: 0, right: 0, 
               background: 'white', borderTopLeftRadius: 24, borderTopRightRadius: 24,
-              padding: '16px 20px 32px', zIndex: 10001, boxShadow: '0 -10px 40px rgba(0,0,0,0.1)'
+              padding: '16px 20px calc(env(safe-area-inset-bottom, 0px) + 32px)', zIndex: 10001, boxShadow: '0 -10px 40px rgba(0,0,0,0.1)'
             }}
           >
             <div style={{ width: 60, height: 4, background: '#dedede', borderRadius: 4, margin: '0 auto 24px' }} />
@@ -132,7 +132,7 @@ function LocationPickerPopup({ isOpen, onClose, title, isPickup, onSelect }) {
                 value={query} 
                 onChange={e => setQuery(e.target.value)} 
                 placeholder={isPickup ? "Pick Up Location" : "Drop Off Location"} 
-                style={{ flex: 1, background: 'none', border: 'none', outline: 'none', fontSize: 14, color: '#1a1a1a' }}
+                style={{ flex: 1, background: 'none', border: 'none', outline: 'none', fontSize: 14, color: '#1a1a1a', minWidth: 0 }}
               />
             </div>
 
@@ -144,7 +144,11 @@ function LocationPickerPopup({ isOpen, onClose, title, isPickup, onSelect }) {
                   {isPickup && (
                     <div 
                       className="location-item" 
-                      onClick={() => { onSelect({ name: 'Current Location', lat: 52.2331, lng: 5.0760 }); onClose(); }}
+                      onClick={() => { 
+                        if(onUseGPS) onUseGPS(); 
+                        else onSelect({ name: 'Current Location', lat: 52.2331, lng: 5.0760 }); 
+                        onClose(); 
+                      }}
                       style={{ display: 'flex', gap: 12, alignItems: 'flex-start', padding: '8px 0', cursor: 'pointer', marginBottom: 16 }}
                     >
                       <svg width="18" height="18" viewBox="0 0 24 24" fill="none" style={{ marginTop: 2 }}>
@@ -561,6 +565,7 @@ export function GetRideScreen({ onBack, onRequestRide, userProfile }) {
         onClose={() => setActivePicker(null)} 
         title={activePicker === 'pickup' ? "Enter your pick-up location" : "Enter your drop off location"} 
         isPickup={activePicker === 'pickup'} 
+        onUseGPS={handleUseGPS}
         onSelect={(location) => {
           if (activePicker === 'pickup') {
             setPickup(location);

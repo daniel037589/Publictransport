@@ -503,7 +503,8 @@
   display: flex;
   flex-direction: column;
   gap: 20px;
-  width: 370px;
+  width: 100%;
+  max-width: 370px;
 }
 
 .form-inputs-row {
@@ -516,6 +517,7 @@
   flex-direction: column;
   gap: 8px;
   flex: 1;
+  min-width: 0;
 }
 
 .form-label-new {
@@ -536,6 +538,7 @@
   gap: 10px;
   border: 1px solid #707072;
   transition: border-color 0.2s ease;
+  min-width: 0;
 }
 
 .input-field-new.highlight {
