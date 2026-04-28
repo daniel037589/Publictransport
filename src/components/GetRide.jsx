@@ -51,7 +51,7 @@ function CommunityShieldIcon() {
   );
 }
 
-function LocationPickerPopup({ isOpen, onClose, title, isPickup, onSelect, onUseGPS }) {
+function LocationPickerPopup({ isOpen, onClose, title, isPickup, onSelect, onUseGPS, initialValue }) {
   const [query, setQuery] = useState('');
   const [results, setResults] = useState([]);
   const [isSearching, setIsSearching] = useState(false);
@@ -59,12 +59,13 @@ function LocationPickerPopup({ isOpen, onClose, title, isPickup, onSelect, onUse
 
   useEffect(() => {
     if (isOpen && inputRef.current) {
+      setQuery(initialValue || '');
       setTimeout(() => inputRef.current.focus(), 100);
     } else {
       setQuery('');
       setResults([]);
     }
-  }, [isOpen]);
+  }, [isOpen, initialValue]);
 
   useEffect(() => {
     const fetchLocations = async () => {
@@ -110,7 +111,7 @@ function LocationPickerPopup({ isOpen, onClose, title, isPickup, onSelect, onUse
             style={{ 
               position: 'fixed', bottom: 0, left: 0, right: 0, 
               background: 'white', borderTopLeftRadius: 24, borderTopRightRadius: 24,
-              padding: '16px 20px calc(env(safe-area-inset-bottom, 20px) + 60px)', zIndex: 10001, boxShadow: '0 -10px 40px rgba(0,0,0,0.1)'
+              padding: '16px 20px calc(env(safe-area-inset-bottom, 20px) + 100px)', zIndex: 10001, boxShadow: '0 -10px 40px rgba(0,0,0,0.1)'
             }}
           >
             <div style={{ width: 60, height: 4, background: '#dedede', borderRadius: 4, margin: '0 auto 24px' }} />
@@ -156,7 +157,6 @@ function LocationPickerPopup({ isOpen, onClose, title, isPickup, onSelect, onUse
                       </svg>
                       <div>
                         <div style={{ fontWeight: 500, fontSize: 14, color: '#1a1a1a' }}>Current Location</div>
-                        <div style={{ fontSize: 12, color: '#707072' }}>Beukenlaan 9<br/>1341 UT Kortenhoef</div>
                       </div>
                     </div>
                   )}
@@ -541,6 +541,7 @@ export function GetRideScreen({ onBack, onRequestRide, userProfile }) {
         title={activePicker === 'pickup' ? "Enter your pick-up location" : "Enter your drop off location"} 
         isPickup={activePicker === 'pickup'} 
         onUseGPS={handleUseGPS}
+        initialValue={activePicker === 'pickup' && pickup ? pickup.name : activePicker === 'dropoff' && dropoff ? dropoff.name : ''}
         onSelect={(location) => {
           if (activePicker === 'pickup') {
             setPickup(location);

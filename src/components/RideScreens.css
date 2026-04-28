@@ -382,8 +382,10 @@
 }
 
 .ride-screen.redesign {
-  width: 402px;
-  height: 874px;
+  width: 100%;
+  max-width: 402px;
+  height: 100dvh;
+  max-height: 874px;
   margin: 0 auto;
   background-color: #F2F2EB; /* Soft beige background */
   display: flex;
