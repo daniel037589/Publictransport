@@ -110,7 +110,7 @@ function LocationPickerPopup({ isOpen, onClose, title, isPickup, onSelect, onUse
             style={{ 
               position: 'fixed', bottom: 0, left: 0, right: 0, 
               background: 'white', borderTopLeftRadius: 24, borderTopRightRadius: 24,
-              padding: '16px 20px calc(env(safe-area-inset-bottom, 0px) + 32px)', zIndex: 10001, boxShadow: '0 -10px 40px rgba(0,0,0,0.1)'
+              padding: '16px 20px calc(env(safe-area-inset-bottom, 20px) + 60px)', zIndex: 10001, boxShadow: '0 -10px 40px rgba(0,0,0,0.1)'
             }}
           >
             <div style={{ width: 60, height: 4, background: '#dedede', borderRadius: 4, margin: '0 auto 24px' }} />
@@ -454,31 +454,6 @@ export function GetRideScreen({ onBack, onRequestRide, userProfile }) {
                 {pickup ? pickup.name : 'Pick Up Location'}
               </div>
               <input type="hidden" name="pickup" value={pickup ? pickup.name : ''} />
-              <button 
-                type="button" 
-                className="btn-use-location" 
-                onClick={(e) => {
-                  e.stopPropagation();
-                  handleUseGPS();
-                }}
-                title="Use current location"
-                style={{ opacity: isLocating ? 0.5 : 1 }}
-              >
-                {isLocating ? (
-                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" style={{ animation: 'spin 1s linear infinite' }}>
-                    <path d="M21 12a9 9 0 1 1-6.219-8.56"/>
-                  </svg>
-                ) : (
-                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-                    <circle cx="12" cy="12" r="10"/>
-                    <circle cx="12" cy="12" r="3"/>
-                    <line x1="12" y1="2" x2="12" y2="5"/>
-                    <line x1="12" y1="19" x2="12" y2="22"/>
-                    <line x1="2" y1="12" x2="5" y2="12"/>
-                    <line x1="19" y1="12" x2="22" y2="12"/>
-                  </svg>
-                )}
-              </button>
             </div>
           </div>
           <div className="form-field">
