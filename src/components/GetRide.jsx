@@ -1,4 +1,5 @@
-import { useState, useEffect, useRef, forwardRef, useImperativeHandle } from 'react';
+import { useState, useEffect, useRef } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
 import { MapContainer, TileLayer, Polyline, Marker, useMap } from 'react-leaflet';
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
@@ -50,14 +51,20 @@ function CommunityShieldIcon() {
   );
 }
 
-const LocationAutocomplete = forwardRef(function LocationAutocomplete({ id, name, placeholder, disabled, required, onSelect }, ref) {
+function LocationPickerPopup({ isOpen, onClose, title, isPickup, onSelect }) {
   const [query, setQuery] = useState('');
   const [results, setResults] = useState([]);
-  const [isOpen, setIsOpen] = useState(false);
   const [isSearching, setIsSearching] = useState(false);
-  const wrapperRef = useRef(null);
+  const inputRef = useRef(null);
 
-  useImperativeHandle(ref, () => ({ setQuery }));
+  useEffect(() => {
+    if (isOpen && inputRef.current) {
+      setTimeout(() => inputRef.current.focus(), 100);
+    } else {
+      setQuery('');
+      setResults([]);
+    }
+  }, [isOpen]);
 
   useEffect(() => {
     const fetchLocations = async () => {
@@ -73,95 +80,164 @@ const LocationAutocomplete = forwardRef(function LocationAutocomplete({ id, name
         const data = await resp.json();
         setResults(data || []);
       } catch (err) {
-        console.error("Autocomplete error", err);
-      } finally {
-        setIsSearching(false);
+        setResults([]);
       }
+      setIsSearching(false);
     };
-
-    const debounce = setTimeout(fetchLocations, 450);
-    return () => clearTimeout(debounce);
+    
+    const timeoutId = setTimeout(fetchLocations, 400);
+    return () => clearTimeout(timeoutId);
   }, [query]);
 
-  useEffect(() => {
-    function handleClickOutside(event) {
-      if (wrapperRef.current && !wrapperRef.current.contains(event.target)) {
-        setIsOpen(false);
-      }
-    }
-    document.addEventListener("mousedown", handleClickOutside);
-    return () => document.removeEventListener("mousedown", handleClickOutside);
-  }, [wrapperRef]);
-
   return (
-    <div style={{ position: 'relative', zIndex: isOpen ? 1000 : 1 }} ref={wrapperRef}>
-      <input 
-        className="form-input-clean" 
-        id={id} 
-        name={name} 
-        type="text" 
-        placeholder={placeholder} 
-        required={required} 
-        disabled={disabled}
-        value={query}
-        autoComplete="off"
-        onChange={(e) => {
-          setQuery(e.target.value);
-          setIsOpen(true);
-        }}
-        onFocus={() => setIsOpen(true)}
-        onKeyDown={(e) => {
-          if (e.key === 'Enter' && isOpen && results.length > 0) {
-            e.preventDefault();
-            const r = results[0];
-            const displayName = r.display_name.split(',')[0];
-            setQuery(displayName);
-            setIsOpen(false);
-            if (onSelect) onSelect({ lat: parseFloat(r.lat), lng: parseFloat(r.lon), name: displayName });
-          }
-        }}
-      />
-      {isOpen && (query.trim().length >= 3) && (
-        <ul className="autocomplete-popup">
-          {isSearching && results.length === 0 ? (
-             <li style={{ padding: '12px 16px', fontSize: '14px', color: '#8A8A7A' }}>Searching streets...</li>
-          ) : results.length === 0 ? (
-             <li style={{ padding: '12px 16px', fontSize: '14px', color: '#8A8A7A' }}>No results found</li>
-          ) : (
-            results.map((r, i) => (
-              <li 
-                key={i} 
-                className="autocomplete-item"
-                onClick={() => {
-                  const displayName = r.display_name.split(',')[0];
-                  setQuery(displayName);
-                  setIsOpen(false);
-                  if (onSelect) {
-                    onSelect({
-                      lat: parseFloat(r.lat),
-                      lng: parseFloat(r.lon),
-                      name: displayName
-                    });
-                  }
-                }}
+    <AnimatePresence>
+      {isOpen && (
+        <>
+          <motion.div 
+            className="popup-overlay"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            onClick={onClose}
+            style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.4)', zIndex: 10000 }}
+          />
+          <motion.div 
+            className="location-popup-sheet"
+            initial={{ y: '100%' }}
+            animate={{ y: 0 }}
+            exit={{ y: '100%' }}
+            transition={{ type: 'spring', damping: 25, stiffness: 200 }}
+            style={{ 
+              position: 'fixed', bottom: 0, left: 0, right: 0, 
+              background: 'white', borderTopLeftRadius: 24, borderTopRightRadius: 24,
+              padding: '16px 20px 32px', zIndex: 10001, boxShadow: '0 -10px 40px rgba(0,0,0,0.1)'
+            }}
+          >
+            <div style={{ width: 60, height: 4, background: '#dedede', borderRadius: 4, margin: '0 auto 24px' }} />
+            
+            <h2 style={{ fontSize: 16, fontWeight: 600, color: '#1a1a1a', marginBottom: 16, letterSpacing: '-0.5px' }}>
+              {title}
+            </h2>
+
+            <div style={{ 
+              display: 'flex', alignItems: 'center', gap: 8, background: '#fafafa', 
+              borderRadius: 999, padding: '12px 16px', border: '1px solid #d3d3d3', marginBottom: 16
+            }}>
+              <svg width="14" height="18" viewBox="0 0 14 18" fill="none">
+                <path d="M7 3.85718C6.3707 3.85718 5.75552 4.0457 5.23228 4.39889C4.70903 4.75209 4.30121 5.25409 4.06038 5.84143C3.81956 6.42877 3.75655 7.07506 3.87932 7.69858C4.00209 8.3221 4.30513 8.89483 4.75011 9.34437C5.1951 9.7939 5.76205 10.1 6.37926 10.2241C6.99647 10.3481 7.63623 10.2844 8.21763 10.0411C8.79903 9.79786 9.29596 9.38587 9.64559 8.85728C9.99521 8.32869 10.1818 7.70723 10.1818 7.0715C10.1818 6.21901 9.84659 5.40143 9.24989 4.79863C8.65318 4.19583 7.84387 3.85718 7 3.85718ZM7 9.00009C6.62242 9.00009 6.25331 8.88698 5.93937 8.67506C5.62542 8.46315 5.38072 8.16194 5.23623 7.80954C5.09174 7.45714 5.05393 7.06936 5.12759 6.69525C5.20125 6.32114 5.38308 5.9775 5.65007 5.70778C5.91706 5.43806 6.25723 5.25438 6.62755 5.17997C6.99788 5.10555 7.38174 5.14374 7.73058 5.28971C8.07942 5.43568 8.37758 5.68288 8.58735 6.00003C8.79903 6.31719 8.90909 6.69006 8.90909 7.0715C8.90909 7.58299 8.70796 8.07354 8.34993 8.43522C7.99191 8.7969 7.50632 9.00009 7 9.00009ZM7 0C5.14413 0.00212686 3.36488 0.747841 2.05258 2.07354C0.740279 3.39925 0.00210536 5.19667 0 7.0715C0 9.59474 1.1542 12.2691 3.34091 14.806C4.32347 15.9523 5.42934 16.9846 6.63807 17.8837C6.74507 17.9594 6.87254 18 7.00318 18C7.13382 18 7.2613 17.9594 7.3683 17.8837C8.5748 16.9842 9.67852 15.9519 10.6591 14.806C12.8426 12.2691 14 9.59474 14 7.0715C13.9979 5.19667 13.2597 3.39925 11.9474 2.07354C10.6351 0.747841 8.85587 0.00212686 7 0ZM7 16.5537C5.68511 15.5091 1.27273 11.672 1.27273 7.0715C1.27273 5.53702 1.87613 4.06538 2.95021 2.98034C4.02428 1.8953 5.48103 1.28573 7 1.28573C8.51897 1.28573 9.97572 1.8953 11.0498 2.98034C12.1239 4.06538 12.7273 5.53702 12.7273 7.0715C12.7273 11.6704 8.31489 15.5091 7 16.5537Z" fill="#707072"/>
+              </svg>
+              <input 
+                ref={inputRef}
+                type="text" 
+                value={query} 
+                onChange={e => setQuery(e.target.value)} 
+                placeholder={isPickup ? "Pick Up Location" : "Drop Off Location"} 
+                style={{ flex: 1, background: 'none', border: 'none', outline: 'none', fontSize: 14, color: '#1a1a1a' }}
+              />
+            </div>
+
+            <div style={{ height: 1, background: '#dedede', width: '100%', marginBottom: 16 }} />
+
+            <div className="popup-results" style={{ minHeight: 180, maxHeight: 300, overflowY: 'auto' }}>
+              {query.trim().length === 0 ? (
+                <>
+                  {isPickup && (
+                    <div 
+                      className="location-item" 
+                      onClick={() => { onSelect({ name: 'Current Location', lat: 52.2331, lng: 5.0760 }); onClose(); }}
+                      style={{ display: 'flex', gap: 12, alignItems: 'flex-start', padding: '8px 0', cursor: 'pointer', marginBottom: 16 }}
+                    >
+                      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" style={{ marginTop: 2 }}>
+                        <path d="M22 2L11 13M22 2L15 22L11 13M22 2L2 9L11 13" stroke="#1a1a1a" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                      </svg>
+                      <div>
+                        <div style={{ fontWeight: 500, fontSize: 14, color: '#1a1a1a' }}>Current Location</div>
+                        <div style={{ fontSize: 12, color: '#707072' }}>Beukenlaan 9<br/>1341 UT Kortenhoef</div>
+                      </div>
+                    </div>
+                  )}
+
+                  <h3 style={{ fontSize: 16, fontWeight: 600, color: '#1a1a1a', margin: '0 0 12px' }}>Your adresses</h3>
+                  
+                  <div 
+                    className="location-item"
+                    onClick={() => { onSelect({ name: 'Dorpsstraat 42', lat: 52.1932, lng: 5.0898 }); onClose(); }} 
+                    style={{ display: 'flex', gap: 12, alignItems: 'flex-start', padding: '8px 0', cursor: 'pointer' }}
+                  >
+                    <svg width="10" height="13" viewBox="0 0 10 13" fill="none" style={{ marginTop: 4 }}>
+                      <path d="M5 0.5C2.51472 0.5 0.5 2.51472 0.5 5C0.5 8.375 5 12.5 5 12.5C5 12.5 9.5 8.375 9.5 5C9.5 2.51472 7.48528 0.5 5 0.5ZM5 6.75C4.0335 6.75 3.25 5.9665 3.25 5C3.25 4.0335 4.0335 3.25 5 3.25C5.9665 3.25 6.75 4.0335 6.75 5C6.75 5.9665 5.9665 6.75 5 6.75Z" stroke="#707072" strokeLinecap="round" strokeLinejoin="round"/>
+                    </svg>
+                    <div>
+                      <div style={{ fontSize: 12, color: '#707072' }}>Dorpsstraat 42<br/>1231 AB Loosdrecht</div>
+                    </div>
+                  </div>
+                  
+                  <div 
+                    className="location-item" 
+                    onClick={() => { onSelect({ name: 'Noordereinde 42', lat: 52.2355, lng: 5.1232 }); onClose(); }}
+                    style={{ display: 'flex', gap: 12, alignItems: 'flex-start', padding: '8px 0', cursor: 'pointer' }}
+                  >
+                    <svg width="10" height="13" viewBox="0 0 10 13" fill="none" style={{ marginTop: 4 }}>
+                      <path d="M5 0.5C2.51472 0.5 0.5 2.51472 0.5 5C0.5 8.375 5 12.5 5 12.5C5 12.5 9.5 8.375 9.5 5C9.5 2.51472 7.48528 0.5 5 0.5ZM5 6.75C4.0335 6.75 3.25 5.9665 3.25 5C3.25 4.0335 4.0335 3.25 5 3.25C5.9665 3.25 6.75 4.0335 6.75 5C6.75 5.9665 5.9665 6.75 5 6.75Z" stroke="#707072" strokeLinecap="round" strokeLinejoin="round"/>
+                    </svg>
+                    <div>
+                      <div style={{ fontSize: 12, color: '#707072' }}>Noordereinde 42<br/>1243 JJ 's-Graveland</div>
+                    </div>
+                  </div>
+                </>
+              ) : isSearching && results.length === 0 ? (
+                <div style={{ color: '#8e8e93', fontSize: 14, padding: '12px 0' }}>Searching...</div>
+              ) : results.length === 0 ? (
+                <div style={{ color: '#8e8e93', fontSize: 14, padding: '12px 0' }}>No results found</div>
+              ) : (
+                results.map((r, i) => {
+                  const name = r.name || r.display_name.split(',')[0];
+                  const subtitle = r.display_name.split(',').slice(1,3).join(',').trim();
+                  return (
+                    <div 
+                      key={i}
+                      className="location-item"
+                      onClick={() => {
+                        onSelect({ name, lat: parseFloat(r.lat), lng: parseFloat(r.lon) });
+                        onClose();
+                      }}
+                      style={{ display: 'flex', gap: 12, alignItems: 'flex-start', padding: '8px 0', cursor: 'pointer', marginBottom: 8 }}
+                    >
+                      <svg width="10" height="13" viewBox="0 0 10 13" fill="none" style={{ marginTop: 4 }}>
+                        <path d="M5 0.5C2.51472 0.5 0.5 2.51472 0.5 5C0.5 8.375 5 12.5 5 12.5C5 12.5 9.5 8.375 9.5 5C9.5 2.51472 7.48528 0.5 5 0.5ZM5 6.75C4.0335 6.75 3.25 5.9665 3.25 5C3.25 4.0335 4.0335 3.25 5 3.25C5.9665 3.25 6.75 4.0335 6.75 5C6.75 5.9665 5.9665 6.75 5 6.75Z" stroke="#707072" strokeLinecap="round" strokeLinejoin="round"/>
+                      </svg>
+                      <div>
+                        <div style={{ fontSize: 14, color: '#707072' }}>{name}</div>
+                        <div style={{ fontSize: 12, color: '#707072', opacity: 0.8 }}>{subtitle}</div>
+                      </div>
+                    </div>
+                  );
+                })
+              )}
+            </div>
+
+            <div style={{ display: 'flex', gap: 12, marginTop: 16 }}>
+              <button 
+                type="button"
+                onClick={onClose}
+                style={{ flex: 1, background: '#dedede', color: '#1a1a1a', fontWeight: 600, fontSize: 20, padding: '16px 0', borderRadius: 50, border: 'none', cursor: 'pointer' }}
               >
-                <div className="autocomplete-icon-box">
-                  <svg width="14" height="18" viewBox="0 0 14 18" fill="none">
-                    <path d="M7 3.85718C6.3707 3.85718 5.75552 4.0457 5.23228 4.39889C4.70903 4.75209 4.30121 5.25409 4.06038 5.84143C3.81956 6.42877 3.75655 7.07506 3.87932 7.69858C4.00209 8.3221 4.30513 8.89483 4.75011 9.34437C5.1951 9.7939 5.76205 10.1 6.37926 10.2241C6.99647 10.3481 7.63623 10.2844 8.21763 10.0411C8.79903 9.79786 9.29596 9.38587 9.64559 8.85728C9.99521 8.32869 10.1818 7.70723 10.1818 7.0715C10.1818 6.21901 9.84659 5.40143 9.24989 4.79863C8.65318 4.19583 7.84387 3.85718 7 3.85718ZM7 9.00009C6.62242 9.00009 6.25331 8.88698 5.93937 8.67506C5.62542 8.46315 5.38072 8.16194 5.23623 7.80954C5.09174 7.45714 5.05393 7.06936 5.12759 6.69525C5.20125 6.32114 5.38308 5.9775 5.65007 5.70778C5.91706 5.43806 6.25723 5.25438 6.62755 5.17997C6.99788 5.10555 7.38174 5.14374 7.73058 5.28971C8.07942 5.43568 8.37758 5.68288 8.58735 6.00003C8.79903 6.31719 8.90909 6.69006 8.90909 7.0715C8.90909 7.58299 8.70796 8.07354 8.34993 8.43522C7.99191 8.7969 7.50632 9.00009 7 9.00009ZM7 0C5.14413 0.00212686 3.36488 0.747841 2.05258 2.07354C0.740279 3.39925 0.00210536 5.19667 0 7.0715C0 9.59474 1.1542 12.2691 3.34091 14.806C4.32347 15.9523 5.42934 16.9846 6.63807 17.8837C6.74507 17.9594 6.87254 18 7.00318 18C7.13382 18 7.2613 17.9594 7.3683 17.8837C8.5748 16.9842 9.67852 15.9519 10.6591 14.806C12.8426 12.2691 14 9.59474 14 7.0715C13.9979 5.19667 13.2597 3.39925 11.9474 2.07354C10.6351 0.747841 8.85587 0.00212686 7 0ZM7 16.5537C5.68511 15.5091 1.27273 11.672 1.27273 7.0715C1.27273 5.53702 1.87613 4.06538 2.95021 2.98034C4.02428 1.8953 5.48103 1.28573 7 1.28573C8.51897 1.28573 9.97572 1.8953 11.0498 2.98034C12.1239 4.06538 12.7273 5.53702 12.7273 7.0715C12.7273 11.6704 8.31489 15.5091 7 16.5537Z" fill="currentColor"/>
-                  </svg>
-                </div>
-                <div className="autocomplete-text">
-                  <span className="autocomplete-name">{r.name || r.display_name.split(',')[0]}</span>
-                  <span className="autocomplete-address">{r.display_name}</span>
-                </div>
-              </li>
-            ))
-          )}
-        </ul>
+                Cancel
+              </button>
+              <button 
+                type="button"
+                onClick={onClose}
+                style={{ flex: 1, background: '#bbcd2f', color: '#1a1a1a', fontWeight: 600, fontSize: 20, padding: '16px 0', borderRadius: 50, border: 'none', cursor: 'pointer' }}
+              >
+                Confirm
+              </button>
+            </div>
+          </motion.div>
+        </>
       )}
-    </div>
+    </AnimatePresence>
   );
-});
+}
 
 export function GetRideScreen({ onBack, onRequestRide, userProfile }) {
   const [isLoading, setIsLoading] = useState(false);
@@ -169,6 +245,7 @@ export function GetRideScreen({ onBack, onRequestRide, userProfile }) {
   const [pickup, setPickup] = useState(null);
   const [dropoff, setDropoff] = useState(null);
   const [route, setRoute] = useState(null);
+  const [activePicker, setActivePicker] = useState(null);
   const [timeValue, setTimeValue] = useState(() => {
     const now = new Date();
     return `${String(now.getHours()).padStart(2,'0')}:${String(now.getMinutes()).padStart(2,'0')}`;
@@ -297,7 +374,7 @@ export function GetRideScreen({ onBack, onRequestRide, userProfile }) {
         date: dateInput,
         time: timeInput,
         pickup: pickupInput,
-        destination: destinationInput,
+        destination: dropoff ? dropoff.name : destinationInput,
         location: pickupCoords,
         destinationLocation: dropoffCoords,
         routeGeometry,
@@ -359,24 +436,27 @@ export function GetRideScreen({ onBack, onRequestRide, userProfile }) {
         <div className="form-inputs-row">
           <div className="form-field">
             <label className="form-label-new">Pick up location</label>
-            <div className="input-field-new">
+            <div 
+              className="input-field-new"
+              onClick={() => !isLoading && setActivePicker('pickup')}
+              style={{ cursor: isLoading ? 'default' : 'pointer' }}
+            >
               <span className="input-icon-new">
                 <svg width="14" height="18" viewBox="0 0 14 18" fill="none">
                   <path d="M7 3.85718C6.3707 3.85718 5.75552 4.0457 5.23228 4.39889C4.70903 4.75209 4.30121 5.25409 4.06038 5.84143C3.81956 6.42877 3.75655 7.07506 3.87932 7.69858C4.00209 8.3221 4.30513 8.89483 4.75011 9.34437C5.1951 9.7939 5.76205 10.1 6.37926 10.2241C6.99647 10.3481 7.63623 10.2844 8.21763 10.0411C8.79903 9.79786 9.29596 9.38587 9.64559 8.85728C9.99521 8.32869 10.1818 7.70723 10.1818 7.0715C10.1818 6.21901 9.84659 5.40143 9.24989 4.79863C8.65318 4.19583 7.84387 3.85718 7 3.85718ZM7 9.00009C6.62242 9.00009 6.25331 8.88698 5.93937 8.67506C5.62542 8.46315 5.38072 8.16194 5.23623 7.80954C5.09174 7.45714 5.05393 7.06936 5.12759 6.69525C5.20125 6.32114 5.38308 5.9775 5.65007 5.70778C5.91706 5.43806 6.25723 5.25438 6.62755 5.17997C6.99788 5.10555 7.38174 5.14374 7.73058 5.28971C8.07942 5.43568 8.37758 5.68288 8.58735 6.00003C8.79903 6.31719 8.90909 6.69006 8.90909 7.0715C8.90909 7.58299 8.70796 8.07354 8.34993 8.43522C7.99191 8.7969 7.50632 9.00009 7 9.00009ZM7 0C5.14413 0.00212686 3.36488 0.747841 2.05258 2.07354C0.740279 3.39925 0.00210536 5.19667 0 7.0715C0 9.59474 1.1542 12.2691 3.34091 14.806C4.32347 15.9523 5.42934 16.9846 6.63807 17.8837C6.74507 17.9594 6.87254 18 7.00318 18C7.13382 18 7.2613 17.9594 7.3683 17.8837C8.5748 16.9842 9.67852 15.9519 10.6591 14.806C12.8426 12.2691 14 9.59474 14 7.0715C13.9979 5.19667 13.2597 3.39925 11.9474 2.07354C10.6351 0.747841 8.85587 0.00212686 7 0ZM7 16.5537C5.68511 15.5091 1.27273 11.672 1.27273 7.0715C1.27273 5.53702 1.87613 4.06538 2.95021 2.98034C4.02428 1.8953 5.48103 1.28573 7 1.28573C8.51897 1.28573 9.97572 1.8953 11.0498 2.98034C12.1239 4.06538 12.7273 5.53702 12.7273 7.0715C12.7273 11.6704 8.31489 15.5091 7 16.5537Z" fill="#707072"/>
                 </svg>
               </span>
-              <LocationAutocomplete 
-                ref={pickupInputRef}
-                id="pickup" 
-                name="pickup" 
-                placeholder="Pick Up" 
-                disabled={isLoading} 
-                onSelect={setPickup}
-              />
+              <div style={{ flex: 1, padding: '16px 0', fontSize: 16, color: pickup ? '#1a1a1a' : '#707072', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                {pickup ? pickup.name : 'Pick Up Location'}
+              </div>
+              <input type="hidden" name="pickup" value={pickup ? pickup.name : ''} />
               <button 
                 type="button" 
                 className="btn-use-location" 
-                onClick={handleUseGPS}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  handleUseGPS();
+                }}
                 title="Use current location"
                 style={{ opacity: isLocating ? 0.5 : 1 }}
               >
@@ -399,20 +479,20 @@ export function GetRideScreen({ onBack, onRequestRide, userProfile }) {
           </div>
           <div className="form-field">
             <label className="form-label-new">Where to?</label>
-            <div className="input-field-new highlight">
+            <div 
+              className="input-field-new highlight"
+              onClick={() => !isLoading && setActivePicker('dropoff')}
+              style={{ cursor: isLoading ? 'default' : 'pointer' }}
+            >
               <span className="input-icon-new">
                 <svg width="14" height="18" viewBox="0 0 14 18" fill="none">
                   <path d="M7 3.85718C6.3707 3.85718 5.75552 4.0457 5.23228 4.39889C4.70903 4.75209 4.30121 5.25409 4.06038 5.84143C3.81956 6.42877 3.75655 7.07506 3.87932 7.69858C4.00209 8.3221 4.30513 8.89483 4.75011 9.34437C5.1951 9.7939 5.76205 10.1 6.37926 10.2241C6.99647 10.3481 7.63623 10.2844 8.21763 10.0411C8.79903 9.79786 9.29596 9.38587 9.64559 8.85728C9.99521 8.32869 10.1818 7.70723 10.1818 7.0715C10.1818 6.21901 9.84659 5.40143 9.24989 4.79863C8.65318 4.19583 7.84387 3.85718 7 3.85718ZM7 9.00009C6.62242 9.00009 6.25331 8.88698 5.93937 8.67506C5.62542 8.46315 5.38072 8.16194 5.23623 7.80954C5.09174 7.45714 5.05393 7.06936 5.12759 6.69525C5.20125 6.32114 5.38308 5.9775 5.65007 5.70778C5.91706 5.43806 6.25723 5.25438 6.62755 5.17997C6.99788 5.10555 7.38174 5.14374 7.73058 5.28971C8.07942 5.43568 8.37758 5.68288 8.58735 6.00003C8.79903 6.31719 8.90909 6.69006 8.90909 7.0715C8.90909 7.58299 8.70796 8.07354 8.34993 8.43522C7.99191 8.7969 7.50632 9.00009 7 9.00009ZM7 0C5.14413 0.00212686 3.36488 0.747841 2.05258 2.07354C0.740279 3.39925 0.00210536 5.19667 0 7.0715C0 9.59474 1.1542 12.2691 3.34091 14.806C4.32347 15.9523 5.42934 16.9846 6.63807 17.8837C6.74507 17.9594 6.87254 18 7.00318 18C7.13382 18 7.2613 17.9594 7.3683 17.8837C8.5748 16.9842 9.67852 15.9519 10.6591 14.806C12.8426 12.2691 14 9.59474 14 7.0715C13.9979 5.19667 13.2597 3.39925 11.9474 2.07354C10.6351 0.747841 8.85587 0.00212686 7 0ZM7 16.5537C5.68511 15.5091 1.27273 11.672 1.27273 7.0715C1.27273 5.53702 1.87613 4.06538 2.95021 2.98034C4.02428 1.8953 5.48103 1.28573 7 1.28573C8.51897 1.28573 9.97572 1.8953 11.0498 2.98034C12.1239 4.06538 12.7273 5.53702 12.7273 7.0715C12.7273 11.6704 8.31489 15.5091 7 16.5537Z" fill="#707072"/>
                 </svg>
               </span>
-              <LocationAutocomplete 
-                id="dropoff" 
-                name="dropoff" 
-                placeholder="Drop Off" 
-                disabled={isLoading} 
-                required 
-                onSelect={setDropoff}
-              />
+              <div style={{ flex: 1, padding: '16px 0', fontSize: 16, color: dropoff ? '#1a1a1a' : '#707072', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                {dropoff ? dropoff.name : 'Drop Off'}
+              </div>
+              <input type="hidden" name="dropoff" value={dropoff ? dropoff.name : ''} />
             </div>
           </div>
         </div>
@@ -476,6 +556,20 @@ export function GetRideScreen({ onBack, onRequestRide, userProfile }) {
           {isLoading ? 'Searching...' : 'Find a neighbour'}
         </button>
       </form>
+      <LocationPickerPopup 
+        isOpen={activePicker !== null} 
+        onClose={() => setActivePicker(null)} 
+        title={activePicker === 'pickup' ? "Enter your pick-up location" : "Enter your drop off location"} 
+        isPickup={activePicker === 'pickup'} 
+        onSelect={(location) => {
+          if (activePicker === 'pickup') {
+            setPickup(location);
+          } else {
+            setDropoff(location);
+          }
+          setActivePicker(null);
+        }}
+      />
     </div>
   );
 }
