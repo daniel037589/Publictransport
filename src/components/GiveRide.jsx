@@ -94,10 +94,16 @@ export function GiveRideCard({ rider, onClick, showCancel, onCancel }) {
   const ageNum = rider.age != null && rider.age !== '' ? Number(rider.age) : calcAge(rider.birthdate);
   const age = ageNum ? `${ageNum} years old` : null;
 
-  // Use current date as mock if missing
-  const dateStr = rider.date
-    ? new Date(rider.date).toLocaleDateString('en-GB', { weekday: 'short', day: 'numeric', month: 'short' })
-    : new Date().toLocaleDateString('en-GB', { weekday: 'short', day: 'numeric', month: 'short' });
+  // Use current date as mock if missing, or use string directly if not parseable
+  let dateStr = new Date().toLocaleDateString('en-GB', { weekday: 'short', day: 'numeric', month: 'short' });
+  if (rider.date) {
+    const d = new Date(rider.date);
+    if (!isNaN(d.getTime())) {
+      dateStr = d.toLocaleDateString('en-GB', { weekday: 'short', day: 'numeric', month: 'short' });
+    } else {
+      dateStr = rider.date;
+    }
+  }
 
   // Calculate real distance + time from route geometry (Haversine sum)
   const calcRouteStats = (geometry) => {
