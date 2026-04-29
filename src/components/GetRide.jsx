@@ -277,7 +277,7 @@ function TimePickerPopup({ isOpen, onClose, dateValue, setDateValue, timeValue, 
               position: 'fixed', bottom: 0, left: 0, right: 0, 
               background: 'white', borderTopLeftRadius: 24, borderTopRightRadius: 24,
               padding: '16px 20px calc(env(safe-area-inset-bottom, 20px) + 60px)', zIndex: 10001, boxShadow: '0 -10px 40px rgba(0,0,0,0.1)',
-              display: 'flex', flexDirection: 'col', alignItems: 'center'
+              display: 'flex', flexDirection: 'column', alignItems: 'center'
             }}
           >
             <div style={{ width: 60, height: 4, background: '#dedede', borderRadius: 4, margin: '0 auto 24px' }} />
