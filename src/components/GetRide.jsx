@@ -819,8 +819,7 @@ export function GetRideScreen({ onBack, onRequestRide, userProfile }) {
           </div>
         </div>
 
-        <div style={{ height: '32px' }} />
-        <button className="btn-find-neighbour" type="submit" disabled={isLoading} style={{ position: 'relative', bottom: 'auto', left: 'auto', transform: 'none', margin: '0 auto 20px auto', display: 'flex' }}>
+        <button className="btn-find-neighbour" type="submit" disabled={isLoading}>
           {isLoading ? 'Searching...' : 'Find a neighbour'}
         </button>
       </form>
