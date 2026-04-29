@@ -249,8 +249,22 @@ function TimePickerPopup({ isOpen, onClose, dateValue, setDateValue, timeValue, 
     if (isOpen) {
       if (activeTab === 'right-now') {
         const now = new Date();
-        setTimeValue(`${String(now.getHours()).padStart(2,'0')}:${String(now.getMinutes()).padStart(2,'0')}`);
+        const hr = now.getHours();
+        const min = now.getMinutes();
+        setTimeValue(`${String(hr).padStart(2,'0')}:${String(min).padStart(2,'0')}`);
         setDateValue(new Date().toISOString().split('T')[0]);
+
+        // Auto-scroll the wheel to current time
+        setTimeout(() => {
+          const dateWheel = document.getElementById('date-wheel');
+          if (dateWheel) dateWheel.scrollTop = 3 * 36; // Index 3 is 'Vandaag'
+          
+          const hourWheel = document.getElementById('hour-wheel');
+          if (hourWheel) hourWheel.scrollTop = hr * 36;
+          
+          const minWheel = document.getElementById('minute-wheel');
+          if (minWheel) minWheel.scrollTop = min * 36;
+        }, 50);
       }
     }
   }, [isOpen, activeTab]);
@@ -286,7 +300,7 @@ function TimePickerPopup({ isOpen, onClose, dateValue, setDateValue, timeValue, 
               At what moment?
             </h2>
 
-            <div style={{ display: 'flex', gap: 8, marginBottom: 16, width: '100%' }}>
+            <div style={{ display: 'flex', gap: 8, marginBottom: 16, width: '100%', overflowX: 'auto', paddingBottom: 4 }}>
               <button 
                 type="button"
                 onClick={() => setActiveTab('right-now')}
@@ -295,7 +309,7 @@ function TimePickerPopup({ isOpen, onClose, dateValue, setDateValue, timeValue, 
                   background: activeTab === 'right-now' ? '#bbcd2f' : '#ffffff',
                   boxShadow: '0 2px 6px rgba(0,0,0,0.1)',
                   fontWeight: 500, fontSize: 14, color: '#1a1a1a',
-                  minWidth: 90
+                  minWidth: 90, flexShrink: 0
                 }}
               >
                 Right Now
@@ -308,11 +322,26 @@ function TimePickerPopup({ isOpen, onClose, dateValue, setDateValue, timeValue, 
                   background: activeTab === 'departure' ? '#bbcd2f' : '#ffffff',
                   boxShadow: '0 2px 6px rgba(0,0,0,0.1)',
                   fontWeight: 500, fontSize: 14, color: '#1a1a1a',
-                  minWidth: 90
+                  minWidth: 90, flexShrink: 0
                 }}
               >
                 Departure
               </button>
+              {roundtrip && (
+                <button 
+                  type="button"
+                  onClick={() => setActiveTab('return')}
+                  style={{ 
+                    padding: '9px 12px', borderRadius: 50, border: 'none', cursor: 'pointer',
+                    background: activeTab === 'return' ? '#bbcd2f' : '#ffffff',
+                    boxShadow: '0 2px 6px rgba(0,0,0,0.1)',
+                    fontWeight: 500, fontSize: 14, color: '#1a1a1a',
+                    minWidth: 90, flexShrink: 0
+                  }}
+                >
+                  Return
+                </button>
+              )}
             </div>
 
             <div style={{ height: 1, background: '#dedede', width: '100%', marginBottom: 16 }} />
@@ -365,50 +394,53 @@ function TimePickerPopup({ isOpen, onClose, dateValue, setDateValue, timeValue, 
                 }
               `}
             </style>
-            <div style={{ position: 'relative', width: '100%', height: 180, display: 'flex', justifyContent: 'center', alignItems: 'center', marginBottom: 24, opacity: activeTab === 'right-now' ? 0.4 : 1, pointerEvents: activeTab === 'right-now' ? 'none' : 'auto', userSelect: 'none' }}>
-              <div style={{ position: 'absolute', top: '50%', left: 0, right: 0, height: 36, background: '#f5f5f5', transform: 'translateY(-50%)', borderRadius: 8, zIndex: 0 }} />
-              
-              <div style={{ display: 'flex', gap: 32, zIndex: 1, textAlign: 'center', fontFamily: "system-ui, -apple-system, sans-serif", width: '100%', justifyContent: 'center', height: '100%' }}>
+
+            {!flexible && (
+              <div style={{ position: 'relative', width: '100%', height: 180, display: 'flex', justifyContent: 'center', alignItems: 'center', marginBottom: 24, opacity: activeTab === 'right-now' ? 0.4 : 1, pointerEvents: activeTab === 'right-now' ? 'none' : 'auto', userSelect: 'none' }}>
+                <div style={{ position: 'absolute', top: '50%', left: 0, right: 0, height: 36, background: '#f5f5f5', transform: 'translateY(-50%)', borderRadius: 8, zIndex: 0 }} />
                 
-                <div className="scroll-wheel-col" id="date-wheel" onScroll={(e) => {
-                    const idx = Math.round(e.target.scrollTop / 36);
-                    const dates = ['Ma 20 apr', 'Di 21 apr', 'Wo 22 apr', 'Vandaag', 'Vr 24 apr', 'Za 25 apr', 'Zo 26 apr', 'Ma 27 apr', 'Di 28 apr'];
-                    setDateValue(dates[idx] || 'Vandaag');
-                }}>
-                  {['Ma 20 apr', 'Di 21 apr', 'Wo 22 apr', 'Vandaag', 'Vr 24 apr', 'Za 25 apr', 'Zo 26 apr', 'Ma 27 apr', 'Di 28 apr'].map(d => (
-                    <div key={d} className="scroll-wheel-item" style={{ minWidth: 100 }}>{d}</div>
-                  ))}
+                <div style={{ display: 'flex', gap: 32, zIndex: 1, textAlign: 'center', fontFamily: "system-ui, -apple-system, sans-serif", width: '100%', justifyContent: 'center', height: '100%' }}>
+                  
+                  <div className="scroll-wheel-col" id="date-wheel" onScroll={(e) => {
+                      const idx = Math.round(e.target.scrollTop / 36);
+                      const dates = ['Ma 20 apr', 'Di 21 apr', 'Wo 22 apr', 'Vandaag', 'Vr 24 apr', 'Za 25 apr', 'Zo 26 apr', 'Ma 27 apr', 'Di 28 apr'];
+                      setDateValue(dates[idx] || 'Vandaag');
+                  }}>
+                    {['Ma 20 apr', 'Di 21 apr', 'Wo 22 apr', 'Vandaag', 'Vr 24 apr', 'Za 25 apr', 'Zo 26 apr', 'Ma 27 apr', 'Di 28 apr'].map(d => (
+                      <div key={d} className="scroll-wheel-item" style={{ minWidth: 100 }}>{d}</div>
+                    ))}
+                  </div>
+
+                  <div className="scroll-wheel-col" id="hour-wheel" onScroll={(e) => {
+                      const idx = Math.round(e.target.scrollTop / 36);
+                      const hours = Array.from({length: 24}, (_, i) => String(i).padStart(2, '0'));
+                      if(hours[idx]) {
+                          setTimeValue(prev => `${hours[idx]}:${prev.split(':')[1] || '00'}`);
+                      }
+                  }}>
+                    {Array.from({length: 24}, (_, i) => String(i).padStart(2, '0')).map(h => (
+                      <div key={h} className="scroll-wheel-item" style={{ minWidth: 40 }}>{h}</div>
+                    ))}
+                  </div>
+
+                  <div className="scroll-wheel-col" id="minute-wheel" onScroll={(e) => {
+                      const idx = Math.round(e.target.scrollTop / 36);
+                      const minutes = Array.from({length: 60}, (_, i) => String(i).padStart(2, '0'));
+                      if(minutes[idx]) {
+                          setTimeValue(prev => `${prev.split(':')[0] || '12'}:${minutes[idx]}`);
+                      }
+                  }}>
+                    {Array.from({length: 60}, (_, i) => String(i).padStart(2, '0')).map(m => (
+                      <div key={m} className="scroll-wheel-item" style={{ minWidth: 40 }}>{m}</div>
+                    ))}
+                  </div>
+
                 </div>
 
-                <div className="scroll-wheel-col" id="hour-wheel" onScroll={(e) => {
-                    const idx = Math.round(e.target.scrollTop / 36);
-                    const hours = Array.from({length: 24}, (_, i) => String(i).padStart(2, '0'));
-                    if(hours[idx]) {
-                        setTimeValue(prev => `${hours[idx]}:${prev.split(':')[1] || '00'}`);
-                    }
-                }}>
-                  {Array.from({length: 24}, (_, i) => String(i).padStart(2, '0')).map(h => (
-                    <div key={h} className="scroll-wheel-item" style={{ minWidth: 40 }}>{h}</div>
-                  ))}
-                </div>
-
-                <div className="scroll-wheel-col" id="minute-wheel" onScroll={(e) => {
-                    const idx = Math.round(e.target.scrollTop / 36);
-                    const minutes = Array.from({length: 60}, (_, i) => String(i).padStart(2, '0'));
-                    if(minutes[idx]) {
-                        setTimeValue(prev => `${prev.split(':')[0] || '12'}:${minutes[idx]}`);
-                    }
-                }}>
-                  {Array.from({length: 60}, (_, i) => String(i).padStart(2, '0')).map(m => (
-                    <div key={m} className="scroll-wheel-item" style={{ minWidth: 40 }}>{m}</div>
-                  ))}
-                </div>
-
+                <div style={{ position: 'absolute', top: 0, left: 0, right: 0, height: 60, background: 'linear-gradient(to bottom, rgba(255,255,255,1), rgba(255,255,255,0))', zIndex: 2, pointerEvents: 'none' }} />
+                <div style={{ position: 'absolute', bottom: 0, left: 0, right: 0, height: 60, background: 'linear-gradient(to top, rgba(255,255,255,1), rgba(255,255,255,0))', zIndex: 2, pointerEvents: 'none' }} />
               </div>
-
-              <div style={{ position: 'absolute', top: 0, left: 0, right: 0, height: 60, background: 'linear-gradient(to bottom, rgba(255,255,255,1), rgba(255,255,255,0))', zIndex: 2, pointerEvents: 'none' }} />
-              <div style={{ position: 'absolute', bottom: 0, left: 0, right: 0, height: 60, background: 'linear-gradient(to top, rgba(255,255,255,1), rgba(255,255,255,0))', zIndex: 2, pointerEvents: 'none' }} />
-            </div>
+            )}
 
             <div style={{ display: 'flex', gap: 12, width: '100%', justifyContent: 'center' }}>
               <div 
