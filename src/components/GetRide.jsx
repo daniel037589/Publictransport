@@ -262,6 +262,15 @@ function TimePickerPopup({ isOpen, onClose, initialTimeState, onConfirm }) {
   const [retDateVal, setRetDateVal] = useState(initialTimeState?.returnDate || new Date().toISOString().split('T')[0]);
   const [retTimeVal, setRetTimeVal] = useState(initialTimeState?.returnTime || `${String(new Date().getHours() + 1).padStart(2,'0')}:${String(new Date().getMinutes()).padStart(2,'0')}`);
 
+  const dates = [];
+  const today = new Date();
+  for (let i = 0; i < 14; i++) {
+    const d = new Date(today);
+    d.setDate(today.getDate() + i);
+    const dayStr = d.toLocaleDateString('nl-NL', { weekday: 'short', day: 'numeric', month: 'short' });
+    dates.push(i === 0 ? 'Vandaag' : dayStr);
+  }
+
   useEffect(() => {
     if (isOpen) {
       if (activeTab === 'right-now') {
@@ -273,14 +282,13 @@ function TimePickerPopup({ isOpen, onClose, initialTimeState, onConfirm }) {
 
         setTimeout(() => {
           const dateWheel = document.getElementById('date-wheel');
-          if (dateWheel) dateWheel.scrollTop = 3 * 36;
+          if (dateWheel) dateWheel.scrollTop = 0; // Today is first
           const hourWheel = document.getElementById('hour-wheel');
           if (hourWheel) hourWheel.scrollTop = hr * 36;
           const minWheel = document.getElementById('minute-wheel');
           if (minWheel) minWheel.scrollTop = min * 36;
         }, 50);
       } else {
-        // When switching tabs, ensure the scroll wheel snaps to the correct position for that tab's data
         setTimeout(() => {
           const isReturn = activeTab === 'return';
           const tVal = isReturn ? retTimeVal : timeVal;
@@ -289,7 +297,6 @@ function TimePickerPopup({ isOpen, onClose, initialTimeState, onConfirm }) {
           
           const hourWheel = document.getElementById('hour-wheel');
           if (hourWheel) hourWheel.scrollTop = hr * 36;
-          
           const minWheel = document.getElementById('minute-wheel');
           if (minWheel) minWheel.scrollTop = min * 36;
         }, 50);
@@ -302,6 +309,10 @@ function TimePickerPopup({ isOpen, onClose, initialTimeState, onConfirm }) {
   const setDisplayDate = isReturn ? setRetDateVal : setDateVal;
   const displayTime = isReturn ? retTimeVal : timeVal;
   const setDisplayTime = isReturn ? setRetTimeVal : setTimeVal;
+
+  const onScrollDeparture = () => {
+    if (activeTab === 'right-now') setActiveTab('departure');
+  };
 
   return createPortal(
     <AnimatePresence>
@@ -441,17 +452,19 @@ function TimePickerPopup({ isOpen, onClose, initialTimeState, onConfirm }) {
               `}
             </style>
 
-            <div style={{ position: 'relative', width: '100%', height: 180, display: 'flex', justifyContent: 'center', alignItems: 'center', marginBottom: 24, opacity: activeTab === 'right-now' ? 0.4 : 1, pointerEvents: activeTab === 'right-now' ? 'none' : 'auto', userSelect: 'none' }}>
+            <div style={{ position: 'relative', width: '100%', height: 180, display: 'flex', justifyContent: 'center', alignItems: 'center', marginBottom: 24, userSelect: 'none' }}>
               <div style={{ position: 'absolute', top: '50%', left: 0, right: 0, height: 36, background: '#f5f5f5', transform: 'translateY(-50%)', borderRadius: 8, zIndex: 0 }} />
               
               <div style={{ display: 'flex', gap: 32, zIndex: 1, textAlign: 'center', fontFamily: "system-ui, -apple-system, sans-serif", width: '100%', justifyContent: 'center', height: '100%' }}>
                 
                 <div className="scroll-wheel-col" id="date-wheel" onScroll={(e) => {
                     const idx = Math.round(e.target.scrollTop / 36);
-                    const dates = ['Ma 20 apr', 'Di 21 apr', 'Wo 22 apr', 'Vandaag', 'Vr 24 apr', 'Za 25 apr', 'Zo 26 apr', 'Ma 27 apr', 'Di 28 apr'];
-                    setDisplayDate(dates[idx] || 'Vandaag');
+                    if (dates[idx]) {
+                      onScrollDeparture();
+                      setDisplayDate(dates[idx]);
+                    }
                 }}>
-                  {['Ma 20 apr', 'Di 21 apr', 'Wo 22 apr', 'Vandaag', 'Vr 24 apr', 'Za 25 apr', 'Zo 26 apr', 'Ma 27 apr', 'Di 28 apr'].map(d => (
+                  {dates.map(d => (
                     <div key={d} className="scroll-wheel-item" style={{ minWidth: 100 }}>{d}</div>
                   ))}
                 </div>
@@ -462,6 +475,7 @@ function TimePickerPopup({ isOpen, onClose, initialTimeState, onConfirm }) {
                         const idx = Math.round(e.target.scrollTop / 36);
                         const hours = Array.from({length: 24}, (_, i) => String(i).padStart(2, '0'));
                         if(hours[idx]) {
+                            onScrollDeparture();
                             setDisplayTime(prev => `${hours[idx]}:${prev.split(':')[1] || '00'}`);
                         }
                     }}>
@@ -474,6 +488,7 @@ function TimePickerPopup({ isOpen, onClose, initialTimeState, onConfirm }) {
                         const idx = Math.round(e.target.scrollTop / 36);
                         const minutes = Array.from({length: 60}, (_, i) => String(i).padStart(2, '0'));
                         if(minutes[idx]) {
+                            onScrollDeparture();
                             setDisplayTime(prev => `${prev.split(':')[0] || '12'}:${minutes[idx]}`);
                         }
                     }}>
@@ -795,7 +810,7 @@ export function GetRideScreen({ onBack, onRequestRide, userProfile }) {
         </div>
 
         <div style={{ height: '32px' }} />
-        <button className="btn-find-neighbour" type="submit" disabled={isLoading} style={{ position: 'relative', bottom: 'auto', left: 'auto', transform: 'none', margin: '0 auto 40px auto', display: 'flex' }}>
+        <button className="btn-find-neighbour" type="submit" disabled={isLoading} style={{ position: 'relative', bottom: 'auto', left: 'auto', transform: 'none', margin: '0 auto 20px auto', display: 'flex' }}>
           {isLoading ? 'Searching...' : 'Find a neighbour'}
         </button>
       </form>
