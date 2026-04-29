@@ -421,22 +421,23 @@
   background-color: #BBCD2F;
   border-radius: 32px;
   width: 370px;
-  height: 540px;
+  height: 460px;
   margin-bottom: 60px;
   position: relative;
   display: flex;
   flex-direction: column;
-  padding: 24px 14px;
+  padding: 14px;
   overflow: hidden; 
   flex-shrink: 0;
-  justify-content: space-between;
+  justify-content: flex-start;
+  gap: 14px;
 }
 
 .card-header {
   position: relative;
   z-index: 10;
-  margin-bottom: 8px; /* Tightened */
-  padding: 0 10px;
+  margin-bottom: 0; 
+  padding: 0 4px;
 }
 
 .card-title {
