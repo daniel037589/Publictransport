@@ -374,14 +374,15 @@ export function GiveRideScreen({ onBack, riders, onOfferRide, userProfile }) {
                 dragConstraints={{ top: 0, bottom: 0 }}
                 dragElastic={{ top: 0, bottom: 0.5 }}
                 onDragEnd={(e, info) => {
-                  if (info.offset.y > 100 || info.velocity.y > 500) {
+                  if (info.offset.y > 50 || info.velocity.y > 500) {
                     setSelectedRider(null);
                   }
                 }}
                 onClick={e => e.stopPropagation()}
+                style={{ touchAction: 'pan-y' }}
               >
                 {/* Drag handle */}
-                <div className="gr-handle" />
+                <div className="gr-handle" style={{ touchAction: 'none' }} />
 
                 {/* Profile row */}
                 <div className="gr-profile">

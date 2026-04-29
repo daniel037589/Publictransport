@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef } from 'react';
+import { createPortal } from 'react-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { MapContainer, TileLayer, Polyline, Marker, useMap } from 'react-leaflet';
 import L from 'leaflet';
@@ -90,7 +91,7 @@ function LocationPickerPopup({ isOpen, onClose, title, isPickup, onSelect, onUse
     return () => clearTimeout(timeoutId);
   }, [query]);
 
-  return (
+  return createPortal(
     <AnimatePresence>
       {isOpen && (
         <>
@@ -112,17 +113,18 @@ function LocationPickerPopup({ isOpen, onClose, title, isPickup, onSelect, onUse
             dragConstraints={{ top: 0, bottom: 0 }}
             dragElastic={{ top: 0, bottom: 0.5 }}
             onDragEnd={(e, info) => {
-              if (info.offset.y > 100 || info.velocity.y > 500) {
+              if (info.offset.y > 50 || info.velocity.y > 500) {
                 onClose();
               }
             }}
             style={{ 
               position: 'fixed', bottom: 0, left: 0, right: 0, 
               background: 'white', borderTopLeftRadius: 24, borderTopRightRadius: 24,
-              padding: '16px 20px calc(env(safe-area-inset-bottom, 20px) + 100px)', zIndex: 10001, boxShadow: '0 -10px 40px rgba(0,0,0,0.1)'
+              padding: '16px 20px calc(env(safe-area-inset-bottom, 20px) + 100px)', zIndex: 10001, boxShadow: '0 -10px 40px rgba(0,0,0,0.1)',
+              touchAction: 'pan-y'
             }}
           >
-            <div style={{ width: 60, height: 4, background: '#dedede', borderRadius: 4, margin: '0 auto 24px' }} />
+            <div style={{ width: 60, height: 4, background: '#dedede', borderRadius: 4, margin: '0 auto 24px', touchAction: 'none' }} />
             
             <h2 style={{ fontSize: 16, fontWeight: 600, color: '#1a1a1a', marginBottom: 16, letterSpacing: '-0.5px' }}>
               {title}
@@ -244,7 +246,8 @@ function LocationPickerPopup({ isOpen, onClose, title, isPickup, onSelect, onUse
           </motion.div>
         </>
       )}
-    </AnimatePresence>
+    </AnimatePresence>,
+    document.body
   );
 }
 
@@ -300,7 +303,7 @@ function TimePickerPopup({ isOpen, onClose, initialTimeState, onConfirm }) {
   const displayTime = isReturn ? retTimeVal : timeVal;
   const setDisplayTime = isReturn ? setRetTimeVal : setTimeVal;
 
-  return (
+  return createPortal(
     <AnimatePresence>
       {isOpen && (
         <>
@@ -322,7 +325,7 @@ function TimePickerPopup({ isOpen, onClose, initialTimeState, onConfirm }) {
             dragConstraints={{ top: 0, bottom: 0 }}
             dragElastic={{ top: 0, bottom: 0.5 }}
             onDragEnd={(e, info) => {
-              if (info.offset.y > 100 || info.velocity.y > 500) {
+              if (info.offset.y > 50 || info.velocity.y > 500) {
                 onClose();
               }
             }}
@@ -330,10 +333,11 @@ function TimePickerPopup({ isOpen, onClose, initialTimeState, onConfirm }) {
               position: 'fixed', bottom: 0, left: 0, right: 0, 
               background: 'white', borderTopLeftRadius: 24, borderTopRightRadius: 24,
               padding: '16px 20px calc(env(safe-area-inset-bottom, 20px) + 60px)', zIndex: 10001, boxShadow: '0 -10px 40px rgba(0,0,0,0.1)',
-              display: 'flex', flexDirection: 'column', alignItems: 'center'
+              display: 'flex', flexDirection: 'column', alignItems: 'center',
+              touchAction: 'pan-y'
             }}
           >
-            <div style={{ width: 60, height: 4, background: '#dedede', borderRadius: 4, margin: '0 auto 24px' }} />
+            <div style={{ width: 60, height: 4, background: '#dedede', borderRadius: 4, margin: '0 auto 24px', touchAction: 'none' }} />
             
             <h2 style={{ fontSize: 16, fontWeight: 600, color: '#1a1a1a', marginBottom: 16, letterSpacing: '-0.5px', textAlign: 'left', width: '100%' }}>
               At what moment?
@@ -514,7 +518,8 @@ function TimePickerPopup({ isOpen, onClose, initialTimeState, onConfirm }) {
           </motion.div>
         </>
       )}
-    </AnimatePresence>
+    </AnimatePresence>,
+    document.body
   );
 }
 
