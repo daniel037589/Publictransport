@@ -262,6 +262,8 @@ function TimePickerPopup({ isOpen, onClose, initialTimeState, onConfirm }) {
   const [retDateVal, setRetDateVal] = useState(initialTimeState?.returnDate || new Date().toISOString().split('T')[0]);
   const [retTimeVal, setRetTimeVal] = useState(initialTimeState?.returnTime || `${String(new Date().getHours() + 1).padStart(2,'0')}:${String(new Date().getMinutes()).padStart(2,'0')}`);
 
+  const isResettingRef = useRef(false);
+
   const dates = [];
   const today = new Date();
   for (let i = 0; i < 14; i++) {
@@ -280,6 +282,7 @@ function TimePickerPopup({ isOpen, onClose, initialTimeState, onConfirm }) {
         setTimeVal(`${String(hr).padStart(2,'0')}:${String(min).padStart(2,'0')}`);
         setDateVal(new Date().toISOString().split('T')[0]);
 
+        isResettingRef.current = true;
         setTimeout(() => {
           const dateWheel = document.getElementById('date-wheel');
           if (dateWheel) dateWheel.scrollTop = 0; // Today is first
@@ -287,8 +290,12 @@ function TimePickerPopup({ isOpen, onClose, initialTimeState, onConfirm }) {
           if (hourWheel) hourWheel.scrollTop = hr * 36;
           const minWheel = document.getElementById('minute-wheel');
           if (minWheel) minWheel.scrollTop = min * 36;
+          
+          // Re-enable scroll listener after wheels have snapped
+          setTimeout(() => { isResettingRef.current = false; }, 100);
         }, 50);
       } else {
+        isResettingRef.current = true;
         setTimeout(() => {
           const isReturn = activeTab === 'return';
           const tVal = isReturn ? retTimeVal : timeVal;
@@ -299,6 +306,8 @@ function TimePickerPopup({ isOpen, onClose, initialTimeState, onConfirm }) {
           if (hourWheel) hourWheel.scrollTop = hr * 36;
           const minWheel = document.getElementById('minute-wheel');
           if (minWheel) minWheel.scrollTop = min * 36;
+          
+          setTimeout(() => { isResettingRef.current = false; }, 100);
         }, 50);
       }
     }
@@ -311,6 +320,7 @@ function TimePickerPopup({ isOpen, onClose, initialTimeState, onConfirm }) {
   const setDisplayTime = isReturn ? setRetTimeVal : setTimeVal;
 
   const onScrollDeparture = () => {
+    if (isResettingRef.current) return;
     if (activeTab === 'right-now') setActiveTab('departure');
   };
 
