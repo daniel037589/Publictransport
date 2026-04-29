@@ -340,29 +340,74 @@ function TimePickerPopup({ isOpen, onClose, dateValue, setDateValue, timeValue, 
 
             <div style={{ height: 1, background: '#dedede', width: '100%', marginBottom: 16 }} />
 
+            <style>
+              {`
+                .scroll-wheel-col {
+                  overflow-y: scroll;
+                  scroll-snap-type: y mandatory;
+                  height: 100%;
+                  scrollbar-width: none;
+                  -ms-overflow-style: none;
+                  padding: 72px 0;
+                }
+                .scroll-wheel-col::-webkit-scrollbar {
+                  display: none;
+                }
+                .scroll-wheel-item {
+                  height: 36px;
+                  display: flex;
+                  align-items: center;
+                  justify-content: center;
+                  scroll-snap-align: center;
+                  font-size: 18px;
+                  color: #1a1a1a;
+                  font-weight: 500;
+                }
+              `}
+            </style>
             <div style={{ position: 'relative', width: '100%', height: 180, display: 'flex', justifyContent: 'center', alignItems: 'center', marginBottom: 24, opacity: activeTab === 'right-now' ? 0.4 : 1, pointerEvents: activeTab === 'right-now' ? 'none' : 'auto', userSelect: 'none' }}>
               <div style={{ position: 'absolute', top: '50%', left: 0, right: 0, height: 36, background: '#f5f5f5', transform: 'translateY(-50%)', borderRadius: 8, zIndex: 0 }} />
               
-              <div style={{ display: 'flex', gap: 32, zIndex: 1, fontSize: 20, color: '#1a1a1a', fontWeight: 500, textAlign: 'center', fontFamily: "system-ui, -apple-system, sans-serif" }}>
-                <div style={{ display: 'flex', flexDirection: 'column', gap: 12, color: '#a3a3a3', transform: 'translateY(-20px)' }}>
-                  <div style={{ fontSize: 16 }}>Wo 22 apr</div>
-                  <div style={{ color: '#1a1a1a', fontSize: 20, fontWeight: 600 }}>Vandaag</div>
-                  <div style={{ fontSize: 16 }}>Vr 24 apr</div>
+              <div style={{ display: 'flex', gap: 32, zIndex: 1, textAlign: 'center', fontFamily: "system-ui, -apple-system, sans-serif", width: '100%', justifyContent: 'center', height: '100%' }}>
+                
+                <div className="scroll-wheel-col" id="date-wheel" onScroll={(e) => {
+                    const idx = Math.round(e.target.scrollTop / 36);
+                    const dates = ['Ma 20 apr', 'Di 21 apr', 'Wo 22 apr', 'Vandaag', 'Vr 24 apr', 'Za 25 apr', 'Zo 26 apr', 'Ma 27 apr', 'Di 28 apr'];
+                    setDateValue(dates[idx] || 'Vandaag');
+                }}>
+                  {['Ma 20 apr', 'Di 21 apr', 'Wo 22 apr', 'Vandaag', 'Vr 24 apr', 'Za 25 apr', 'Zo 26 apr', 'Ma 27 apr', 'Di 28 apr'].map(d => (
+                    <div key={d} className="scroll-wheel-item" style={{ minWidth: 100 }}>{d}</div>
+                  ))}
                 </div>
-                <div style={{ display: 'flex', flexDirection: 'column', gap: 12, color: '#a3a3a3', transform: 'translateY(-20px)' }}>
-                  <div style={{ fontSize: 18 }}>11</div>
-                  <div style={{ color: '#1a1a1a', fontSize: 22, fontWeight: 600 }}>12</div>
-                  <div style={{ fontSize: 18 }}>13</div>
+
+                <div className="scroll-wheel-col" id="hour-wheel" onScroll={(e) => {
+                    const idx = Math.round(e.target.scrollTop / 36);
+                    const hours = Array.from({length: 24}, (_, i) => String(i).padStart(2, '0'));
+                    if(hours[idx]) {
+                        setTimeValue(prev => `${hours[idx]}:${prev.split(':')[1] || '00'}`);
+                    }
+                }}>
+                  {Array.from({length: 24}, (_, i) => String(i).padStart(2, '0')).map(h => (
+                    <div key={h} className="scroll-wheel-item" style={{ minWidth: 40 }}>{h}</div>
+                  ))}
                 </div>
-                <div style={{ display: 'flex', flexDirection: 'column', gap: 12, color: '#a3a3a3', transform: 'translateY(-20px)' }}>
-                  <div style={{ fontSize: 18 }}>08</div>
-                  <div style={{ color: '#1a1a1a', fontSize: 22, fontWeight: 600 }}>09</div>
-                  <div style={{ fontSize: 18 }}>10</div>
+
+                <div className="scroll-wheel-col" id="minute-wheel" onScroll={(e) => {
+                    const idx = Math.round(e.target.scrollTop / 36);
+                    const minutes = Array.from({length: 60}, (_, i) => String(i).padStart(2, '0'));
+                    if(minutes[idx]) {
+                        setTimeValue(prev => `${prev.split(':')[0] || '12'}:${minutes[idx]}`);
+                    }
+                }}>
+                  {Array.from({length: 60}, (_, i) => String(i).padStart(2, '0')).map(m => (
+                    <div key={m} className="scroll-wheel-item" style={{ minWidth: 40 }}>{m}</div>
+                  ))}
                 </div>
+
               </div>
 
-              <div style={{ position: 'absolute', top: 0, left: 0, right: 0, height: 60, background: 'linear-gradient(to bottom, rgba(255,255,255,1), rgba(255,255,255,0))', zIndex: 2 }} />
-              <div style={{ position: 'absolute', bottom: 0, left: 0, right: 0, height: 60, background: 'linear-gradient(to top, rgba(255,255,255,1), rgba(255,255,255,0))', zIndex: 2 }} />
+              <div style={{ position: 'absolute', top: 0, left: 0, right: 0, height: 60, background: 'linear-gradient(to bottom, rgba(255,255,255,1), rgba(255,255,255,0))', zIndex: 2, pointerEvents: 'none' }} />
+              <div style={{ position: 'absolute', bottom: 0, left: 0, right: 0, height: 60, background: 'linear-gradient(to top, rgba(255,255,255,1), rgba(255,255,255,0))', zIndex: 2, pointerEvents: 'none' }} />
             </div>
 
             <div style={{ display: 'flex', gap: 12, width: '100%', justifyContent: 'center' }}>
