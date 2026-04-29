@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { MapContainer, TileLayer, Marker, Tooltip, Polyline, useMap, Popup } from 'react-leaflet';
+import { MapContainer, TileLayer, Marker, Tooltip, Polyline, useMap, Popup, ZoomControl } from 'react-leaflet';
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
 import './HomePage.css';
@@ -138,12 +138,13 @@ function FullscreenMap({ onClose, riders = [] }) {
           center={KORTENHOEF}
           zoom={15}
           scrollWheelZoom
-          zoomControl
+          zoomControl={false}
           attributionControl={false}
           dragging
           style={{ width: '100%', height: '100%' }}
         >
           <MapContent dragging scrollWheelZoom riders={riders} />
+          <ZoomControl position="bottomleft" />
         </MapContainer>
 
         {/* Close button */}
