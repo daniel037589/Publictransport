@@ -366,9 +366,6 @@ export function GiveRideScreen({ onBack, riders, onOfferRide, userProfile }) {
               />
               <motion.div 
                 className="gr-sheet"
-                initial={{ y: '100%' }}
-                animate={{ y: 0 }}
-                exit={{ y: '100%' }}
                 transition={{ type: 'spring', damping: 25, stiffness: 200 }}
                 drag="y"
                 dragConstraints={{ top: 0, bottom: 0 }}
@@ -379,7 +376,18 @@ export function GiveRideScreen({ onBack, riders, onOfferRide, userProfile }) {
                   }
                 }}
                 onClick={e => e.stopPropagation()}
-                style={{ touchAction: 'pan-y' }}
+                style={{ 
+                  touchAction: 'pan-y',
+                  position: 'fixed',
+                  bottom: 0,
+                  left: '50%',
+                  width: '100%',
+                  maxWidth: '402px',
+                  zIndex: 10001
+                }}
+                initial={{ y: '100%', x: '-50%' }}
+                animate={{ y: 0, x: '-50%' }}
+                exit={{ y: '100%', x: '-50%' }}
               >
                 {/* Drag handle */}
                 <div className="gr-handle" style={{ touchAction: 'none' }} />

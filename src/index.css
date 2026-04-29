@@ -89,6 +89,8 @@ html, body, #root {
   height: 100%;
   width: 100%;
   background: #e8e8e8;
+  overflow: hidden;
+  overscroll-behavior: none;
 }
 
 body {

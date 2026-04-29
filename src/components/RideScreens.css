@@ -4,6 +4,8 @@
   height: 100%;
   background-color: var(--color-bg-primary);
   overflow-y: auto;
+  overflow-x: hidden;
+  -webkit-overflow-scrolling: touch;
   padding: 24px 24px calc(var(--navbar-height) + 24px);
   animation: fadeSlideUp 0.4s ease forwards;
 }
