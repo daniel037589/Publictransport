@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { createPortal } from 'react-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { MapContainer, TileLayer, Marker, Tooltip, Polyline, useMap, Popup, ZoomControl } from 'react-leaflet';
 import L from 'leaflet';
@@ -123,9 +124,10 @@ function MapContent({ dragging = false, scrollWheelZoom = false, riders = [] }) 
   );
 }
 
+
 // ── Fullscreen Map Modal ───────────────────────────────────────
 function FullscreenMap({ onClose, riders = [] }) {
-  return (
+  return createPortal(
     <AnimatePresence>
       <motion.div
         className="map-fullscreen"
@@ -163,7 +165,8 @@ function FullscreenMap({ onClose, riders = [] }) {
           <span>📍 Kortenhoef</span>
         </div>
       </motion.div>
-    </AnimatePresence>
+    </AnimatePresence>,
+    document.body
   );
 }
 
