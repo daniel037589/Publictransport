@@ -199,20 +199,17 @@ function LocationPickerPopup({ isOpen, onClose, title, isPickup, onSelect, onUse
                   const subtitle = r.display_name.split(',').slice(1,3).join(',').trim();
                   return (
                     <div 
-                      key={i}
-                      className="location-item"
-                      onClick={() => {
-                        onSelect({ name, lat: parseFloat(r.lat), lng: parseFloat(r.lon) });
-                        onClose();
-                      }}
-                      style={{ display: 'flex', gap: 12, alignItems: 'flex-start', padding: '8px 0', cursor: 'pointer', marginBottom: 8 }}
+                      key={i} 
+                      className="location-item" 
+                      onClick={() => { onSelect({ name, lat: parseFloat(r.lat), lng: parseFloat(r.lon) }); onClose(); }}
+                      style={{ display: 'flex', gap: 12, alignItems: 'flex-start', padding: '8px 0', cursor: 'pointer', borderBottom: i < results.length - 1 ? '1px solid #f0f0f0' : 'none' }}
                     >
                       <svg width="10" height="13" viewBox="0 0 10 13" fill="none" style={{ marginTop: 4 }}>
                         <path d="M5 0.5C2.51472 0.5 0.5 2.51472 0.5 5C0.5 8.375 5 12.5 5 12.5C5 12.5 9.5 8.375 9.5 5C9.5 2.51472 7.48528 0.5 5 0.5ZM5 6.75C4.0335 6.75 3.25 5.9665 3.25 5C3.25 4.0335 4.0335 3.25 5 3.25C5.9665 3.25 6.75 4.0335 6.75 5C6.75 5.9665 5.9665 6.75 5 6.75Z" stroke="#707072" strokeLinecap="round" strokeLinejoin="round"/>
                       </svg>
                       <div>
-                        <div style={{ fontSize: 14, color: '#707072' }}>{name}</div>
-                        <div style={{ fontSize: 12, color: '#707072', opacity: 0.8 }}>{subtitle}</div>
+                        <div style={{ fontWeight: 500, fontSize: 14, color: '#1a1a1a' }}>{name}</div>
+                        <div style={{ fontSize: 12, color: '#707072' }}>{subtitle}</div>
                       </div>
                     </div>
                   );
@@ -242,6 +239,146 @@ function LocationPickerPopup({ isOpen, onClose, title, isPickup, onSelect, onUse
     </AnimatePresence>
   );
 }
+
+function TimePickerPopup({ isOpen, onClose, dateValue, setDateValue, timeValue, setTimeValue }) {
+  const [activeTab, setActiveTab] = useState('right-now');
+  const [roundtrip, setRoundtrip] = useState(false);
+  const [flexible, setFlexible] = useState(false);
+
+  useEffect(() => {
+    if (isOpen) {
+      if (activeTab === 'right-now') {
+        const now = new Date();
+        setTimeValue(`${String(now.getHours()).padStart(2,'0')}:${String(now.getMinutes()).padStart(2,'0')}`);
+        setDateValue(new Date().toISOString().split('T')[0]);
+      }
+    }
+  }, [isOpen, activeTab]);
+
+  return (
+    <AnimatePresence>
+      {isOpen && (
+        <>
+          <motion.div 
+            className="popup-overlay"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            onClick={onClose}
+            style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.4)', zIndex: 10000 }}
+          />
+          <motion.div 
+            className="location-popup-sheet"
+            initial={{ y: '100%' }}
+            animate={{ y: 0 }}
+            exit={{ y: '100%' }}
+            transition={{ type: 'spring', damping: 25, stiffness: 200 }}
+            style={{ 
+              position: 'fixed', bottom: 0, left: 0, right: 0, 
+              background: 'white', borderTopLeftRadius: 24, borderTopRightRadius: 24,
+              padding: '16px 20px calc(env(safe-area-inset-bottom, 20px) + 60px)', zIndex: 10001, boxShadow: '0 -10px 40px rgba(0,0,0,0.1)',
+              display: 'flex', flexDirection: 'col', alignItems: 'center'
+            }}
+          >
+            <div style={{ width: 60, height: 4, background: '#dedede', borderRadius: 4, margin: '0 auto 24px' }} />
+            
+            <h2 style={{ fontSize: 16, fontWeight: 600, color: '#1a1a1a', marginBottom: 16, letterSpacing: '-0.5px', textAlign: 'left', width: '100%' }}>
+              At what moment?
+            </h2>
+
+            <div style={{ display: 'flex', gap: 8, marginBottom: 16, width: '100%' }}>
+              <button 
+                type="button"
+                onClick={() => setActiveTab('right-now')}
+                style={{ 
+                  flex: 1, padding: '10px', borderRadius: 50, border: 'none', cursor: 'pointer',
+                  background: activeTab === 'right-now' ? '#bbcd2f' : '#ffffff',
+                  boxShadow: '0 2px 6px rgba(0,0,0,0.1)',
+                  fontWeight: 500, fontSize: 14, color: '#1a1a1a'
+                }}
+              >
+                Right Now
+              </button>
+              <button 
+                type="button"
+                onClick={() => setActiveTab('departure')}
+                style={{ 
+                  flex: 1, padding: '10px', borderRadius: 50, border: 'none', cursor: 'pointer',
+                  background: activeTab === 'departure' ? '#bbcd2f' : '#ffffff',
+                  boxShadow: '0 2px 6px rgba(0,0,0,0.1)',
+                  fontWeight: 500, fontSize: 14, color: '#1a1a1a'
+                }}
+              >
+                Departure
+              </button>
+            </div>
+
+            <div style={{ height: 1, background: '#dedede', width: '100%', marginBottom: 16 }} />
+
+            <div style={{ display: 'flex', justifyContent: 'space-between', width: '100%', marginBottom: 16 }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                <span style={{ fontSize: 12, fontWeight: 500, color: '#1a1a1a' }}>Roundtrip</span>
+                <div 
+                  onClick={() => setRoundtrip(!roundtrip)}
+                  style={{ width: 44, height: 24, borderRadius: 24, background: roundtrip ? '#bbcd2f' : '#e5e5e5', position: 'relative', cursor: 'pointer', transition: '0.2s' }}
+                >
+                  <div style={{ width: 20, height: 20, borderRadius: '50%', background: roundtrip ? '#fff' : '#a3a3a3', position: 'absolute', top: 2, left: roundtrip ? 22 : 2, transition: '0.2s' }} />
+                </div>
+              </div>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                <span style={{ fontSize: 12, fontWeight: 500, color: '#1a1a1a' }}>I'm Flexible</span>
+                <div 
+                  onClick={() => setFlexible(!flexible)}
+                  style={{ width: 44, height: 24, borderRadius: 24, background: flexible ? '#bbcd2f' : '#e5e5e5', position: 'relative', cursor: 'pointer', transition: '0.2s' }}
+                >
+                  <div style={{ width: 20, height: 20, borderRadius: '50%', background: flexible ? '#fff' : '#a3a3a3', position: 'absolute', top: 2, left: flexible ? 22 : 2, transition: '0.2s' }} />
+                </div>
+              </div>
+            </div>
+
+            <div style={{ height: 1, background: '#dedede', width: '100%', marginBottom: 16 }} />
+
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 16, width: '100%', marginBottom: 24, opacity: activeTab === 'right-now' ? 0.5 : 1, pointerEvents: activeTab === 'right-now' ? 'none' : 'auto' }}>
+              <input 
+                className="form-input-clean" 
+                type="date" 
+                value={dateValue}
+                onChange={e => setDateValue(e.target.value)}
+                style={{ padding: '12px', background: '#fafafa', border: '1px solid #d3d3d3', borderRadius: 12, fontSize: 16 }}
+              />
+              <input 
+                className="form-input-clean" 
+                type="time" 
+                value={timeValue}
+                onChange={e => setTimeValue(e.target.value)}
+                style={{ padding: '12px', background: '#fafafa', border: '1px solid #d3d3d3', borderRadius: 12, fontSize: 16 }}
+              />
+            </div>
+
+            <div style={{ display: 'flex', gap: 12, width: '100%' }}>
+              <button 
+                type="button"
+                onClick={onClose}
+                style={{ flex: 1, background: '#dedede', color: '#1a1a1a', fontWeight: 600, fontSize: 20, padding: '16px 0', borderRadius: 50, border: 'none', cursor: 'pointer' }}
+              >
+                Cancel
+              </button>
+              <button 
+                type="button"
+                onClick={onClose}
+                style={{ flex: 1, background: '#bbcd2f', color: '#1a1a1a', fontWeight: 600, fontSize: 20, padding: '16px 0', borderRadius: 50, border: 'none', cursor: 'pointer' }}
+              >
+                Confirm
+              </button>
+            </div>
+          </motion.div>
+        </>
+      )}
+    </AnimatePresence>
+  );
+}
+
+
 
 export function GetRideScreen({ onBack, onRequestRide, userProfile }) {
   const [isLoading, setIsLoading] = useState(false);
@@ -478,55 +615,34 @@ export function GetRideScreen({ onBack, onRequestRide, userProfile }) {
 
         <div className="form-field">
           <label className="form-label-new">When do you need a ride?</label>
-          <div className="input-field-new" style={{ gap: '4px' }}>
+          <div 
+            className="input-field-new" 
+            onClick={() => !isLoading && setActivePicker('time')}
+            style={{ cursor: isLoading ? 'default' : 'pointer' }}
+          >
             <span className="input-icon-new">
               <svg width="18" height="18" viewBox="0 0 18 18" fill="none">
                 <path d="M9 0C7.21997 0 5.47991 0.527841 3.99987 1.51677C2.51983 2.50571 1.36628 3.91131 0.685088 5.55585C0.00389956 7.20038 -0.17433 9.00998 0.172937 10.7558C0.520203 12.5016 1.37737 14.1053 2.63604 15.364C3.89471 16.6226 5.49836 17.4798 7.24419 17.8271C8.99002 18.1743 10.7996 17.9961 12.4442 17.3149C14.0887 16.6337 15.4943 15.4802 16.4832 14.0001C17.4722 12.5201 18 10.78 18 9C17.9975 6.61382 17.0485 4.3261 15.3612 2.63882C13.6739 0.95154 11.3862 0.00251984 9 0ZM14.5385 9C14.5385 9.18361 14.4655 9.3597 14.3357 9.48953C14.2059 9.61937 14.0298 9.69231 13.8462 9.69231H9C8.81639 9.69231 8.6403 9.61937 8.51047 9.48953C8.38063 9.3597 8.30769 9.18361 8.30769 9V4.15385C8.30769 3.97023 8.38063 3.79414 8.51047 3.66431C8.6403 3.53448 8.81639 3.46154 9 3.46154C9.18361 3.46154 9.3597 3.53448 9.48954 3.66431C9.61937 3.79414 9.69231 3.97023 9.69231 4.15385V8.30769H13.8462C14.0298 8.30769 14.2059 8.38063 14.3357 8.51046C14.4655 8.6403 14.5385 8.81639 14.5385 9Z" fill="#707072"/>
               </svg>
             </span>
-            <input 
-              className="form-input-clean" 
-              id="date" 
-              name="date" 
-              type="date" 
-              value={dateValue}
-              onChange={e => setDateValue(e.target.value)}
-              disabled={isLoading} 
-              style={{ flex: 1, minWidth: 0 }}
-            />
-            <input 
-              className="form-input-clean" 
-              id="time" 
-              name="time" 
-              type="time" 
-              value={timeValue}
-              onChange={e => setTimeValue(e.target.value)}
-              disabled={isLoading} 
-              style={{ flex: '0 0 90px', minWidth: 0 }}
-            />
-            <button
-              type="button"
-              onClick={() => {
-                const now = new Date();
-                setTimeValue(`${String(now.getHours()).padStart(2,'0')}:${String(now.getMinutes()).padStart(2,'0')}`);
-                setDateValue(new Date().toISOString().split('T')[0]);
-              }}
-              style={{
+            <div style={{ flex: 1, padding: '16px 0', fontSize: 16, color: '#1a1a1a', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+              {dateValue === new Date().toISOString().split('T')[0] && timeValue.startsWith(String(new Date().getHours()).padStart(2, '0')) ? 'Right now' : `${dateValue} at ${timeValue}`}
+            </div>
+            {dateValue === new Date().toISOString().split('T')[0] && timeValue.startsWith(String(new Date().getHours()).padStart(2, '0')) && (
+              <div style={{
                 flexShrink: 0,
                 background: '#BBCD2F',
                 color: '#2D3320',
-                border: 'none',
                 borderRadius: '20px',
                 padding: '4px 10px',
                 fontSize: '12px',
                 fontWeight: 600,
-                cursor: 'pointer',
                 whiteSpace: 'nowrap',
                 fontFamily: 'var(--font-family-button)'
-              }}
-            >
-              Right now
-            </button>
+              }}>
+                Right now
+              </div>
+            )}
           </div>
         </div>
 
@@ -536,7 +652,7 @@ export function GetRideScreen({ onBack, onRequestRide, userProfile }) {
         </button>
       </form>
       <LocationPickerPopup 
-        isOpen={activePicker !== null} 
+        isOpen={activePicker === 'pickup' || activePicker === 'dropoff'} 
         onClose={() => setActivePicker(null)} 
         title={activePicker === 'pickup' ? "Enter your pick-up location" : "Enter your drop off location"} 
         isPickup={activePicker === 'pickup'} 
@@ -550,6 +666,14 @@ export function GetRideScreen({ onBack, onRequestRide, userProfile }) {
           }
           setActivePicker(null);
         }}
+      />
+      <TimePickerPopup 
+        isOpen={activePicker === 'time'}
+        onClose={() => setActivePicker(null)}
+        dateValue={dateValue}
+        setDateValue={setDateValue}
+        timeValue={timeValue}
+        setTimeValue={setTimeValue}
       />
     </div>
   );
