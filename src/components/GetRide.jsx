@@ -240,10 +240,16 @@ function LocationPickerPopup({ isOpen, onClose, title, isPickup, onSelect, onUse
   );
 }
 
-function TimePickerPopup({ isOpen, onClose, dateValue, setDateValue, timeValue, setTimeValue }) {
+function TimePickerPopup({ isOpen, onClose, initialTimeState, onConfirm }) {
   const [activeTab, setActiveTab] = useState('right-now');
-  const [roundtrip, setRoundtrip] = useState(false);
-  const [flexible, setFlexible] = useState(false);
+  const [roundtrip, setRoundtrip] = useState(initialTimeState?.roundtrip || false);
+  const [flexible, setFlexible] = useState(initialTimeState?.flexible || false);
+
+  const [dateVal, setDateVal] = useState(initialTimeState?.date || new Date().toISOString().split('T')[0]);
+  const [timeVal, setTimeVal] = useState(initialTimeState?.time || `${String(new Date().getHours()).padStart(2,'0')}:${String(new Date().getMinutes()).padStart(2,'0')}`);
+  
+  const [retDateVal, setRetDateVal] = useState(initialTimeState?.returnDate || new Date().toISOString().split('T')[0]);
+  const [retTimeVal, setRetTimeVal] = useState(initialTimeState?.returnTime || `${String(new Date().getHours() + 1).padStart(2,'0')}:${String(new Date().getMinutes()).padStart(2,'0')}`);
 
   useEffect(() => {
     if (isOpen) {
@@ -251,13 +257,24 @@ function TimePickerPopup({ isOpen, onClose, dateValue, setDateValue, timeValue, 
         const now = new Date();
         const hr = now.getHours();
         const min = now.getMinutes();
-        setTimeValue(`${String(hr).padStart(2,'0')}:${String(min).padStart(2,'0')}`);
-        setDateValue(new Date().toISOString().split('T')[0]);
+        setTimeVal(`${String(hr).padStart(2,'0')}:${String(min).padStart(2,'0')}`);
+        setDateVal(new Date().toISOString().split('T')[0]);
 
-        // Auto-scroll the wheel to current time
         setTimeout(() => {
           const dateWheel = document.getElementById('date-wheel');
-          if (dateWheel) dateWheel.scrollTop = 3 * 36; // Index 3 is 'Vandaag'
+          if (dateWheel) dateWheel.scrollTop = 3 * 36;
+          const hourWheel = document.getElementById('hour-wheel');
+          if (hourWheel) hourWheel.scrollTop = hr * 36;
+          const minWheel = document.getElementById('minute-wheel');
+          if (minWheel) minWheel.scrollTop = min * 36;
+        }, 50);
+      } else {
+        // When switching tabs, ensure the scroll wheel snaps to the correct position for that tab's data
+        setTimeout(() => {
+          const isReturn = activeTab === 'return';
+          const tVal = isReturn ? retTimeVal : timeVal;
+          const hr = parseInt(tVal.split(':')[0], 10);
+          const min = parseInt(tVal.split(':')[1], 10);
           
           const hourWheel = document.getElementById('hour-wheel');
           if (hourWheel) hourWheel.scrollTop = hr * 36;
@@ -268,6 +285,12 @@ function TimePickerPopup({ isOpen, onClose, dateValue, setDateValue, timeValue, 
       }
     }
   }, [isOpen, activeTab]);
+
+  const isReturn = activeTab === 'return';
+  const displayDate = isReturn ? retDateVal : dateVal;
+  const setDisplayDate = isReturn ? setRetDateVal : setDateVal;
+  const displayTime = isReturn ? retTimeVal : timeVal;
+  const setDisplayTime = isReturn ? setRetTimeVal : setTimeVal;
 
   return (
     <AnimatePresence>
@@ -350,7 +373,10 @@ function TimePickerPopup({ isOpen, onClose, dateValue, setDateValue, timeValue, 
               <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
                 <span style={{ fontSize: 12, fontWeight: 500, color: '#1a1a1a' }}>Roundtrip</span>
                 <div 
-                  onClick={() => setRoundtrip(!roundtrip)}
+                  onClick={() => {
+                    setRoundtrip(!roundtrip);
+                    if (roundtrip && activeTab === 'return') setActiveTab('departure');
+                  }}
                   style={{ width: 44, height: 24, borderRadius: 24, background: roundtrip ? '#bbcd2f' : '#e5e5e5', position: 'relative', cursor: 'pointer', transition: '0.2s' }}
                 >
                   <div style={{ width: 20, height: 20, borderRadius: '50%', background: roundtrip ? '#fff' : '#a3a3a3', position: 'absolute', top: 2, left: roundtrip ? 22 : 2, transition: '0.2s' }} />
@@ -395,52 +421,53 @@ function TimePickerPopup({ isOpen, onClose, dateValue, setDateValue, timeValue, 
               `}
             </style>
 
-            {!flexible && (
-              <div style={{ position: 'relative', width: '100%', height: 180, display: 'flex', justifyContent: 'center', alignItems: 'center', marginBottom: 24, opacity: activeTab === 'right-now' ? 0.4 : 1, pointerEvents: activeTab === 'right-now' ? 'none' : 'auto', userSelect: 'none' }}>
-                <div style={{ position: 'absolute', top: '50%', left: 0, right: 0, height: 36, background: '#f5f5f5', transform: 'translateY(-50%)', borderRadius: 8, zIndex: 0 }} />
+            <div style={{ position: 'relative', width: '100%', height: 180, display: 'flex', justifyContent: 'center', alignItems: 'center', marginBottom: 24, opacity: activeTab === 'right-now' ? 0.4 : 1, pointerEvents: activeTab === 'right-now' ? 'none' : 'auto', userSelect: 'none' }}>
+              <div style={{ position: 'absolute', top: '50%', left: 0, right: 0, height: 36, background: '#f5f5f5', transform: 'translateY(-50%)', borderRadius: 8, zIndex: 0 }} />
+              
+              <div style={{ display: 'flex', gap: 32, zIndex: 1, textAlign: 'center', fontFamily: "system-ui, -apple-system, sans-serif", width: '100%', justifyContent: 'center', height: '100%' }}>
                 
-                <div style={{ display: 'flex', gap: 32, zIndex: 1, textAlign: 'center', fontFamily: "system-ui, -apple-system, sans-serif", width: '100%', justifyContent: 'center', height: '100%' }}>
-                  
-                  <div className="scroll-wheel-col" id="date-wheel" onScroll={(e) => {
-                      const idx = Math.round(e.target.scrollTop / 36);
-                      const dates = ['Ma 20 apr', 'Di 21 apr', 'Wo 22 apr', 'Vandaag', 'Vr 24 apr', 'Za 25 apr', 'Zo 26 apr', 'Ma 27 apr', 'Di 28 apr'];
-                      setDateValue(dates[idx] || 'Vandaag');
-                  }}>
-                    {['Ma 20 apr', 'Di 21 apr', 'Wo 22 apr', 'Vandaag', 'Vr 24 apr', 'Za 25 apr', 'Zo 26 apr', 'Ma 27 apr', 'Di 28 apr'].map(d => (
-                      <div key={d} className="scroll-wheel-item" style={{ minWidth: 100 }}>{d}</div>
-                    ))}
-                  </div>
-
-                  <div className="scroll-wheel-col" id="hour-wheel" onScroll={(e) => {
-                      const idx = Math.round(e.target.scrollTop / 36);
-                      const hours = Array.from({length: 24}, (_, i) => String(i).padStart(2, '0'));
-                      if(hours[idx]) {
-                          setTimeValue(prev => `${hours[idx]}:${prev.split(':')[1] || '00'}`);
-                      }
-                  }}>
-                    {Array.from({length: 24}, (_, i) => String(i).padStart(2, '0')).map(h => (
-                      <div key={h} className="scroll-wheel-item" style={{ minWidth: 40 }}>{h}</div>
-                    ))}
-                  </div>
-
-                  <div className="scroll-wheel-col" id="minute-wheel" onScroll={(e) => {
-                      const idx = Math.round(e.target.scrollTop / 36);
-                      const minutes = Array.from({length: 60}, (_, i) => String(i).padStart(2, '0'));
-                      if(minutes[idx]) {
-                          setTimeValue(prev => `${prev.split(':')[0] || '12'}:${minutes[idx]}`);
-                      }
-                  }}>
-                    {Array.from({length: 60}, (_, i) => String(i).padStart(2, '0')).map(m => (
-                      <div key={m} className="scroll-wheel-item" style={{ minWidth: 40 }}>{m}</div>
-                    ))}
-                  </div>
-
+                <div className="scroll-wheel-col" id="date-wheel" onScroll={(e) => {
+                    const idx = Math.round(e.target.scrollTop / 36);
+                    const dates = ['Ma 20 apr', 'Di 21 apr', 'Wo 22 apr', 'Vandaag', 'Vr 24 apr', 'Za 25 apr', 'Zo 26 apr', 'Ma 27 apr', 'Di 28 apr'];
+                    setDisplayDate(dates[idx] || 'Vandaag');
+                }}>
+                  {['Ma 20 apr', 'Di 21 apr', 'Wo 22 apr', 'Vandaag', 'Vr 24 apr', 'Za 25 apr', 'Zo 26 apr', 'Ma 27 apr', 'Di 28 apr'].map(d => (
+                    <div key={d} className="scroll-wheel-item" style={{ minWidth: 100 }}>{d}</div>
+                  ))}
                 </div>
 
-                <div style={{ position: 'absolute', top: 0, left: 0, right: 0, height: 60, background: 'linear-gradient(to bottom, rgba(255,255,255,1), rgba(255,255,255,0))', zIndex: 2, pointerEvents: 'none' }} />
-                <div style={{ position: 'absolute', bottom: 0, left: 0, right: 0, height: 60, background: 'linear-gradient(to top, rgba(255,255,255,1), rgba(255,255,255,0))', zIndex: 2, pointerEvents: 'none' }} />
+                {!flexible && (
+                  <>
+                    <div className="scroll-wheel-col" id="hour-wheel" onScroll={(e) => {
+                        const idx = Math.round(e.target.scrollTop / 36);
+                        const hours = Array.from({length: 24}, (_, i) => String(i).padStart(2, '0'));
+                        if(hours[idx]) {
+                            setDisplayTime(prev => `${hours[idx]}:${prev.split(':')[1] || '00'}`);
+                        }
+                    }}>
+                      {Array.from({length: 24}, (_, i) => String(i).padStart(2, '0')).map(h => (
+                        <div key={h} className="scroll-wheel-item" style={{ minWidth: 40 }}>{h}</div>
+                      ))}
+                    </div>
+
+                    <div className="scroll-wheel-col" id="minute-wheel" onScroll={(e) => {
+                        const idx = Math.round(e.target.scrollTop / 36);
+                        const minutes = Array.from({length: 60}, (_, i) => String(i).padStart(2, '0'));
+                        if(minutes[idx]) {
+                            setDisplayTime(prev => `${prev.split(':')[0] || '12'}:${minutes[idx]}`);
+                        }
+                    }}>
+                      {Array.from({length: 60}, (_, i) => String(i).padStart(2, '0')).map(m => (
+                        <div key={m} className="scroll-wheel-item" style={{ minWidth: 40 }}>{m}</div>
+                      ))}
+                    </div>
+                  </>
+                )}
               </div>
-            )}
+
+              <div style={{ position: 'absolute', top: 0, left: 0, right: 0, height: 60, background: 'linear-gradient(to bottom, rgba(255,255,255,1), rgba(255,255,255,0))', zIndex: 2, pointerEvents: 'none' }} />
+              <div style={{ position: 'absolute', bottom: 0, left: 0, right: 0, height: 60, background: 'linear-gradient(to top, rgba(255,255,255,1), rgba(255,255,255,0))', zIndex: 2, pointerEvents: 'none' }} />
+            </div>
 
             <div style={{ display: 'flex', gap: 12, width: '100%', justifyContent: 'center' }}>
               <div 
@@ -452,7 +479,17 @@ function TimePickerPopup({ isOpen, onClose, dateValue, setDateValue, timeValue, 
               </div>
               <div 
                 className="confirm-btn"
-                onClick={onClose}
+                onClick={() => {
+                  onConfirm({
+                    date: dateVal,
+                    time: timeVal,
+                    returnDate: retDateVal,
+                    returnTime: retTimeVal,
+                    roundtrip,
+                    flexible
+                  });
+                  onClose();
+                }}
                 style={{ flex: '0 0 185px', background: '#bbcd2f', color: '#1a1a1a', fontWeight: 600, fontSize: 20, padding: '16px 0', borderRadius: 50, border: 'none', cursor: 'pointer', textAlign: 'center' }}
               >
                 Confirm
@@ -465,8 +502,6 @@ function TimePickerPopup({ isOpen, onClose, dateValue, setDateValue, timeValue, 
   );
 }
 
-
-
 export function GetRideScreen({ onBack, onRequestRide, userProfile }) {
   const [isLoading, setIsLoading] = useState(false);
   const [isLocating, setIsLocating] = useState(false);
@@ -474,11 +509,19 @@ export function GetRideScreen({ onBack, onRequestRide, userProfile }) {
   const [dropoff, setDropoff] = useState(null);
   const [route, setRoute] = useState(null);
   const [activePicker, setActivePicker] = useState(null);
-  const [timeValue, setTimeValue] = useState(() => {
+  
+  const [timeState, setTimeState] = useState(() => {
     const now = new Date();
-    return `${String(now.getHours()).padStart(2,'0')}:${String(now.getMinutes()).padStart(2,'0')}`;
+    return {
+      date: new Date().toISOString().split('T')[0],
+      time: `${String(now.getHours()).padStart(2,'0')}:${String(now.getMinutes()).padStart(2,'0')}`,
+      returnDate: new Date().toISOString().split('T')[0],
+      returnTime: `${String(now.getHours() + 1).padStart(2,'0')}:${String(now.getMinutes()).padStart(2,'0')}`,
+      roundtrip: false,
+      flexible: false
+    };
   });
-  const [dateValue, setDateValue] = useState(() => new Date().toISOString().split('T')[0]);
+  
   const pickupInputRef = useRef(null);
 
   const handleUseGPS = () => {
@@ -493,7 +536,6 @@ export function GetRideScreen({ onBack, onRequestRide, userProfile }) {
           const data = await resp.json();
           const streetName = data.address?.road || data.address?.neighbourhood || data.display_name?.split(',')[0] || 'Current Location';
           setPickup({ lat: latitude, lng: longitude, name: streetName });
-          // Update the visible text in the autocomplete input
           if (pickupInputRef.current) pickupInputRef.current.setQuery(streetName);
         } catch {
           setPickup({ lat: latitude, lng: longitude, name: 'Current Location' });
@@ -562,8 +604,8 @@ export function GetRideScreen({ onBack, onRequestRide, userProfile }) {
     const formData = new FormData(e.target);
     const pickupInput = formData.get('pickup') || 'Ons Kortenhoef';
     const destinationInput = formData.get('dropoff') || 'Somewhere in Kortenhoef';
-    const timeInput = formData.get('time') || '08:30';
-    const dateInput = formData.get('date') || new Date().toLocaleDateString('nl-NL', { weekday: 'short', day: 'numeric', month: 'short' });
+    const timeInput = timeState.flexible ? 'Flexible time' : timeState.time;
+    const dateInput = timeState.date;
     const timeframe = `${dateInput} ${timeInput}`;
     
     try {
@@ -713,9 +755,22 @@ export function GetRideScreen({ onBack, onRequestRide, userProfile }) {
               </svg>
             </span>
             <div style={{ flex: 1, padding: '16px 0', fontSize: 16, color: '#1a1a1a', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
-              {dateValue === new Date().toISOString().split('T')[0] && timeValue.startsWith(String(new Date().getHours()).padStart(2, '0')) ? 'Right now' : `${dateValue} at ${timeValue}`}
+              {(() => {
+                const { date, time, returnDate, returnTime, roundtrip, flexible } = timeState;
+                const isToday = date === new Date().toISOString().split('T')[0];
+                const isNow = time.startsWith(String(new Date().getHours()).padStart(2, '0'));
+                
+                let mainText = `${date} at ${time}`;
+                if (flexible) mainText = `${date}, Flexible`;
+                if (isToday && isNow && !flexible) mainText = 'Right now';
+                
+                if (roundtrip && returnDate) {
+                    mainText += ` • Return: ${returnDate}` + (flexible ? '' : ` at ${returnTime}`);
+                }
+                return mainText;
+              })()}
             </div>
-            {dateValue === new Date().toISOString().split('T')[0] && timeValue.startsWith(String(new Date().getHours()).padStart(2, '0')) && (
+            {timeState.date === new Date().toISOString().split('T')[0] && timeState.time.startsWith(String(new Date().getHours()).padStart(2, '0')) && !timeState.flexible && (
               <div style={{
                 flexShrink: 0,
                 background: '#BBCD2F',
@@ -757,10 +812,10 @@ export function GetRideScreen({ onBack, onRequestRide, userProfile }) {
       <TimePickerPopup 
         isOpen={activePicker === 'time'}
         onClose={() => setActivePicker(null)}
-        dateValue={dateValue}
-        setDateValue={setDateValue}
-        timeValue={timeValue}
-        setTimeValue={setTimeValue}
+        initialTimeState={timeState}
+        onConfirm={(newState) => {
+          setTimeState(newState);
+        }}
       />
     </div>
   );
