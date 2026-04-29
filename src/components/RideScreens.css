@@ -421,13 +421,15 @@
   background-color: #BBCD2F;
   border-radius: 32px;
   width: 370px;
-  height: 520px;
-  margin-bottom: 40px;
+  height: 540px;
+  margin-bottom: 60px;
   position: relative;
   display: flex;
   flex-direction: column;
-  padding: 24px 14px 25px 14px;
-  overflow: hidden; /* Ensure car doesn't peek out */
+  padding: 24px 14px;
+  overflow: hidden; 
+  flex-shrink: 0;
+  justify-content: space-between;
 }
 
 .card-header {
@@ -479,7 +481,7 @@
   position: relative;
   background: #f0f0f0;
   z-index: 5; /* Map in front of car */
-  margin: auto auto 0 auto;
+  margin: 0 auto;
   flex-shrink: 0;
 }
 
