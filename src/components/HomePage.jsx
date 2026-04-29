@@ -72,29 +72,47 @@ function HandHeartIcon() {
 }
 
 function MovingMarker({ rider }) {
-  const [currentIndex, setCurrentIndex] = useState(0);
   const route = rider.routeGeometry;
+  const [position, setPosition] = useState(route?.[0] || rider.location);
+  const [pointIndex, setPointIndex] = useState(0);
 
   useEffect(() => {
-    if (!route || route.length < 2) return;
+    if (!route || route.length < 2 || pointIndex >= route.length - 1) return;
 
-    // Simulate movement: move to next point every 3 seconds
-    const interval = setInterval(() => {
-      setCurrentIndex(prev => (prev + 1) % route.length);
-    }, 3000);
+    let startTime = performance.now();
+    const segmentDuration = 4000; // 4 seconds per segment for a calm, smooth crawl
 
-    return () => clearInterval(interval);
-  }, [route]);
+    const animate = (now) => {
+      const elapsed = now - startTime;
+      const progress = Math.min(elapsed / segmentDuration, 1);
 
-  const position = (route && route[currentIndex]) ? route[currentIndex] : rider.location;
+      const start = route[pointIndex];
+      const end = route[pointIndex + 1];
+
+      // Linear interpolation between the two GPS points
+      const lat = start[0] + (end[0] - start[0]) * progress;
+      const lng = start[1] + (end[1] - start[1]) * progress;
+
+      setPosition([lat, lng]);
+
+      if (progress < 1) {
+        requestAnimationFrame(animate);
+      } else {
+        // Move to next segment
+        setPointIndex(prev => prev + 1);
+      }
+    };
+
+    const rafId = requestAnimationFrame(animate);
+    return () => cancelAnimationFrame(rafId);
+  }, [pointIndex, route]);
 
   return (
     <Marker 
-      key={`car-${rider.id}-${currentIndex}`} 
       position={position} 
       icon={new L.DivIcon({
         className: 'moving-car-icon',
-        html: `<div style="background-color: white; border-radius: 50%; padding: 4px; box-shadow: 0 2px 4px rgba(0,0,0,0.2); font-size: 14px; text-align: center; line-height: 20px; width: 28px; height: 28px; transition: all 3s linear;">🚗</div>`,
+        html: `<div style="background-color: white; border-radius: 50%; padding: 4px; box-shadow: 0 2px 4px rgba(0,0,0,0.2); font-size: 14px; text-align: center; line-height: 20px; width: 28px; height: 28px;">🚗</div>`,
         iconSize: [28, 28],
         iconAnchor: [14, 14],
       })}
