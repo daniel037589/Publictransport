@@ -108,6 +108,14 @@ function LocationPickerPopup({ isOpen, onClose, title, isPickup, onSelect, onUse
             animate={{ y: 0 }}
             exit={{ y: '100%' }}
             transition={{ type: 'spring', damping: 25, stiffness: 200 }}
+            drag="y"
+            dragConstraints={{ top: 0, bottom: 0 }}
+            dragElastic={{ top: 0, bottom: 0.5 }}
+            onDragEnd={(e, info) => {
+              if (info.offset.y > 100 || info.velocity.y > 500) {
+                onClose();
+              }
+            }}
             style={{ 
               position: 'fixed', bottom: 0, left: 0, right: 0, 
               background: 'white', borderTopLeftRadius: 24, borderTopRightRadius: 24,
@@ -310,6 +318,14 @@ function TimePickerPopup({ isOpen, onClose, initialTimeState, onConfirm }) {
             animate={{ y: 0 }}
             exit={{ y: '100%' }}
             transition={{ type: 'spring', damping: 25, stiffness: 200 }}
+            drag="y"
+            dragConstraints={{ top: 0, bottom: 0 }}
+            dragElastic={{ top: 0, bottom: 0.5 }}
+            onDragEnd={(e, info) => {
+              if (info.offset.y > 100 || info.velocity.y > 500) {
+                onClose();
+              }
+            }}
             style={{ 
               position: 'fixed', bottom: 0, left: 0, right: 0, 
               background: 'white', borderTopLeftRadius: 24, borderTopRightRadius: 24,
@@ -769,22 +785,6 @@ export function GetRideScreen({ onBack, onRequestRide, userProfile }) {
                 }
                 return mainText;
               })()}
-            </div>
-            {timeState.date === new Date().toISOString().split('T')[0] && timeState.time.startsWith(String(new Date().getHours()).padStart(2, '0')) && !timeState.flexible && (
-              <div style={{
-                flexShrink: 0,
-                background: '#BBCD2F',
-                color: '#2D3320',
-                borderRadius: '20px',
-                padding: '4px 10px',
-                fontSize: '12px',
-                fontWeight: 600,
-                whiteSpace: 'nowrap',
-                fontFamily: 'var(--font-family-button)'
-              }}>
-                Right now
-              </div>
-            )}
           </div>
         </div>
 

@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { createPortal } from 'react-dom';
+import { motion, AnimatePresence } from 'framer-motion';
 import { MapContainer, TileLayer, Marker, Polyline, Popup, useMap } from 'react-leaflet';
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
@@ -352,71 +353,96 @@ export function GiveRideScreen({ onBack, riders, onOfferRide, userProfile }) {
       </div>
 
       {/* ── Rider Detail Bottom Sheet — portalled to document.body ── */}
-      {selectedRider && createPortal(
-        <div className="gr-overlay" onClick={() => setSelectedRider(null)}>
-          <div className="gr-sheet" onClick={e => e.stopPropagation()}>
-
-            {/* Drag handle */}
-            <div className="gr-handle" />
-
-            {/* Profile row */}
-            <div className="gr-profile">
-              <div
-                className="gr-avatar"
-                style={selectedRider.avatarUrl
-                  ? { backgroundImage: `url(${selectedRider.avatarUrl})`, backgroundSize: 'cover' }
-                  : { backgroundColor: selectedRider.color || '#F08A4B' }}
+      {createPortal(
+        <AnimatePresence>
+          {selectedRider && (
+            <>
+              <motion.div 
+                className="gr-overlay" 
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                onClick={() => setSelectedRider(null)}
+              />
+              <motion.div 
+                className="gr-sheet"
+                initial={{ y: '100%' }}
+                animate={{ y: 0 }}
+                exit={{ y: '100%' }}
+                transition={{ type: 'spring', damping: 25, stiffness: 200 }}
+                drag="y"
+                dragConstraints={{ top: 0, bottom: 0 }}
+                dragElastic={{ top: 0, bottom: 0.5 }}
+                onDragEnd={(e, info) => {
+                  if (info.offset.y > 100 || info.velocity.y > 500) {
+                    setSelectedRider(null);
+                  }
+                }}
+                onClick={e => e.stopPropagation()}
               >
-                {!selectedRider.avatarUrl && (
-                  <span>{selectedRider.initial || (selectedRider.name ? selectedRider.name[0] : '?')}</span>
+                {/* Drag handle */}
+                <div className="gr-handle" />
+
+                {/* Profile row */}
+                <div className="gr-profile">
+                  <div
+                    className="gr-avatar"
+                    style={selectedRider.avatarUrl
+                      ? { backgroundImage: `url(${selectedRider.avatarUrl})`, backgroundSize: 'cover' }
+                      : { backgroundColor: selectedRider.color || '#F08A4B' }}
+                  >
+                    {!selectedRider.avatarUrl && (
+                      <span>{selectedRider.initial || (selectedRider.name ? selectedRider.name[0] : '?')}</span>
+                    )}
+                  </div>
+                  <div className="gr-profile-info">
+                    <p className="gr-name">{selectedRider.name}</p>
+                    <p className="gr-age">{selectedRider.distance}</p>
+                  </div>
+                </div>
+
+                {/* Badges */}
+                {selectedRider.badges && selectedRider.badges.length > 0 && (
+                  <div className="gr-badges">
+                    {selectedRider.badges.map((b, i) => <NeedBadge key={i} badge={b} />)}
+                  </div>
                 )}
-              </div>
-              <div className="gr-profile-info">
-                <p className="gr-name">{selectedRider.name}</p>
-                <p className="gr-age">{selectedRider.distance}</p>
-              </div>
-            </div>
 
-            {/* Badges */}
-            {selectedRider.badges && selectedRider.badges.length > 0 && (
-              <div className="gr-badges">
-                {selectedRider.badges.map((b, i) => <NeedBadge key={i} badge={b} />)}
-              </div>
-            )}
-
-            {/* Route rows */}
-            <div className="gr-route">
-              <div className="gr-route-row">
-                <div className="gr-dot gr-dot--pickup" />
-                <div className="gr-route-text">
-                  <p className="gr-route-label">Pick up</p>
-                  <p className="gr-route-address">{selectedRider.pickup || 'Kortenhoef center'}</p>
+                {/* Route rows */}
+                <div className="gr-route">
+                  <div className="gr-route-row">
+                    <div className="gr-dot gr-dot--pickup" />
+                    <div className="gr-route-text">
+                      <p className="gr-route-label">Pick up</p>
+                      <p className="gr-route-address">{selectedRider.pickup || 'Kortenhoef center'}</p>
+                    </div>
+                  </div>
+                  <div className="gr-route-line" />
+                  <div className="gr-route-row">
+                    <div className="gr-dot gr-dot--dropoff" />
+                    <div className="gr-route-text">
+                      <p className="gr-route-label">Drop off</p>
+                      <p className="gr-route-address">{selectedRider.destination || 'Destination'}</p>
+                    </div>
+                  </div>
                 </div>
-              </div>
-              <div className="gr-route-line" />
-              <div className="gr-route-row">
-                <div className="gr-dot gr-dot--dropoff" />
-                <div className="gr-route-text">
-                  <p className="gr-route-label">Drop off</p>
-                  <p className="gr-route-address">{selectedRider.destination || 'Destination'}</p>
-                </div>
-              </div>
-            </div>
 
-            {/* Action buttons */}
-            <div className="gr-actions">
-              <button className="gr-btn gr-btn--cancel" onClick={() => setSelectedRider(null)}>
-                Cancel
-              </button>
-              <button className="gr-btn gr-btn--pickup" onClick={() => {
-                if (onOfferRide) onOfferRide(selectedRider.id);
-                setSelectedRider(null);
-              }}>
-                Pick up
-              </button>
-            </div>
-          </div>
-        </div>,
+                {/* Action buttons */}
+                <div className="gr-actions">
+                  <button className="gr-btn gr-btn--cancel" onClick={() => setSelectedRider(null)}>
+                    Cancel
+                  </button>
+                  <button className="gr-btn gr-btn--pickup" onClick={() => {
+                    if (onOfferRide) onOfferRide(selectedRider.id);
+                    setSelectedRider(null);
+                  }}>
+                    Pick up
+                  </button>
+                </div>
+              </motion.div>
+            </>
+          )}
+        </AnimatePresence>,
         document.body
       )}
     </div>
