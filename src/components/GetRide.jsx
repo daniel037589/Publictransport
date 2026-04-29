@@ -291,10 +291,11 @@ function TimePickerPopup({ isOpen, onClose, dateValue, setDateValue, timeValue, 
                 type="button"
                 onClick={() => setActiveTab('right-now')}
                 style={{ 
-                  flex: 1, padding: '10px', borderRadius: 50, border: 'none', cursor: 'pointer',
+                  padding: '9px 12px', borderRadius: 50, border: 'none', cursor: 'pointer',
                   background: activeTab === 'right-now' ? '#bbcd2f' : '#ffffff',
                   boxShadow: '0 2px 6px rgba(0,0,0,0.1)',
-                  fontWeight: 500, fontSize: 14, color: '#1a1a1a'
+                  fontWeight: 500, fontSize: 14, color: '#1a1a1a',
+                  minWidth: 90
                 }}
               >
                 Right Now
@@ -303,10 +304,11 @@ function TimePickerPopup({ isOpen, onClose, dateValue, setDateValue, timeValue, 
                 type="button"
                 onClick={() => setActiveTab('departure')}
                 style={{ 
-                  flex: 1, padding: '10px', borderRadius: 50, border: 'none', cursor: 'pointer',
+                  padding: '9px 12px', borderRadius: 50, border: 'none', cursor: 'pointer',
                   background: activeTab === 'departure' ? '#bbcd2f' : '#ffffff',
                   boxShadow: '0 2px 6px rgba(0,0,0,0.1)',
-                  fontWeight: 500, fontSize: 14, color: '#1a1a1a'
+                  fontWeight: 500, fontSize: 14, color: '#1a1a1a',
+                  minWidth: 90
                 }}
               >
                 Departure
@@ -315,7 +317,7 @@ function TimePickerPopup({ isOpen, onClose, dateValue, setDateValue, timeValue, 
 
             <div style={{ height: 1, background: '#dedede', width: '100%', marginBottom: 16 }} />
 
-            <div style={{ display: 'flex', justifyContent: 'space-between', width: '100%', marginBottom: 16 }}>
+            <div style={{ display: 'flex', justifyContent: 'flex-start', gap: 24, width: '100%', marginBottom: 16 }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
                 <span style={{ fontSize: 12, fontWeight: 500, color: '#1a1a1a' }}>Roundtrip</span>
                 <div 
@@ -338,38 +340,46 @@ function TimePickerPopup({ isOpen, onClose, dateValue, setDateValue, timeValue, 
 
             <div style={{ height: 1, background: '#dedede', width: '100%', marginBottom: 16 }} />
 
-            <div style={{ display: 'flex', flexDirection: 'column', gap: 16, width: '100%', marginBottom: 24, opacity: activeTab === 'right-now' ? 0.5 : 1, pointerEvents: activeTab === 'right-now' ? 'none' : 'auto' }}>
-              <input 
-                className="form-input-clean" 
-                type="date" 
-                value={dateValue}
-                onChange={e => setDateValue(e.target.value)}
-                style={{ padding: '12px', background: '#fafafa', border: '1px solid #d3d3d3', borderRadius: 12, fontSize: 16 }}
-              />
-              <input 
-                className="form-input-clean" 
-                type="time" 
-                value={timeValue}
-                onChange={e => setTimeValue(e.target.value)}
-                style={{ padding: '12px', background: '#fafafa', border: '1px solid #d3d3d3', borderRadius: 12, fontSize: 16 }}
-              />
+            <div style={{ position: 'relative', width: '100%', height: 180, display: 'flex', justifyContent: 'center', alignItems: 'center', marginBottom: 24, opacity: activeTab === 'right-now' ? 0.4 : 1, pointerEvents: activeTab === 'right-now' ? 'none' : 'auto', userSelect: 'none' }}>
+              <div style={{ position: 'absolute', top: '50%', left: 0, right: 0, height: 36, background: '#f5f5f5', transform: 'translateY(-50%)', borderRadius: 8, zIndex: 0 }} />
+              
+              <div style={{ display: 'flex', gap: 32, zIndex: 1, fontSize: 20, color: '#1a1a1a', fontWeight: 500, textAlign: 'center', fontFamily: "system-ui, -apple-system, sans-serif" }}>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: 12, color: '#a3a3a3', transform: 'translateY(-20px)' }}>
+                  <div style={{ fontSize: 16 }}>Wo 22 apr</div>
+                  <div style={{ color: '#1a1a1a', fontSize: 20, fontWeight: 600 }}>Vandaag</div>
+                  <div style={{ fontSize: 16 }}>Vr 24 apr</div>
+                </div>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: 12, color: '#a3a3a3', transform: 'translateY(-20px)' }}>
+                  <div style={{ fontSize: 18 }}>11</div>
+                  <div style={{ color: '#1a1a1a', fontSize: 22, fontWeight: 600 }}>12</div>
+                  <div style={{ fontSize: 18 }}>13</div>
+                </div>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: 12, color: '#a3a3a3', transform: 'translateY(-20px)' }}>
+                  <div style={{ fontSize: 18 }}>08</div>
+                  <div style={{ color: '#1a1a1a', fontSize: 22, fontWeight: 600 }}>09</div>
+                  <div style={{ fontSize: 18 }}>10</div>
+                </div>
+              </div>
+
+              <div style={{ position: 'absolute', top: 0, left: 0, right: 0, height: 60, background: 'linear-gradient(to bottom, rgba(255,255,255,1), rgba(255,255,255,0))', zIndex: 2 }} />
+              <div style={{ position: 'absolute', bottom: 0, left: 0, right: 0, height: 60, background: 'linear-gradient(to top, rgba(255,255,255,1), rgba(255,255,255,0))', zIndex: 2 }} />
             </div>
 
-            <div style={{ display: 'flex', gap: 12, width: '100%' }}>
-              <button 
-                type="button"
+            <div style={{ display: 'flex', gap: 12, width: '100%', justifyContent: 'center' }}>
+              <div 
+                className="cancel-btn"
                 onClick={onClose}
-                style={{ flex: 1, background: '#dedede', color: '#1a1a1a', fontWeight: 600, fontSize: 20, padding: '16px 0', borderRadius: 50, border: 'none', cursor: 'pointer' }}
+                style={{ flex: '0 0 165px', background: '#dedede', color: '#1a1a1a', fontWeight: 600, fontSize: 20, padding: '16px 0', borderRadius: 50, border: 'none', cursor: 'pointer', textAlign: 'center' }}
               >
                 Cancel
-              </button>
-              <button 
-                type="button"
+              </div>
+              <div 
+                className="confirm-btn"
                 onClick={onClose}
-                style={{ flex: 1, background: '#bbcd2f', color: '#1a1a1a', fontWeight: 600, fontSize: 20, padding: '16px 0', borderRadius: 50, border: 'none', cursor: 'pointer' }}
+                style={{ flex: '0 0 185px', background: '#bbcd2f', color: '#1a1a1a', fontWeight: 600, fontSize: 20, padding: '16px 0', borderRadius: 50, border: 'none', cursor: 'pointer', textAlign: 'center' }}
               >
                 Confirm
-              </button>
+              </div>
             </div>
           </motion.div>
         </>
