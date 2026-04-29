@@ -380,14 +380,16 @@ export function GiveRideScreen({ onBack, riders, onOfferRide, userProfile }) {
                   touchAction: 'pan-y',
                   position: 'fixed',
                   bottom: 0,
-                  left: '50%',
+                  left: 0,
+                  right: 0,
+                  margin: '0 auto',
                   width: '100%',
                   maxWidth: '402px',
                   zIndex: 10001
                 }}
-                initial={{ y: '100%', x: '-50%' }}
-                animate={{ y: 0, x: '-50%' }}
-                exit={{ y: '100%', x: '-50%' }}
+                initial={{ y: '100%' }}
+                animate={{ y: 0 }}
+                exit={{ y: '100%' }}
               >
                 {/* Drag handle */}
                 <div className="gr-handle" style={{ touchAction: 'none' }} />
