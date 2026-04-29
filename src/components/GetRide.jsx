@@ -790,6 +790,7 @@ export function GetRideScreen({ onBack, onRequestRide, userProfile }) {
                 }
                 return mainText;
               })()}
+            </div>
           </div>
         </div>
 
