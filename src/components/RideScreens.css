@@ -421,16 +421,16 @@
   background-color: #BBCD2F;
   border-radius: 32px;
   width: 370px;
-  height: 460px;
+  height: 437px;
   margin-bottom: 60px;
   position: relative;
   display: flex;
   flex-direction: column;
-  padding: 14px;
+  padding: 22px 14px 14px;
   overflow: hidden; 
   flex-shrink: 0;
   justify-content: flex-start;
-  gap: 14px;
+  gap: 12px;
 }
 
 .card-header {
@@ -438,6 +438,9 @@
   z-index: 10;
   margin-bottom: 0; 
   padding: 0 4px;
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
 }
 
 .card-title {
