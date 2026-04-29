@@ -421,7 +421,7 @@
   background-color: #BBCD2F;
   border-radius: 32px;
   width: 370px;
-  height: 450px;
+  height: 480px;
   margin-bottom: 24px;
   position: relative;
   display: flex;
@@ -480,6 +480,7 @@
   background: #f0f0f0;
   z-index: 5; /* Map in front of car */
   margin: auto auto 0 auto;
+  flex-shrink: 0;
 }
 
 .card-map-img {
@@ -763,6 +764,7 @@
   margin-top: auto;
   position: relative;
   z-index: 2;
+  flex-shrink: 0;
 }
 
 /* Give Ride screen — fills the .screen container, scrollable */
