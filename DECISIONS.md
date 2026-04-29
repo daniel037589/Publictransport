@@ -433,6 +433,38 @@ A red "Cancel Drive" button was added to each card in the "Rides I'm Giving" sec
 
 ---
 
+## Decision 15: Custom Time Picker Carousel & State Logic
+
+**Date:** 2026-04-29  
+**Context:** The standard HTML date/time inputs were not user-friendly on mobile and didn't match the high-fidelity Figma design.  
+**Decision:** Built a custom, swipeable scroll-wheel carousel using CSS `scroll-snap`.
+1. **Auto-Scroll:** Tapping "Right Now" programmatically scrolls the wheels to the current system time.
+2. **State Separation:** "Departure" and "Return" now maintain completely independent date/time states to prevent accidental overwriting when configuring roundtrips.
+3. **Flexible Logic:** If "I'm Flexible" is toggled, the hour/minute wheels are removed, but the date wheel remains so the user can still specify the day they are flexible on.  
+**Rationale:** Mimicking native mobile pickers provides a premium feel. Explicitly separating Departure/Return states prevents user error.
+
+---
+
+## Decision 16: Consistent Swipe-to-Dismiss Interaction
+
+**Date:** 2026-04-29  
+**Context:** Bottom sheets felt "stuck" if users tried to dismiss them with natural swipe gestures.  
+**Decision:** Standardized `framer-motion`'s `drag="y"` behavior across all popups (Location Picker, Time Picker, and Rider Detail Sheet).
+1. **Visual Cues:** All sheets include a centered top handle (`.gr-handle` or similar div).
+2. **Dismiss Threshold:** Dragging down by more than 100px or with high velocity triggers the `onClose` callback.  
+**Rationale:** Swipe-to-dismiss is a core UX expectation for mobile bottom sheets. Using a unified implementation ensures predictability across the app.
+
+---
+
+## Decision 17: UI Refinement — Removing Redundant Indicators
+
+**Date:** 2026-04-29  
+**Context:** The main input field for time had a green "Right Now" pill that duplicated the state shown in the popup.  
+**Decision:** Removed the green badge from the `GetRideScreen` input.  
+**Rationale:** Reducing visual clutter. The text inside the input already updates to "Right Now" or the specific time, making the badge redundant and noisy.
+
+---
+
 # Part 3: Environment & Deployment
 
 ## Environment Variables
@@ -479,6 +511,8 @@ CREATE TABLE public.ride_requests (
   initial text,
   distance text,
   timeframe text,
+  date text,
+  time text,
   destination text,
   location jsonb,
   destination_location jsonb,
