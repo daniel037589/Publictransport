@@ -71,6 +71,44 @@ function HandHeartIcon() {
   );
 }
 
+function MovingMarker({ rider }) {
+  const [currentIndex, setCurrentIndex] = useState(0);
+  const route = rider.routeGeometry;
+
+  useEffect(() => {
+    if (!route || route.length < 2) return;
+
+    // Simulate movement: move to next point every 3 seconds
+    const interval = setInterval(() => {
+      setCurrentIndex(prev => (prev + 1) % route.length);
+    }, 3000);
+
+    return () => clearInterval(interval);
+  }, [route]);
+
+  const position = (route && route[currentIndex]) ? route[currentIndex] : rider.location;
+
+  return (
+    <Marker 
+      key={`car-${rider.id}-${currentIndex}`} 
+      position={position} 
+      icon={new L.DivIcon({
+        className: 'moving-car-icon',
+        html: `<div style="background-color: white; border-radius: 50%; padding: 4px; box-shadow: 0 2px 4px rgba(0,0,0,0.2); font-size: 14px; text-align: center; line-height: 20px; width: 28px; height: 28px; transition: all 3s linear;">🚗</div>`,
+        iconSize: [28, 28],
+        iconAnchor: [14, 14],
+      })}
+    >
+      <Popup className="rider-status-popup">
+        <div style={{ textAlign: 'center', lineHeight: '1.4' }}>
+          <div style={{ fontWeight: 'bold', color: '#1A1A1A' }}>{rider.name}</div>
+          <div style={{ fontSize: '12px', color: '#707072' }}>{rider.status === 'ongoing' ? 'En Route' : 'Waiting'}</div>
+        </div>
+      </Popup>
+    </Marker>
+  );
+}
+
 // ── Reusable Map Content (shared by inline + fullscreen) ───────
 function MapContent({ dragging = false, scrollWheelZoom = false, riders = [] }) {
   const ongoingRides = riders.filter(r => r.status === 'ongoing');
@@ -104,20 +142,8 @@ function MapContent({ dragging = false, scrollWheelZoom = false, riders = [] }) 
           pathOptions={{ color: rider.color || '#F08A4B', weight: 4, opacity: 0.8, dashArray: '8, 8' }}
         />
       ))}
-      {ongoingRides.map(rider => rider.location && (
-        <Marker key={`car-${rider.id}`} position={rider.location} icon={new L.DivIcon({
-          className: '',
-          html: `<div style="background-color: white; border-radius: 50%; padding: 4px; box-shadow: 0 2px 4px rgba(0,0,0,0.2); font-size: 14px; text-align: center; line-height: 20px; width: 28px; height: 28px;">🚗</div>`,
-          iconSize: [28, 28],
-          iconAnchor: [14, 14],
-        })}>
-          <Popup className="rider-status-popup">
-            <div style={{ textAlign: 'center', lineHeight: '1.4' }}>
-              <div style={{ fontWeight: 'bold', color: '#1A1A1A' }}>{rider.name}</div>
-              <div style={{ fontSize: '12px', color: '#707072' }}>{rider.status === 'ongoing' ? 'En Route' : 'Waiting'}</div>
-            </div>
-          </Popup>
-        </Marker>
+      {ongoingRides.map(rider => (
+        <MovingMarker key={`moving-car-${rider.id}`} rider={rider} />
       ))}
       <MapRecenter bounds={mapBounds} />
     </>

@@ -13,7 +13,6 @@ import DesktopScreen from './components/DesktopScreen';
 import './index.css';
 
 const INITIAL_RIDERS = [
-  // Keeping initial mockup data ...
   {
     id: 'sarah',
     name: 'Sara de Jong',
@@ -22,11 +21,42 @@ const INITIAL_RIDERS = [
     distance: '1 km away',
     timeframe: 'Needs ride now',
     destination: 'Hilversum Train Station',
-    location: [52.3094, 5.0392],
-    destinationLocation: [52.3134, 5.0425],
+    location: [52.2331, 5.0760],
+    destinationLocation: [52.2380, 5.0900],
+    routeGeometry: [
+      [52.2331, 5.0760],
+      [52.2340, 5.0780],
+      [52.2350, 5.0800],
+      [52.2360, 5.0840],
+      [52.2370, 5.0880],
+      [52.2380, 5.0900]
+    ],
+    status: 'ongoing',
     color: '#1164fd',
     avatarUrl: 'https://i.pravatar.cc/150?img=47',
     badges: ['Has newborn', 'Needs walker space']
+  },
+  {
+    id: 'peter',
+    name: 'Peter van Dijk',
+    age: 42,
+    initial: 'P',
+    distance: '2 km away',
+    timeframe: 'Leaving at 14:00',
+    destination: 'Weesp Centrum',
+    location: [52.2300, 5.0600],
+    destinationLocation: [52.2350, 5.0700],
+    routeGeometry: [
+      [52.2300, 5.0600],
+      [52.2310, 5.0620],
+      [52.2320, 5.0650],
+      [52.2340, 5.0680],
+      [52.2350, 5.0700]
+    ],
+    status: 'ongoing',
+    color: '#F08A4B',
+    avatarUrl: 'https://i.pravatar.cc/150?img=11',
+    badges: ['Foldable wheelchair', 'No pets']
   }
 ];
 
