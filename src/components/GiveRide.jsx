@@ -250,6 +250,9 @@ const createRiderIcon = (color, initial, avatarUrl) => new L.DivIcon({
 // ── GiveRideScreen ────────────────────────────────────────────
 export function GiveRideScreen({ onBack, riders, onOfferRide, userProfile }) {
   const [selectedRider, setSelectedRider] = useState(null);
+  const [sheetStep, setSheetStep] = useState(1);
+  const [message, setMessage] = useState('');
+  const [pickupTime, setPickupTime] = useState('');
   const MAP_CENTER = [52.2331, 5.0760]; // Kortenhoef
 
   // Lock scroll on the parent screen when popup is open
@@ -257,6 +260,11 @@ export function GiveRideScreen({ onBack, riders, onOfferRide, userProfile }) {
     const el = document.querySelector('.ride-screen.redesign');
     if (el) {
       el.style.overflowY = selectedRider ? 'hidden' : 'auto';
+    }
+    if (!selectedRider) {
+      setSheetStep(1);
+      setMessage('');
+      setPickupTime('');
     }
   }, [selectedRider]);
 
@@ -312,7 +320,7 @@ export function GiveRideScreen({ onBack, riders, onOfferRide, userProfile }) {
                   key={rider.id}
                   position={rider.location}
                   icon={createRiderIcon(rider.color || '#F08A4B', rider.initial, rider.avatarUrl)}
-                  eventHandlers={{ click: () => setSelectedRider(rider) }}
+                  eventHandlers={{ click: () => { setSelectedRider(rider); setSheetStep(1); } }}
                 />
               ) : null
             ))}
@@ -341,7 +349,7 @@ export function GiveRideScreen({ onBack, riders, onOfferRide, userProfile }) {
             <GiveRideCard
               key={rider.id}
               rider={rider}
-              onClick={setSelectedRider}
+              onClick={(r) => { setSelectedRider(r); setSheetStep(1); }}
             />
           ))}
           {pendingRiders.length === 0 && (
@@ -394,62 +402,133 @@ export function GiveRideScreen({ onBack, riders, onOfferRide, userProfile }) {
                 {/* Drag handle */}
                 <div className="gr-handle" style={{ touchAction: 'none' }} />
 
-                {/* Profile row */}
-                <div className="gr-profile">
-                  <div
-                    className="gr-avatar"
-                    style={selectedRider.avatarUrl
-                      ? { backgroundImage: `url(${selectedRider.avatarUrl})`, backgroundSize: 'cover' }
-                      : { backgroundColor: selectedRider.color || '#F08A4B' }}
-                  >
-                    {!selectedRider.avatarUrl && (
-                      <span>{selectedRider.initial || (selectedRider.name ? selectedRider.name[0] : '?')}</span>
+                {sheetStep === 1 ? (
+                  <>
+                    {/* Step 1: Overview */}
+                    <div className="gr-profile">
+                      <div
+                        className="gr-avatar"
+                        style={selectedRider.avatarUrl
+                          ? { backgroundImage: `url(${selectedRider.avatarUrl})`, backgroundSize: 'cover' }
+                          : { backgroundColor: selectedRider.color || '#F08A4B' }}
+                      >
+                        {!selectedRider.avatarUrl && (
+                          <span>{selectedRider.initial || (selectedRider.name ? selectedRider.name[0] : '?')}</span>
+                        )}
+                      </div>
+                      <div className="gr-profile-info">
+                        <p className="gr-name">{selectedRider.name}</p>
+                        <p className="gr-age">{selectedRider.distance}</p>
+                      </div>
+                    </div>
+
+                    {selectedRider.badges && selectedRider.badges.length > 0 && (
+                      <div className="gr-badges">
+                        {selectedRider.badges.map((b, i) => <NeedBadge key={i} badge={b} />)}
+                      </div>
                     )}
-                  </div>
-                  <div className="gr-profile-info">
-                    <p className="gr-name">{selectedRider.name}</p>
-                    <p className="gr-age">{selectedRider.distance}</p>
-                  </div>
-                </div>
 
-                {/* Badges */}
-                {selectedRider.badges && selectedRider.badges.length > 0 && (
-                  <div className="gr-badges">
-                    {selectedRider.badges.map((b, i) => <NeedBadge key={i} badge={b} />)}
-                  </div>
+                    {/* Route rows */}
+                    <div className="gr-route">
+                      <div className="gr-route-row">
+                        <div className="gr-dot gr-dot--pickup" />
+                        <div className="gr-route-text">
+                          <p className="gr-route-label">Pick up</p>
+                          <p className="gr-route-address">{selectedRider.pickup || 'Kortenhoef center'}</p>
+                        </div>
+                      </div>
+                      <div className="gr-route-line" />
+                      <div className="gr-route-row">
+                        <div className="gr-dot gr-dot--dropoff" />
+                        <div className="gr-route-text">
+                          <p className="gr-route-label">Drop off</p>
+                          <p className="gr-route-address">{selectedRider.destination || 'Destination'}</p>
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Action buttons */}
+                    <div className="gr-actions">
+                      <button className="gr-btn gr-btn--cancel" onClick={() => setSelectedRider(null)}>
+                        Cancel
+                      </button>
+                      <button className="gr-btn gr-btn--pickup" onClick={() => setSheetStep(2)}>
+                        Pick up
+                      </button>
+                    </div>
+                  </>
+                ) : (
+                  <>
+                    {/* Step 2: Message & Time Selection */}
+                    <div className="gr-profile">
+                      <div
+                        className="gr-avatar"
+                        style={selectedRider.avatarUrl
+                          ? { backgroundImage: `url(${selectedRider.avatarUrl})`, backgroundSize: 'cover' }
+                          : { backgroundColor: selectedRider.color || '#F08A4B' }}
+                      >
+                        {!selectedRider.avatarUrl && (
+                          <span>{selectedRider.initial || (selectedRider.name ? selectedRider.name[0] : '?')}</span>
+                        )}
+                      </div>
+                      <div className="gr-profile-info">
+                        <p className="gr-name">{selectedRider.name}</p>
+                        <p className="gr-age">
+                          {selectedRider.age || (selectedRider.birthdate ? (new Date().getFullYear() - new Date(selectedRider.birthdate).getFullYear()) : '80')} Years Old
+                        </p>
+                      </div>
+                    </div>
+
+                    <div className="gr-card-divider" />
+
+                    <p className="gr-flexible-status">
+                      {selectedRider.name.split(' ')[0]} has chosen <strong>{selectedRider.timeframe || "I'm Flexible"}</strong>
+                    </p>
+
+                    {/* Show time picker ONLY if timeframe is flexible/missing */}
+                    {(selectedRider.timeframe?.toLowerCase().includes('flexible') || !selectedRider.timeframe) && (
+                      <div className="gr-input-group">
+                        <div className="gr-input-box">
+                          <span className="gr-input-icon">🕒</span>
+                          <input 
+                            type="text" 
+                            placeholder="When do you want to pick up?" 
+                            className="gr-input-field"
+                            value={pickupTime}
+                            onChange={(e) => setPickupTime(e.target.value)}
+                          />
+                        </div>
+                      </div>
+                    )}
+
+                    <div className="gr-input-group">
+                      <label className="gr-input-label">What message do you want to send?</label>
+                      <div className="gr-input-box gr-input-box--message">
+                        <textarea 
+                          placeholder="Type your message here" 
+                          className="gr-input-field gr-textarea"
+                          value={message}
+                          onChange={(e) => setMessage(e.target.value)}
+                        />
+                      </div>
+                    </div>
+
+                    <div className="gr-actions">
+                      <button className="gr-btn gr-btn--cancel" onClick={() => {
+                        if (onOfferRide) onOfferRide(selectedRider.id);
+                        setSelectedRider(null);
+                      }}>
+                        No message
+                      </button>
+                      <button className="gr-btn gr-btn--pickup" onClick={() => {
+                        if (onOfferRide) onOfferRide(selectedRider.id);
+                        setSelectedRider(null);
+                      }}>
+                        Pick up
+                      </button>
+                    </div>
+                  </>
                 )}
-
-                {/* Route rows */}
-                <div className="gr-route">
-                  <div className="gr-route-row">
-                    <div className="gr-dot gr-dot--pickup" />
-                    <div className="gr-route-text">
-                      <p className="gr-route-label">Pick up</p>
-                      <p className="gr-route-address">{selectedRider.pickup || 'Kortenhoef center'}</p>
-                    </div>
-                  </div>
-                  <div className="gr-route-line" />
-                  <div className="gr-route-row">
-                    <div className="gr-dot gr-dot--dropoff" />
-                    <div className="gr-route-text">
-                      <p className="gr-route-label">Drop off</p>
-                      <p className="gr-route-address">{selectedRider.destination || 'Destination'}</p>
-                    </div>
-                  </div>
-                </div>
-
-                {/* Action buttons */}
-                <div className="gr-actions">
-                  <button className="gr-btn gr-btn--cancel" onClick={() => setSelectedRider(null)}>
-                    Cancel
-                  </button>
-                  <button className="gr-btn gr-btn--pickup" onClick={() => {
-                    if (onOfferRide) onOfferRide(selectedRider.id);
-                    setSelectedRider(null);
-                  }}>
-                    Pick up
-                  </button>
-                </div>
               </motion.div>
             </>
           )}
