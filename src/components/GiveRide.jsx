@@ -515,13 +515,13 @@ export function GiveRideScreen({ onBack, riders, onOfferRide, userProfile }) {
 
                     <div className="gr-actions">
                       <button className="gr-btn gr-btn--cancel" onClick={() => {
-                        if (onOfferRide) onOfferRide(selectedRider.id);
+                        if (onOfferRide) onOfferRide(selectedRider.id, { message: '', pickupTime: '' });
                         setSelectedRider(null);
                       }}>
                         No message
                       </button>
                       <button className="gr-btn gr-btn--pickup" onClick={() => {
-                        if (onOfferRide) onOfferRide(selectedRider.id);
+                        if (onOfferRide) onOfferRide(selectedRider.id, { message, pickupTime });
                         setSelectedRider(null);
                       }}>
                         Pick up

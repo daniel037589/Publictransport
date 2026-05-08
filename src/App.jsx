@@ -79,7 +79,9 @@ const serializeForDb = (rider) => ({
   badges: rider.badges,
   avatar_url: rider.avatarUrl,
   status: rider.status || 'pending',
-  driver_name: rider.driverName || null
+  driver_name: rider.driverName || null,
+  driver_message: rider.driverMessage || null,
+  driver_pickup_time: rider.driverPickupTime || null
 });
 
 const deserializeFromDb = (row) => ({
@@ -101,7 +103,9 @@ const deserializeFromDb = (row) => ({
   badges: row.badges,
   avatarUrl: row.avatar_url,
   status: row.status || 'pending',
-  driverName: row.driver_name || null
+  driverName: row.driver_name || null,
+  driverMessage: row.driver_message || null,
+  driverPickupTime: row.driver_pickup_time || null
 });
 
 function App() {
@@ -195,13 +199,24 @@ function App() {
     if (error) console.error("Failed to delete request from Supabase!", error.message);
   };
 
-  const handleOfferRide = async (rideId) => {
+  const handleOfferRide = async (rideId, details = {}) => {
     // Optimistic local UI update
-    setRiders(prev => prev.map(r => r.id === rideId ? { ...r, status: 'ongoing', driverName: userProfile.name } : r));
+    setRiders(prev => prev.map(r => r.id === rideId ? { 
+      ...r, 
+      status: 'ongoing', 
+      driverName: userProfile.name,
+      driverMessage: details.message,
+      driverPickupTime: details.pickupTime
+    } : r));
     setActiveTab('trips');
     
     const { error } = await supabase.from('ride_requests')
-      .update({ status: 'ongoing', driver_name: userProfile.name })
+      .update({ 
+        status: 'ongoing', 
+        driver_name: userProfile.name,
+        driver_message: details.message,
+        driver_pickup_time: details.pickupTime
+      })
       .eq('id', String(rideId));
       
     if (error) console.error("Failed to update request in Supabase!", error.message);
