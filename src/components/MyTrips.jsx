@@ -302,8 +302,9 @@ export function TripCard({ trip, isDriving, onAction, onViewOffer }) {
           </div>
         </div>
 
-        <button 
+        <motion.button 
            onClick={onAction}
+           whileTap={{ scale: 0.95 }}
            style={{
              border: '1px solid #ff3b30',
              background: 'transparent',
@@ -316,7 +317,7 @@ export function TripCard({ trip, isDriving, onAction, onViewOffer }) {
            }}
         >
           Cancel Ride
-        </button>
+        </motion.button>
       </div>
 
       <div style={{ height: 1, background: '#e1e1e3', margin: '4px 0' }} />
@@ -376,8 +377,9 @@ export function TripCard({ trip, isDriving, onAction, onViewOffer }) {
           paddingBottom: '24px',
           zIndex: 10
         }}>
-          <button 
+          <motion.button 
             onClick={(e) => { e.stopPropagation(); onViewOffer && onViewOffer({ ...trip, driverAvatarUrl: finalDriverAvatar }); }}
+            whileTap={{ scale: 0.95 }}
             style={{
               background: 'white',
               color: '#1a1a1a',
@@ -392,7 +394,7 @@ export function TripCard({ trip, isDriving, onAction, onViewOffer }) {
             }}
           >
             See offer
-          </button>
+          </motion.button>
         </div>
       )}
 
