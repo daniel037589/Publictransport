@@ -174,6 +174,29 @@ export function TripCard({ trip, isDriving, onAction, onViewOffer }) {
   const isOngoing = trip.status === 'ongoing';
   const isPending = trip.status === 'pending';
 
+  const [fetchedDriverAvatar, setFetchedDriverAvatar] = useState(null);
+  const [fetchedRiderAvatar, setFetchedRiderAvatar] = useState(null);
+
+  useEffect(() => {
+    if (trip.driverName) {
+      supabase.from('profiles').select('profile_data').eq('name', trip.driverName).single().then(({ data }) => {
+        if (data && data.profile_data?.avatarUrl) {
+          setFetchedDriverAvatar(data.profile_data.avatarUrl);
+        }
+      });
+    }
+    if (trip.name && !trip.avatarUrl) {
+      supabase.from('profiles').select('profile_data').eq('name', trip.name).single().then(({ data }) => {
+        if (data && data.profile_data?.avatarUrl) {
+          setFetchedRiderAvatar(data.profile_data.avatarUrl);
+        }
+      });
+    }
+  }, [trip.driverName, trip.name, trip.avatarUrl]);
+
+  const finalRiderAvatar = trip.avatarUrl || fetchedRiderAvatar;
+  const finalDriverAvatar = fetchedDriverAvatar;
+
   const topName = isDriving ? trip.name : "You";
   const topNameOngoing = isDriving ? `You with ${trip.name}` : `You with ${trip.driverName}`;
 
@@ -252,11 +275,11 @@ export function TripCard({ trip, isDriving, onAction, onViewOffer }) {
           
           {isOngoing ? (
              <div style={{ display: 'flex', position: 'relative', width: 64, height: 40 }}>
-                <img src={trip.avatarUrl || `https://ui-avatars.com/api/?name=${trip.name}&background=random`} style={{ width: 40, height: 40, borderRadius: '50%', position: 'absolute', left: 0, zIndex: 2, border: '2px solid white' }} alt="rider" />
-                <img src={trip.driverAvatarUrl || `https://ui-avatars.com/api/?name=${trip.driverName}&background=random`} style={{ width: 40, height: 40, borderRadius: '50%', position: 'absolute', left: 24, zIndex: 1, border: '2px solid white' }} alt="driver" />
+                <img src={finalRiderAvatar || `https://ui-avatars.com/api/?name=${trip.name}&background=random`} style={{ width: 40, height: 40, borderRadius: '50%', position: 'absolute', left: 0, zIndex: 2, border: '2px solid white' }} alt="rider" />
+                <img src={finalDriverAvatar || `https://ui-avatars.com/api/?name=${trip.driverName}&background=random`} style={{ width: 40, height: 40, borderRadius: '50%', position: 'absolute', left: 24, zIndex: 1, border: '2px solid white' }} alt="driver" />
              </div>
           ) : (
-             <img src={trip.avatarUrl || `https://ui-avatars.com/api/?name=${trip.name}&background=random`} style={{ width: 40, height: 40, borderRadius: '50%' }} alt="user" />
+             <img src={finalRiderAvatar || `https://ui-avatars.com/api/?name=${trip.name}&background=random`} style={{ width: 40, height: 40, borderRadius: '50%' }} alt="user" />
           )}
 
           <div style={{ display: 'flex', flexDirection: 'column' }}>
@@ -354,7 +377,7 @@ export function TripCard({ trip, isDriving, onAction, onViewOffer }) {
           zIndex: 10
         }}>
           <button 
-            onClick={() => onViewOffer && onViewOffer(trip)}
+            onClick={(e) => { e.stopPropagation(); onViewOffer && onViewOffer({ ...trip, driverAvatarUrl: finalDriverAvatar }); }}
             style={{
               background: 'white',
               color: '#1a1a1a',
