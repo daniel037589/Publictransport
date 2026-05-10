@@ -84,7 +84,7 @@ export function RideOfferPopup({ offer, onAccept, onReject }) {
             </div>
           </div>
 
-          <div className="gr-card-divider" style={{ marginTop: '0', marginBottom: '16px' }} />
+          <div className="gr-card-divider" style={{ marginTop: '12px', marginBottom: '12px' }} />
 
           <div className="gr-badges" style={{ margin: '0', gap: '12px' }}>
             {vehicleSpecs.map(spec => (
