@@ -50,26 +50,33 @@ export function RideOfferPopup({ offer, onAccept, onReject }) {
                 {!driverAvatar && <span>{driverName[0]}</span>}
               </div>
               <button className="offer-btn-profile">
-                <span className="offer-icon-user">👤</span> See Profile
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <path d="M20 21V19C20 17.9391 19.5786 16.9217 18.8284 16.1716C18.0783 15.4214 17.0609 15 16 15H8C6.93913 15 5.92172 15.4214 5.17157 16.1716C4.42143 16.9217 4 17.9391 4 19V21" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                  <path d="M12 11C14.2091 11 16 9.20914 16 7C16 4.79086 14.2091 3 12 3C9.79086 3 8 4.79086 8 7C8 9.20914 9.79086 11 12 11Z" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                </svg>
+                See Profile
               </button>
             </div>
-            <div className="offer-title-group">
-              <h2 className="offer-driver-name">{driverName}</h2>
-              <p className="offer-subtitle">has offered to help you!</p>
-            </div>
-          </div>
+            
+            <div className="offer-right-column">
+              <div className="offer-title-group">
+                <h2 className="offer-driver-name">{driverName}</h2>
+                <p className="offer-subtitle">has offered to help you!</p>
+              </div>
 
-          <div className="offer-message-bubble">
-            <p>{message}</p>
-          </div>
+              <div className="offer-message-bubble">
+                <p>{message}</p>
+              </div>
 
-          <div className="offer-contacts">
-            <div className="offer-contact-avatars">
-               <div className="mini-avatar" style={{ backgroundColor: '#FF8A00' }}></div>
-               <div className="mini-avatar" style={{ backgroundColor: '#00C2FF' }}></div>
-               <div className="mini-avatar" style={{ backgroundColor: '#FF00C7' }}></div>
+              <div className="offer-contacts">
+                <div className="offer-contact-avatars">
+                   <div className="mini-avatar" style={{ backgroundColor: '#2196F3' }}><img src="https://i.pravatar.cc/150?img=11" alt="contact" /></div>
+                   <div className="mini-avatar" style={{ backgroundColor: '#FF9800' }}><img src="https://i.pravatar.cc/150?img=12" alt="contact" /></div>
+                   <div className="mini-avatar" style={{ backgroundColor: '#4CAF50' }}><img src="https://i.pravatar.cc/150?img=13" alt="contact" /></div>
+                </div>
+                <span className="offer-contacts-text">10+ Shared Contacts</span>
+              </div>
             </div>
-            <span className="offer-contacts-text">10+ Shared Contacts</span>
           </div>
 
           <div className="gr-card-divider" />
@@ -79,8 +86,8 @@ export function RideOfferPopup({ offer, onAccept, onReject }) {
             <span className="gr-badge-pill">Pets Friendly</span>
           </div>
 
-          <div className="offer-time-row">
-            <strong>Today at {offer.driverPickupTime || '14:00-17:00'}</strong>
+          <div className="offer-time-row" style={{ fontWeight: 500 }}>
+            Today at <strong style={{ fontWeight: 700 }}>{offer.driverPickupTime || '14:00-17:00'}</strong>
           </div>
 
           <div className="gr-route">
@@ -101,7 +108,7 @@ export function RideOfferPopup({ offer, onAccept, onReject }) {
             </div>
           </div>
 
-          <div className="gr-actions" style={{ marginTop: '16px' }}>
+          <div className="gr-actions" style={{ marginTop: '16px', justifyContent: 'center' }}>
             <button className="gr-btn offer-btn--reject" onClick={() => onReject(offer.id)}>
               Reject
             </button>
