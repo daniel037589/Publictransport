@@ -246,10 +246,6 @@ function App() {
     setIncomingOffer(null);
   };
 
-  const handleDismissOffer = () => {
-    setIncomingOffer(null);
-  };
-
   const handleRejectOffer = async (rideId) => {
     setRiders(prev => prev.map(r => r.id === rideId ? { ...r, status: 'pending', driverName: null, driverMessage: null, driverPickupTime: null } : r));
     setIncomingOffer(null);
