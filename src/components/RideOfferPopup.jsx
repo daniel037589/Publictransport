@@ -34,6 +34,40 @@ export function RideOfferPopup({ offer, onAccept, onReject }) {
   const defaultSpecs = ['Air Conditioning', 'Up to 4 Passengers'];
   const vehicleSpecs = driverProfile?.vehicleSpecs || defaultSpecs;
 
+  const formatTimeframe = (tf) => {
+    if (!tf) return { prefix: "Today at", time: "14:00-17:00" };
+    
+    // e.g. "2026-05-10 11:40"
+    const parts = tf.split(' ');
+    if (parts.length >= 2) {
+      const dateStr = parts[0];
+      const timeStr = parts.slice(1).join(' ');
+      
+      const reqDate = new Date(dateStr);
+      if (!isNaN(reqDate.getTime())) {
+        const today = new Date();
+        const tomorrow = new Date(today);
+        tomorrow.setDate(tomorrow.getDate() + 1);
+        
+        const isToday = reqDate.toDateString() === today.toDateString();
+        const isTomorrow = reqDate.toDateString() === tomorrow.toDateString();
+        
+        let prefix = "Today at";
+        if (isTomorrow) {
+          prefix = "Tomorrow at";
+        } else if (!isToday) {
+          prefix = reqDate.toLocaleDateString('en-US', { month: 'short', day: 'numeric' }) + " at";
+        }
+        
+        return { prefix, time: timeStr };
+      }
+    }
+    
+    return { prefix: "Today at", time: tf };
+  };
+
+  const { prefix, time } = formatTimeframe(requestedTime);
+
   return createPortal(
     <AnimatePresence>
       <div className="gr-overlay" style={{ zIndex: 11000 }}>
@@ -93,7 +127,7 @@ export function RideOfferPopup({ offer, onAccept, onReject }) {
           </div>
 
           <div className="offer-time-row" style={{ fontWeight: 500, margin: '20px 0 16px 0' }}>
-            Today at <strong style={{ fontWeight: 700 }}>{requestedTime}</strong>
+            {prefix} <strong style={{ fontWeight: 700 }}>{time}</strong>
           </div>
 
           <div className="gr-route">
