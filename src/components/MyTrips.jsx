@@ -253,7 +253,7 @@ export function TripCard({ trip, isDriving, onAction, onViewOffer }) {
           {isOngoing ? (
              <div style={{ display: 'flex', position: 'relative', width: 64, height: 40 }}>
                 <img src={trip.avatarUrl || `https://ui-avatars.com/api/?name=${trip.name}&background=random`} style={{ width: 40, height: 40, borderRadius: '50%', position: 'absolute', left: 0, zIndex: 2, border: '2px solid white' }} alt="rider" />
-                <img src={`https://ui-avatars.com/api/?name=${trip.driverName}&background=random`} style={{ width: 40, height: 40, borderRadius: '50%', position: 'absolute', left: 24, zIndex: 1, border: '2px solid white' }} alt="driver" />
+                <img src={trip.driverAvatarUrl || `https://ui-avatars.com/api/?name=${trip.driverName}&background=random`} style={{ width: 40, height: 40, borderRadius: '50%', position: 'absolute', left: 24, zIndex: 1, border: '2px solid white' }} alt="driver" />
              </div>
           ) : (
              <img src={trip.avatarUrl || `https://ui-avatars.com/api/?name=${trip.name}&background=random`} style={{ width: 40, height: 40, borderRadius: '50%' }} alt="user" />

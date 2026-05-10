@@ -24,7 +24,7 @@ export function RideOfferPopup({ offer, onAccept, onReject, onDismiss }) {
   if (!offer) return null;
 
   const driverName = offer.driverName || 'Someone';
-  const driverAvatar = driverProfile?.avatarUrl;
+  const driverAvatar = offer.driverAvatarUrl || driverProfile?.avatarUrl;
   const message = offer.driverMessage || "Hey there! I could pick you up, would that work?";
   const pickupAddr = offer.pickup || 'Kerklaan 15';
   const dropoffAddr = offer.destination || 'Noordereinde 42';

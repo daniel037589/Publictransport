@@ -81,6 +81,7 @@ const serializeForDb = (rider) => ({
   avatar_url: rider.avatarUrl,
   status: rider.status || 'pending',
   driver_name: rider.driverName || null,
+  driver_avatar_url: rider.driverAvatarUrl || null,
   driver_message: rider.driverMessage || null,
   driver_pickup_time: rider.driverPickupTime || null
 });
@@ -105,6 +106,7 @@ const deserializeFromDb = (row) => ({
   avatarUrl: row.avatar_url,
   status: row.status || 'pending',
   driverName: row.driver_name || null,
+  driverAvatarUrl: row.driver_avatar_url || null,
   driverMessage: row.driver_message || null,
   driverPickupTime: row.driver_pickup_time || null
 });
@@ -214,6 +216,7 @@ function App() {
       ...r, 
       status: 'offered', 
       driverName: userProfile.name,
+      driverAvatarUrl: userProfile.avatarUrl,
       driverMessage: details.message,
       driverPickupTime: details.pickupTime
     } : r));
@@ -223,6 +226,7 @@ function App() {
       .update({ 
         status: 'offered', 
         driver_name: userProfile.name,
+        driver_avatar_url: userProfile.avatarUrl,
         driver_message: details.message,
         driver_pickup_time: details.pickupTime
       })
@@ -247,11 +251,11 @@ function App() {
   };
 
   const handleRejectOffer = async (rideId) => {
-    setRiders(prev => prev.map(r => r.id === rideId ? { ...r, status: 'pending', driverName: null, driverMessage: null, driverPickupTime: null } : r));
+    setRiders(prev => prev.map(r => r.id === rideId ? { ...r, status: 'pending', driverName: null, driverAvatarUrl: null, driverMessage: null, driverPickupTime: null } : r));
     setIncomingOffer(null);
     
     const { error } = await supabase.from('ride_requests')
-      .update({ status: 'pending', driver_name: null, driver_message: null, driver_pickup_time: null })
+      .update({ status: 'pending', driver_name: null, driver_avatar_url: null, driver_message: null, driver_pickup_time: null })
       .eq('id', String(rideId));
     
     if (error) console.error("Failed to reject offer!", error.message);
