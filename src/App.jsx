@@ -140,7 +140,9 @@ function App() {
     };
     
     fetchExistingRides();
+  }, []);
 
+  useEffect(() => {
     // Supabase Live Websockets
     const channel = supabase
       .channel('public-ride_requests-changes')
@@ -160,8 +162,8 @@ function App() {
             const updatedRider = deserializeFromDb(payload.new);
             setRiders(prev => prev.map(r => r.id === updatedRider.id ? updatedRider : r));
             
-            // NEW: Detect incoming offer for current user's request
-            if (updatedRider.name === userProfile.name && updatedRider.status === 'offered' && updatedRider.driverName) {
+            // Detect incoming offer for current user's request
+            if (userProfile && updatedRider.name === userProfile.name && updatedRider.status === 'offered' && updatedRider.driverName) {
               setIncomingOffer(updatedRider);
             }
           }
@@ -170,7 +172,7 @@ function App() {
       .subscribe();
 
     return () => supabase.removeChannel(channel);
-  }, []);
+  }, [userProfile?.name]);
 
   const TAB_ORDER = ['home', 'trips', 'community', 'profile'];
   const [previousTab, setPreviousTab] = useState('home');
