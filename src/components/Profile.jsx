@@ -18,6 +18,7 @@ const PREFS_CONFIG = [
 
 export function ProfileScreen({ userProfile, onUpdateProfile, onLogout, onResetDevice, riders = [] }) {
   const [isEditingNeeds, setIsEditingNeeds] = useState(false);
+  const [isEditingSpecs, setIsEditingSpecs] = useState(false);
   const fileInputRef = useRef(null);
 
   const profileName = userProfile.name;
@@ -30,7 +31,8 @@ export function ProfileScreen({ userProfile, onUpdateProfile, onLogout, onResetD
   const tripsTaken = riders?.filter(r => r.name === profileName && r.status === 'completed').length || 0;
   const ridesGiven = riders?.filter(r => r.driverName === profileName).length || 0;
 
-  const vehicleSpecs = ['Air Conditioning', 'Up to 4 Passengers', 'Space for Baggage', 'Pets Friendly'];
+  const ALL_VEHICLE_SPECS = ['Air Conditioning', 'Up to 4 Passengers', 'Space for Baggage', 'Pets Friendly'];
+  const vehicleSpecs = userProfile.vehicleSpecs || ALL_VEHICLE_SPECS;
 
   const handleAvatarUpload = (e) => {
     const file = e.target.files[0];
@@ -58,6 +60,12 @@ export function ProfileScreen({ userProfile, onUpdateProfile, onLogout, onResetD
     const isSelected = prefs.includes(prefId);
     const newPrefs = isSelected ? prefs.filter(p => p !== prefId) : [...prefs, prefId];
     onUpdateProfile({ preferences: newPrefs });
+  };
+
+  const toggleVehicleSpec = (spec) => {
+    const isSelected = vehicleSpecs.includes(spec);
+    const newSpecs = isSelected ? vehicleSpecs.filter(s => s !== spec) : [...vehicleSpecs, spec];
+    onUpdateProfile({ vehicleSpecs: newSpecs });
   };
 
   return (
@@ -218,16 +226,45 @@ export function ProfileScreen({ userProfile, onUpdateProfile, onLogout, onResetD
         <div className="profile-specs-card" style={{ marginBottom: 20 }}>
           <div className="profile-card-header">
             <h3>Vehicle Specifications</h3>
-            <button className="profile-edit-btn">
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34c-.39-.39-1.02-.39-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z" fill="currentColor"/></svg>
-              Edit
+            <button className="profile-edit-btn orange-edit" onClick={() => setIsEditingSpecs(!isEditingSpecs)}>
+              {isEditingSpecs ? (
+                <>Done</>
+              ) : (
+                <>
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34c-.39-.39-1.02-.39-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z" fill="currentColor"/></svg>
+                  Edit
+                </>
+              )}
             </button>
           </div>
-          <div className="profile-pill-wrap">
-            {vehicleSpecs.map(s => (
-              <span key={s} className="profile-pill">{s}</span>
-            ))}
-          </div>
+          {isEditingSpecs ? (
+            <div className="profile-pill-wrap">
+              {ALL_VEHICLE_SPECS.map(s => {
+                const isActive = vehicleSpecs.includes(s);
+                return (
+                  <span 
+                    key={s} 
+                    className="profile-pill" 
+                    onClick={() => toggleVehicleSpec(s)}
+                    style={{ 
+                      cursor: 'pointer',
+                      border: isActive ? '2px solid #1a1a1a' : '1px solid #e1e1e3',
+                      background: isActive ? '#f0f0f0' : 'white'
+                    }}
+                  >
+                    {s}
+                  </span>
+                );
+              })}
+            </div>
+          ) : (
+            <div className="profile-pill-wrap">
+              {vehicleSpecs.length === 0 && <span style={{ fontSize: 13, color: '#1a1a1a', opacity: 0.7 }}>No specifications added</span>}
+              {vehicleSpecs.map(s => (
+                <span key={s} className="profile-pill">{s}</span>
+              ))}
+            </div>
+          )}
         </div>
 
         <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>

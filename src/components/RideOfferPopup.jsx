@@ -28,6 +28,11 @@ export function RideOfferPopup({ offer, onAccept, onReject }) {
   const message = offer.driverMessage || "Hey there! I could pick you up, would that work?";
   const pickupAddr = offer.pickup || 'Kerklaan 15';
   const dropoffAddr = offer.destination || 'Noordereinde 42';
+  const requestedTime = offer.timeframe || '14:00-17:00';
+  
+  // Use driver's car specs if available, otherwise show a default or empty
+  const defaultSpecs = ['Air Conditioning', 'Up to 4 Passengers'];
+  const vehicleSpecs = driverProfile?.vehicleSpecs || defaultSpecs;
 
   return createPortal(
     <AnimatePresence>
@@ -79,15 +84,16 @@ export function RideOfferPopup({ offer, onAccept, onReject }) {
             </div>
           </div>
 
-          <div className="gr-card-divider" />
+          <div className="gr-card-divider" style={{ marginTop: '0', marginBottom: '16px' }} />
 
-          <div className="gr-badges" style={{ margin: '8px 0' }}>
-            <span className="gr-badge-pill">Air Conditioning</span>
-            <span className="gr-badge-pill">Pets Friendly</span>
+          <div className="gr-badges" style={{ margin: '0', gap: '12px' }}>
+            {vehicleSpecs.map(spec => (
+              <span key={spec} className="gr-badge-pill">{spec}</span>
+            ))}
           </div>
 
-          <div className="offer-time-row" style={{ fontWeight: 500 }}>
-            Today at <strong style={{ fontWeight: 700 }}>{offer.driverPickupTime || '14:00-17:00'}</strong>
+          <div className="offer-time-row" style={{ fontWeight: 500, margin: '20px 0 16px 0' }}>
+            Today at <strong style={{ fontWeight: 700 }}>{requestedTime}</strong>
           </div>
 
           <div className="gr-route">
