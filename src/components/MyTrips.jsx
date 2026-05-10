@@ -3,7 +3,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import './MyTrips.css';
 import { supabase } from '../supabaseClient';
 
-export function MyTripsScreen({ riders, onDeleteRide, onCancelOffer, userProfile }) {
+export function MyTripsScreen({ riders, onDeleteRide, onCancelOffer, userProfile, onViewOffer }) {
   const [activeTab, setActiveTab] = useState('Active');
   const [adminProfiles, setAdminProfiles] = useState([]);
 
@@ -120,6 +120,7 @@ export function MyTripsScreen({ riders, onDeleteRide, onCancelOffer, userProfile
                       trip={trip} 
                       isDriving={trip.driverName === userProfile?.name}
                       onAction={() => onDeleteRide(trip.id)}
+                      onViewOffer={onViewOffer}
                     />
                   ))}
                 </AnimatePresence>
@@ -136,6 +137,7 @@ export function MyTripsScreen({ riders, onDeleteRide, onCancelOffer, userProfile
                       trip={trip} 
                       isDriving={trip.driverName === userProfile?.name}
                       onAction={() => onDeleteRide(trip.id)}
+                      onViewOffer={onViewOffer}
                     />
                   ))}
                 </AnimatePresence>
@@ -152,6 +154,7 @@ export function MyTripsScreen({ riders, onDeleteRide, onCancelOffer, userProfile
                       trip={trip} 
                       isDriving={trip.driverName === userProfile?.name}
                       onAction={() => onCancelOffer(trip.id)}
+                      onViewOffer={onViewOffer}
                     />
                   ))}
                 </AnimatePresence>
@@ -166,17 +169,62 @@ export function MyTripsScreen({ riders, onDeleteRide, onCancelOffer, userProfile
 
 import { GiveRideCard } from './GiveRide';
 
-export function TripCard({ trip, isDriving, onAction }) {
-  // Build a display label without clobbering the original rider identity fields
-  const displayName = isDriving
-    ? `Ride for ${trip.name}`
-    : (trip.driverName ? `Ride with ${trip.driverName}` : trip.name || 'Ride Request');
+export function TripCard({ trip, isDriving, onAction, onViewOffer }) {
+  const isOffered = trip.status === 'offered';
+  const isOngoing = trip.status === 'ongoing';
+  const isPending = trip.status === 'pending';
 
-  // Pass ALL original fields through untouched — only override the visible display name
-  const formattedTrip = {
-    ...trip,
-    name: displayName,
-    // avatarUrl, age, birthdate, initial, color, routeGeometry all come from trip spread above
+  const topName = isDriving ? trip.name : "You";
+  const topNameOngoing = isDriving ? `You with ${trip.name}` : `You with ${trip.driverName}`;
+
+  let borderColor = '#e1e1e3';
+  let borderWidth = '1px';
+  if (isOffered) {
+    borderColor = '#f08a4b';
+    borderWidth = '8px';
+  } else if (isOngoing) {
+    borderColor = '#bbcd2f';
+    borderWidth = '8px';
+  }
+
+  let statusText = "Ride Requested";
+  let statusBg = "white";
+  let statusColor = "#1a1a1a";
+  let statusBorder = "1px solid #e1e1e3";
+
+  if (isOffered) {
+    statusText = "Approval Needed";
+    statusBg = "#f08a4b";
+    statusBorder = "none";
+  } else if (isOngoing) {
+    statusText = "Ride Accepted";
+    statusBg = "#bbcd2f";
+    statusBorder = "none";
+  }
+
+  const needsApproval = isOffered && !isDriving;
+  
+  let dateText = "Fri, 27 Mar";
+  let timeText = "14:00";
+  if (trip.timeframe) {
+     const parts = trip.timeframe.split(' ');
+     if (parts.length > 0) {
+       const reqDate = new Date(parts[0]);
+       if (!isNaN(reqDate.getTime())) {
+          dateText = reqDate.toLocaleDateString('en-US', { weekday: 'short', day: 'numeric', month: 'short' });
+       }
+       if (parts.length > 1) {
+          timeText = parts.slice(1).join(' ');
+       }
+     }
+  }
+
+  const needsList = trip.preferences && trip.preferences.length > 0 ? trip.preferences : ['entry'];
+  const prefMap = {
+    'entry': 'Vehicle entry help',
+    'stroller': 'Needs stroller space',
+    'newborn': 'Has newborn',
+    'walker': 'Needs walker space'
   };
 
   return (
@@ -186,13 +234,145 @@ export function TripCard({ trip, isDriving, onAction }) {
       animate={{ opacity: 1, scale: 1 }}
       exit={{ opacity: 0, scale: 0.95 }}
       transition={{ duration: 0.3 }}
-      style={{ marginBottom: '16px' }}
+      style={{
+        background: 'white',
+        borderRadius: '24px',
+        border: `${borderWidth} solid ${borderColor}`,
+        padding: '16px',
+        display: 'flex',
+        flexDirection: 'column',
+        gap: '12px',
+        position: 'relative',
+        overflow: 'hidden',
+        marginBottom: '16px'
+      }}
     >
-      <GiveRideCard 
-        rider={formattedTrip} 
-        showCancel={true} 
-        onCancel={onAction} 
-      />
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+        <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
+          
+          {isOngoing ? (
+             <div style={{ display: 'flex', position: 'relative', width: 64, height: 40 }}>
+                <img src={trip.avatarUrl || `https://ui-avatars.com/api/?name=${trip.name}&background=random`} style={{ width: 40, height: 40, borderRadius: '50%', position: 'absolute', left: 0, zIndex: 2, border: '2px solid white' }} alt="rider" />
+                <img src={`https://ui-avatars.com/api/?name=${trip.driverName}&background=random`} style={{ width: 40, height: 40, borderRadius: '50%', position: 'absolute', left: 24, zIndex: 1, border: '2px solid white' }} alt="driver" />
+             </div>
+          ) : (
+             <img src={trip.avatarUrl || `https://ui-avatars.com/api/?name=${trip.name}&background=random`} style={{ width: 40, height: 40, borderRadius: '50%' }} alt="user" />
+          )}
+
+          <div style={{ display: 'flex', flexDirection: 'column' }}>
+             <span style={{ fontWeight: 600, fontSize: '16px', color: '#1a1a1a', lineHeight: '20px' }}>
+               {isOngoing ? topNameOngoing : topName}
+             </span>
+             <span style={{
+               background: statusBg,
+               border: statusBorder,
+               borderRadius: '24px',
+               padding: '2px 8px',
+               fontSize: '12px',
+               fontWeight: 500,
+               color: statusColor,
+               width: 'fit-content',
+               marginTop: '4px'
+             }}>
+               {statusText}
+             </span>
+          </div>
+        </div>
+
+        <button 
+           onClick={onAction}
+           style={{
+             border: '1px solid #ff3b30',
+             background: 'transparent',
+             color: '#ff3b30',
+             borderRadius: '9999px',
+             padding: '8px 16px',
+             fontWeight: 500,
+             fontSize: '14px',
+             cursor: 'pointer'
+           }}
+        >
+          Cancel Ride
+        </button>
+      </div>
+
+      <div style={{ height: 1, background: '#e1e1e3', margin: '4px 0' }} />
+
+      <div style={{ display: 'flex', gap: '12px', flexWrap: 'wrap' }}>
+        {needsList.map((pref, i) => (
+           <span key={i} style={{
+             border: '1px solid #e1e1e3',
+             borderRadius: '9999px',
+             padding: '4px 12px',
+             fontSize: '12px',
+             fontWeight: 500,
+             display: 'flex',
+             alignItems: 'center',
+             gap: '4px'
+           }}>
+             {prefMap[pref] || pref}
+           </span>
+        ))}
+      </div>
+
+      <div style={{ fontWeight: 500, fontSize: '16px', color: '#1a1a1a', marginTop: '4px' }}>
+        {dateText}
+      </div>
+
+      <div style={{ display: 'flex', flexDirection: 'column', gap: '16px', position: 'relative', marginTop: '8px' }}>
+        <div style={{ position: 'absolute', left: '7px', top: '16px', bottom: '16px', width: '2px', background: '#e1e1e3' }} />
+        
+        <div style={{ display: 'flex', gap: '12px', alignItems: 'flex-start' }}>
+          <div style={{ width: '16px', height: '16px', borderRadius: '50%', border: '4px solid #f08a4b', background: 'white', zIndex: 1, marginTop: '2px' }} />
+          <div style={{ display: 'flex', flexDirection: 'column' }}>
+            <span style={{ fontWeight: 600, fontSize: '14px', color: '#1a1a1a' }}>Pickup at {timeText}</span>
+            <span style={{ fontSize: '12px', color: '#707072' }}>{trip.pickup || 'Kerklaan 15'}</span>
+          </div>
+        </div>
+
+        <div style={{ display: 'flex', gap: '12px', alignItems: 'flex-start' }}>
+          <div style={{ width: '16px', height: '16px', borderRadius: '50%', border: '4px solid #bbcd2f', background: 'white', zIndex: 1, marginTop: '2px' }} />
+          <div style={{ display: 'flex', flexDirection: 'column' }}>
+            <span style={{ fontWeight: 600, fontSize: '14px', color: '#1a1a1a' }}>Drop-off</span>
+            <span style={{ fontSize: '12px', color: '#707072' }}>{trip.destination || 'Noordereinde 42'}</span>
+          </div>
+        </div>
+      </div>
+
+      {needsApproval && (
+        <div style={{
+          position: 'absolute',
+          bottom: 0,
+          left: 0,
+          right: 0,
+          height: '160px',
+          background: 'linear-gradient(to top, rgba(240, 138, 75, 1) 0%, rgba(240, 138, 75, 0.8) 40%, rgba(240, 138, 75, 0) 100%)',
+          display: 'flex',
+          alignItems: 'flex-end',
+          justifyContent: 'center',
+          paddingBottom: '24px',
+          zIndex: 10
+        }}>
+          <button 
+            onClick={() => onViewOffer && onViewOffer(trip)}
+            style={{
+              background: 'white',
+              color: '#1a1a1a',
+              border: 'none',
+              borderRadius: '9999px',
+              padding: '12px 24px',
+              fontWeight: 600,
+              fontSize: '16px',
+              cursor: 'pointer',
+              boxShadow: '0 4px 12px rgba(0,0,0,0.15)',
+              width: '200px'
+            }}
+          >
+            See offer
+          </button>
+        </div>
+      )}
+
     </motion.div>
   );
 }

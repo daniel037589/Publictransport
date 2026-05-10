@@ -4,7 +4,7 @@ import { createPortal } from 'react-dom';
 import { supabase } from '../supabaseClient';
 import './RideScreens.css';
 
-export function RideOfferPopup({ offer, onAccept, onReject }) {
+export function RideOfferPopup({ offer, onAccept, onReject, onDismiss }) {
   const [driverProfile, setDriverProfile] = useState(null);
 
   useEffect(() => {
@@ -78,7 +78,7 @@ export function RideOfferPopup({ offer, onAccept, onReject }) {
           exit={{ y: '100%' }}
           transition={{ type: 'spring', damping: 25, stiffness: 200 }}
         >
-          <button className="offer-close-x" onClick={() => onReject(offer.id)}>X</button>
+          <button className="offer-close-x" onClick={() => onDismiss ? onDismiss(offer.id) : onReject(offer.id)}>X</button>
 
           <div className="offer-header">
             <div className="offer-avatar-box">

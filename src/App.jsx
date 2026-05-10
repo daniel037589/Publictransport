@@ -242,6 +242,14 @@ function App() {
     if (error) console.error("Failed to accept offer!", error.message);
   };
 
+  const handleDismissOffer = () => {
+    setIncomingOffer(null);
+  };
+
+  const handleDismissOffer = () => {
+    setIncomingOffer(null);
+  };
+
   const handleRejectOffer = async (rideId) => {
     setRiders(prev => prev.map(r => r.id === rideId ? { ...r, status: 'pending', driverName: null, driverMessage: null, driverPickupTime: null } : r));
     setIncomingOffer(null);
@@ -292,7 +300,13 @@ function App() {
       </div>
 
       <div className={`screen ${slideClass('trips')}`}>
-        <MyTripsScreen riders={riders} onDeleteRide={handleDeleteRide} onCancelOffer={handleCancelOffer} userProfile={userProfile} />
+        <MyTripsScreen 
+          riders={riders} 
+          onDeleteRide={handleDeleteRide} 
+          onCancelOffer={handleCancelOffer} 
+          userProfile={userProfile}
+          onViewOffer={(trip) => setIncomingOffer(trip)}
+        />
       </div>
 
       <div className={`screen ${slideClass('community')}`}>
@@ -332,6 +346,7 @@ function App() {
         offer={incomingOffer} 
         onAccept={handleAcceptOffer} 
         onReject={handleRejectOffer} 
+        onDismiss={handleDismissOffer}
       />
 
       {activeTab !== 'get-ride' && activeTab !== 'give-ride' && <Navbar activeTab={activeTab} onTabChange={setActiveTab} />}
