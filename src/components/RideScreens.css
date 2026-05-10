@@ -1320,3 +1320,144 @@
   line-height: 1.5;
 }
 
+/* --- Ride Offer Popup Styling --- */
+.offer-popup {
+  padding: 24px;
+  position: relative;
+}
+
+.offer-close-x {
+  position: absolute;
+  top: 16px;
+  right: 16px;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: #E1E1E3;
+  border: none;
+  font-weight: 700;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #1A1A1A;
+}
+
+.offer-header {
+  display: flex;
+  gap: 16px;
+  align-items: center;
+  margin-bottom: 16px;
+}
+
+.offer-avatar-box {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+}
+
+.offer-avatar {
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  background-color: #BBCD2F;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  border: 3px solid white;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+}
+
+.offer-avatar span {
+  font-size: 32px;
+  font-weight: 700;
+  color: white;
+}
+
+.offer-btn-profile {
+  background: #F2F2EB;
+  border: 1px solid #E1E1E3;
+  border-radius: 9999px;
+  padding: 4px 12px;
+  font-size: 12px;
+  font-weight: 600;
+  color: #1A1A1A;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.offer-title-group {
+  flex: 1;
+}
+
+.offer-driver-name {
+  font-family: var(--font-family-button);
+  font-size: 28px;
+  font-weight: 700;
+  margin: 0;
+  color: #1A1A1A;
+}
+
+.offer-subtitle {
+  font-size: 16px;
+  color: #1A1A1A;
+  margin: 0;
+}
+
+.offer-message-bubble {
+  background: #FAFAFA;
+  border: 1px solid #E1E1E3;
+  border-radius: 24px 24px 24px 0;
+  padding: 12px 20px;
+  margin-bottom: 12px;
+  font-family: var(--font-family-body);
+  font-size: 14px;
+  color: #1A1A1A;
+}
+
+.offer-contacts {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 16px;
+}
+
+.offer-contact-avatars {
+  display: flex;
+  margin-left: 4px;
+}
+
+.mini-avatar {
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  border: 2px solid white;
+  margin-left: -8px;
+}
+
+.mini-avatar:first-child { margin-left: 0; }
+
+.offer-contacts-text {
+  font-size: 13px;
+  color: #707072;
+  font-weight: 500;
+}
+
+.offer-time-row {
+  font-size: 16px;
+  margin: 12px 0 8px 0;
+  color: #1A1A1A;
+}
+
+.offer-btn--reject {
+  background: #F08A4B;
+  color: #1A1A1A;
+}
+
+.offer-btn--confirm {
+  background: #BBCD2F;
+  color: #1A1A1A;
+}

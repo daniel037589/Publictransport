@@ -8,6 +8,7 @@ import { ProfileScreen } from './components/Profile';
 import { MyTripsScreen } from './components/MyTrips';
 import { OnboardingScreen } from './components/Onboarding';
 import { CommunitiesScreen } from './components/Community';
+import { RideOfferPopup } from './components/RideOfferPopup';
 import IpadScreen from './components/IpadScreen';
 import DesktopScreen from './components/DesktopScreen';
 import './index.css';
@@ -113,6 +114,7 @@ function App() {
   const [riders, setRiders] = useState(INITIAL_RIDERS);
   const [userProfile, setUserProfile] = useState(null);
   const [isInitializing, setIsInitializing] = useState(true);
+  const [incomingOffer, setIncomingOffer] = useState(null);
 
   useEffect(() => {
     // Check if user has executed local boarding flow before
@@ -157,6 +159,11 @@ function App() {
           } else if (payload.eventType === 'UPDATE') {
             const updatedRider = deserializeFromDb(payload.new);
             setRiders(prev => prev.map(r => r.id === updatedRider.id ? updatedRider : r));
+            
+            // NEW: Detect incoming offer for current user's request
+            if (updatedRider.name === userProfile.name && updatedRider.status === 'offered' && updatedRider.driverName) {
+              setIncomingOffer(updatedRider);
+            }
           }
         }
       )
@@ -203,7 +210,7 @@ function App() {
     // Optimistic local UI update
     setRiders(prev => prev.map(r => r.id === rideId ? { 
       ...r, 
-      status: 'ongoing', 
+      status: 'offered', 
       driverName: userProfile.name,
       driverMessage: details.message,
       driverPickupTime: details.pickupTime
@@ -212,7 +219,7 @@ function App() {
     
     const { error } = await supabase.from('ride_requests')
       .update({ 
-        status: 'ongoing', 
+        status: 'offered', 
         driver_name: userProfile.name,
         driver_message: details.message,
         driver_pickup_time: details.pickupTime
@@ -220,6 +227,28 @@ function App() {
       .eq('id', String(rideId));
       
     if (error) console.error("Failed to update request in Supabase!", error.message);
+  };
+
+  const handleAcceptOffer = async (rideId) => {
+    setRiders(prev => prev.map(r => r.id === rideId ? { ...r, status: 'ongoing' } : r));
+    setIncomingOffer(null);
+    
+    const { error } = await supabase.from('ride_requests')
+      .update({ status: 'ongoing' })
+      .eq('id', String(rideId));
+    
+    if (error) console.error("Failed to accept offer!", error.message);
+  };
+
+  const handleRejectOffer = async (rideId) => {
+    setRiders(prev => prev.map(r => r.id === rideId ? { ...r, status: 'pending', driverName: null, driverMessage: null, driverPickupTime: null } : r));
+    setIncomingOffer(null);
+    
+    const { error } = await supabase.from('ride_requests')
+      .update({ status: 'pending', driver_name: null, driver_message: null, driver_pickup_time: null })
+      .eq('id', String(rideId));
+    
+    if (error) console.error("Failed to reject offer!", error.message);
   };
 
   const handleCancelOffer = async (rideId) => {
@@ -296,6 +325,12 @@ function App() {
           }} 
         />
       </div>
+
+      <RideOfferPopup 
+        offer={incomingOffer} 
+        onAccept={handleAcceptOffer} 
+        onReject={handleRejectOffer} 
+      />
 
       {activeTab !== 'get-ride' && activeTab !== 'give-ride' && <Navbar activeTab={activeTab} onTabChange={setActiveTab} />}
     </div>

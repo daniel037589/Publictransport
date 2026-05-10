@@ -1,0 +1,117 @@
+import { useState, useEffect } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
+import { createPortal } from 'react-dom';
+import { supabase } from '../supabaseClient';
+import './RideScreens.css';
+
+export function RideOfferPopup({ offer, onAccept, onReject }) {
+  const [driverProfile, setDriverProfile] = useState(null);
+
+  useEffect(() => {
+    if (offer?.driverName) {
+      const fetchDriver = async () => {
+        const { data } = await supabase
+          .from('profiles')
+          .select('profile_data')
+          .eq('name', offer.driverName)
+          .single();
+        if (data) setDriverProfile(data.profile_data);
+      };
+      fetchDriver();
+    }
+  }, [offer]);
+
+  if (!offer) return null;
+
+  const driverName = offer.driverName || 'Someone';
+  const driverAvatar = driverProfile?.avatarUrl;
+  const message = offer.driverMessage || "Hey there! I could pick you up, would that work?";
+  const pickupAddr = offer.pickup || 'Kerklaan 15';
+  const dropoffAddr = offer.destination || 'Noordereinde 42';
+
+  return createPortal(
+    <AnimatePresence>
+      <div className="gr-overlay" style={{ zIndex: 11000 }}>
+        <motion.div 
+          className="gr-sheet offer-popup"
+          initial={{ y: '100%' }}
+          animate={{ y: 0 }}
+          exit={{ y: '100%' }}
+          transition={{ type: 'spring', damping: 25, stiffness: 200 }}
+        >
+          <button className="offer-close-x" onClick={() => onReject(offer.id)}>X</button>
+
+          <div className="offer-header">
+            <div className="offer-avatar-box">
+              <div 
+                className="offer-avatar" 
+                style={driverAvatar ? { backgroundImage: `url(${driverAvatar})`, backgroundSize: 'cover' } : { backgroundColor: '#BBCD2F' }}
+              >
+                {!driverAvatar && <span>{driverName[0]}</span>}
+              </div>
+              <button className="offer-btn-profile">
+                <span className="offer-icon-user">👤</span> See Profile
+              </button>
+            </div>
+            <div className="offer-title-group">
+              <h2 className="offer-driver-name">{driverName}</h2>
+              <p className="offer-subtitle">has offered to help you!</p>
+            </div>
+          </div>
+
+          <div className="offer-message-bubble">
+            <p>{message}</p>
+          </div>
+
+          <div className="offer-contacts">
+            <div className="offer-contact-avatars">
+               <div className="mini-avatar" style={{ backgroundColor: '#FF8A00' }}></div>
+               <div className="mini-avatar" style={{ backgroundColor: '#00C2FF' }}></div>
+               <div className="mini-avatar" style={{ backgroundColor: '#FF00C7' }}></div>
+            </div>
+            <span className="offer-contacts-text">10+ Shared Contacts</span>
+          </div>
+
+          <div className="gr-card-divider" />
+
+          <div className="gr-badges" style={{ margin: '8px 0' }}>
+            <span className="gr-badge-pill">Air Conditioning</span>
+            <span className="gr-badge-pill">Pets Friendly</span>
+          </div>
+
+          <div className="offer-time-row">
+            <strong>Today at {offer.driverPickupTime || '14:00-17:00'}</strong>
+          </div>
+
+          <div className="gr-route">
+            <div className="gr-route-row">
+              <div className="gr-dot gr-dot--pickup" />
+              <div className="gr-route-text">
+                <p className="gr-route-label">3 min (1.2 km)</p>
+                <p className="gr-route-address">{pickupAddr}</p>
+              </div>
+            </div>
+            <div className="gr-route-line" />
+            <div className="gr-route-row">
+              <div className="gr-dot gr-dot--dropoff" />
+              <div className="gr-route-text">
+                <p className="gr-route-label">15 min (6 km)</p>
+                <p className="gr-route-address">{dropoffAddr}</p>
+              </div>
+            </div>
+          </div>
+
+          <div className="gr-actions" style={{ marginTop: '16px' }}>
+            <button className="gr-btn offer-btn--reject" onClick={() => onReject(offer.id)}>
+              Reject
+            </button>
+            <button className="gr-btn offer-btn--confirm" onClick={() => onAccept(offer.id)}>
+              Confirm
+            </button>
+          </div>
+        </motion.div>
+      </div>
+    </AnimatePresence>,
+    document.body
+  );
+}
