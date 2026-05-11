@@ -1,9 +1,11 @@
 import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
+import { useLanguage, t } from '../LanguageContext';
 import './MyTrips.css';
 import { supabase } from '../supabaseClient';
 
 export function MyTripsScreen({ riders, onDeleteRide, onCancelOffer, userProfile, onViewOffer }) {
+  const lang = useLanguage();
   const [activeTab, setActiveTab] = useState('Active');
   const [adminProfiles, setAdminProfiles] = useState([]);
 
@@ -66,7 +68,7 @@ export function MyTripsScreen({ riders, onDeleteRide, onCancelOffer, userProfile
             <img src="/logo.png" alt="Community logo" />
           </div>
           <div className="trips-community-info">
-            <span className="trips-community-label">Your Community</span>
+            <span className="trips-community-label">{t('Your Community', lang)}</span>
             <span className="trips-community-name">Ons Kortenhoef</span>
           </div>
         </div>
@@ -78,7 +80,7 @@ export function MyTripsScreen({ riders, onDeleteRide, onCancelOffer, userProfile
               className={`trips-tab ${activeTab === tab ? 'active' : ''}`}
               onClick={() => setActiveTab(tab)}
             >
-              {tab}
+              {t(tab, lang)}
             </button>
           ))}
         </div>

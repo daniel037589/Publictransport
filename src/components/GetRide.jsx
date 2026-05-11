@@ -3,6 +3,7 @@ import { createPortal } from 'react-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { MapContainer, TileLayer, Polyline, Marker, useMap } from 'react-leaflet';
 import L from 'leaflet';
+import { useLanguage, t } from '../LanguageContext';
 import 'leaflet/dist/leaflet.css';
 import './RideScreens.css';
 
@@ -549,6 +550,7 @@ function TimePickerPopup({ isOpen, onClose, initialTimeState, onConfirm }) {
 }
 
 export function GetRideScreen({ onBack, onRequestRide, userProfile }) {
+  const lang = useLanguage();
   const [isLoading, setIsLoading] = useState(false);
   const [isLocating, setIsLocating] = useState(false);
   const [pickup, setPickup] = useState(null);
@@ -751,7 +753,7 @@ export function GetRideScreen({ onBack, onRequestRide, userProfile }) {
       <form className="ride-form-new" onSubmit={handleSubmit}>
         <div className="form-inputs-row">
           <div className="form-field">
-            <label className="form-label-new">Pick up location</label>
+            <label className="form-label-new">{t('Pick up location', lang)}</label>
             <div 
               className="input-field-new"
               onClick={() => !isLoading && setActivePicker('pickup')}
@@ -763,13 +765,13 @@ export function GetRideScreen({ onBack, onRequestRide, userProfile }) {
                 </svg>
               </span>
               <div style={{ flex: 1, padding: '16px 0', fontSize: 16, color: pickup ? '#1a1a1a' : '#707072', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
-                {pickup ? pickup.name : 'Pick Up Location'}
+                {pickup ? pickup.name : t('Pick Up Location', lang)}
               </div>
               <input type="hidden" name="pickup" value={pickup ? pickup.name : ''} />
             </div>
           </div>
           <div className="form-field">
-            <label className="form-label-new">Where to?</label>
+            <label className="form-label-new">{t('Where to?', lang)}</label>
             <div 
               className="input-field-new highlight"
               onClick={() => !isLoading && setActivePicker('dropoff')}
@@ -781,7 +783,7 @@ export function GetRideScreen({ onBack, onRequestRide, userProfile }) {
                 </svg>
               </span>
               <div style={{ flex: 1, padding: '16px 0', fontSize: 16, color: dropoff ? '#1a1a1a' : '#707072', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
-                {dropoff ? dropoff.name : 'Drop Off'}
+                {dropoff ? dropoff.name : t('Drop Off', lang)}
               </div>
               <input type="hidden" name="dropoff" value={dropoff ? dropoff.name : ''} />
             </div>
@@ -789,7 +791,7 @@ export function GetRideScreen({ onBack, onRequestRide, userProfile }) {
         </div>
 
         <div className="form-field">
-          <label className="form-label-new">When do you need a ride?</label>
+          <label className="form-label-new">{t('When do you need a ride?', lang)}</label>
           <div 
             className="input-field-new" 
             onClick={() => !isLoading && setActivePicker('time')}
@@ -808,7 +810,7 @@ export function GetRideScreen({ onBack, onRequestRide, userProfile }) {
                 
                 let mainText = `${date} at ${time}`;
                 if (flexible) mainText = `${date}, Flexible`;
-                if (isToday && isNow && !flexible) mainText = 'Right now';
+                if (isToday && isNow && !flexible) mainText = t('Right now', lang);
                 
                 if (roundtrip && returnDate) {
                     mainText += ` • Return: ${returnDate}` + (flexible ? '' : ` at ${returnTime}`);
@@ -820,7 +822,7 @@ export function GetRideScreen({ onBack, onRequestRide, userProfile }) {
         </div>
 
         <button className="btn-find-neighbour" type="submit" disabled={isLoading}>
-          {isLoading ? 'Searching...' : 'Find a neighbour'}
+          {isLoading ? 'Searching...' : t('Find a neighbour', lang)}
         </button>
       </form>
       <LocationPickerPopup 

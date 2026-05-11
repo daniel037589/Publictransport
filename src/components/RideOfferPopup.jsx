@@ -2,9 +2,11 @@ import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { createPortal } from 'react-dom';
 import { supabase } from '../supabaseClient';
+import { useLanguage, t } from '../LanguageContext';
 import './RideScreens.css';
 
 export function RideOfferPopup({ offer, onAccept, onReject, onDismiss }) {
+  const lang = useLanguage();
   const [activeOffer, setActiveOffer] = useState(offer);
 
   useEffect(() => {
@@ -115,14 +117,14 @@ export function RideOfferPopup({ offer, onAccept, onReject, onDismiss }) {
                     <path d="M20 21V19C20 17.9391 19.5786 16.9217 18.8284 16.1716C18.0783 15.4214 17.0609 15 16 15H8C6.93913 15 5.92172 15.4214 5.17157 16.1716C4.42143 16.9217 4 17.9391 4 19V21" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
                     <path d="M12 11C14.2091 11 16 9.20914 16 7C16 4.79086 14.2091 3 12 3C9.79086 3 8 4.79086 8 7C8 9.20914 9.79086 11 12 11Z" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
                   </svg>
-                  See Profile
+                  {t('See Profile', lang)}
                 </motion.button>
               </div>
               
               <div className="offer-right-column">
                 <div className="offer-title-group">
                   <h2 className="offer-driver-name">{driverName}</h2>
-                  <p className="offer-subtitle">has offered to help you!</p>
+                  <p className="offer-subtitle">{t('has offered to help you!', lang)}</p>
                 </div>
 
                 <div className="offer-message-bubble">
@@ -177,7 +179,7 @@ export function RideOfferPopup({ offer, onAccept, onReject, onDismiss }) {
                 whileTap={{ scale: 0.95 }}
                 whileHover={{ scale: 1.02 }}
               >
-                Reject
+                {t('Reject', lang)}
               </motion.button>
               <motion.button 
                 className="gr-btn offer-btn--confirm" 
@@ -185,7 +187,7 @@ export function RideOfferPopup({ offer, onAccept, onReject, onDismiss }) {
                 whileTap={{ scale: 0.95 }}
                 whileHover={{ scale: 1.02 }}
               >
-                Confirm
+                {t('Confirm', lang)}
               </motion.button>
             </div>
           </motion.div>

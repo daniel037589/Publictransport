@@ -11,6 +11,7 @@ import { CommunitiesScreen } from './components/Community';
 import { RideOfferPopup } from './components/RideOfferPopup';
 import IpadScreen from './components/IpadScreen';
 import DesktopScreen from './components/DesktopScreen';
+import { LanguageContext } from './LanguageContext';
 import './index.css';
 
 const INITIAL_RIDERS = [
@@ -283,8 +284,9 @@ function App() {
   if (isDesktopView) return <DesktopScreen supabase={supabase} />;
 
   return (
-    <div className="app-shell">
-      <div className={`screen ${slideClass('home')}`}>
+    <LanguageContext.Provider value={userProfile?.language || 'en'}>
+      <div className="app-shell">
+        <div className={`screen ${slideClass('home')}`}>
         <HomePage onNavigate={handleNavigate} riders={riders} />
       </div>
 
@@ -346,8 +348,9 @@ function App() {
         onDismiss={handleDismissOffer}
       />
 
-      {activeTab !== 'get-ride' && activeTab !== 'give-ride' && <Navbar activeTab={activeTab} onTabChange={setActiveTab} />}
-    </div>
+        {activeTab !== 'get-ride' && activeTab !== 'give-ride' && <Navbar activeTab={activeTab} onTabChange={setActiveTab} />}
+      </div>
+    </LanguageContext.Provider>
   );
 }
 

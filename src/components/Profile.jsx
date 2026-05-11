@@ -1,5 +1,6 @@
 import { useState, useRef } from 'react';
 import { motion } from 'framer-motion';
+import { useLanguage, t } from '../LanguageContext';
 import './Profile.css';
 
 const ALL_LANGUAGES = [
@@ -17,6 +18,7 @@ const PREFS_CONFIG = [
 ];
 
 export function ProfileScreen({ userProfile, onUpdateProfile, onLogout, onResetDevice, riders = [] }) {
+  const lang = useLanguage();
   const [isEditingNeeds, setIsEditingNeeds] = useState(false);
   const [isEditingSpecs, setIsEditingSpecs] = useState(false);
   const fileInputRef = useRef(null);
@@ -99,14 +101,14 @@ export function ProfileScreen({ userProfile, onUpdateProfile, onLogout, onResetD
                 </div>
                 <div className="profile-verified-pill">
                   <svg width="10" height="10" viewBox="0 0 24 24" fill="none"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z" fill="currentColor"/></svg>
-                  Verified
+                  {t('Verified', lang)}
                 </div>
               </div>
 
               <div className="profile-text-info">
                 <h2 className="profile-name-text">{profileName}</h2>
                 <div className="profile-age-row">
-                  {age ? <span>{age} Years Old</span> : <span>Age not set</span>}
+                  {age ? <span>{age} {t('Years Old', lang)}</span> : <span>{t('Age not set', lang)}</span>}
                 </div>
                 <div className="profile-flags">
                   {userLanguages.slice(0, 3).map(lang => (
@@ -118,18 +120,18 @@ export function ProfileScreen({ userProfile, onUpdateProfile, onLogout, onResetD
 
             <button className="profile-edit-btn" onClick={() => fileInputRef.current.click()}>
               <svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34c-.39-.39-1.02-.39-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z" fill="currentColor"/></svg>
-              Edit
+              {t('Edit', lang)}
             </button>
           </div>
 
           <div className="profile-stats-grid">
             <div className="profile-stat-box">
               <div className="stat-number">{tripsTaken}</div>
-              <div className="stat-text">Trips Taken</div>
+              <div className="stat-text">{t('Trips Taken', lang)}</div>
             </div>
             <div className="profile-stat-box">
               <div className="stat-number">{ridesGiven}</div>
-              <div className="stat-text">Rides Given</div>
+              <div className="stat-text">{t('Rides Given', lang)}</div>
             </div>
           </div>
         </div>
@@ -137,14 +139,14 @@ export function ProfileScreen({ userProfile, onUpdateProfile, onLogout, onResetD
         {/* My Needs Card */}
         <div className="profile-needs-card">
           <div className="profile-card-header">
-            <h3>My Needs</h3>
+            <h3>{t('My Needs', lang)}</h3>
             <button className="profile-edit-btn orange-edit" onClick={() => setIsEditingNeeds(!isEditingNeeds)}>
               {isEditingNeeds ? (
-                <>Done</>
+                <>{t('Done', lang)}</>
               ) : (
                 <>
                   <svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34c-.39-.39-1.02-.39-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z" fill="currentColor"/></svg>
-                  Edit
+                  {t('Edit', lang)}
                 </>
               )}
             </button>
@@ -168,19 +170,19 @@ export function ProfileScreen({ userProfile, onUpdateProfile, onLogout, onResetD
                       gap: '4px'
                     }}
                   >
-                    <span style={{fontSize: '14px'}}>{p.icon}</span> {p.label}
+                    <span style={{fontSize: '14px'}}>{p.icon}</span> {t(p.label, lang)}
                   </span>
                 )
               })}
             </div>
           ) : (
             <div className="profile-pill-wrap">
-              {prefs.length === 0 && <span style={{ fontSize: 13, color: '#1a1a1a', opacity: 0.7 }}>No specific needs defined</span>}
+              {prefs.length === 0 && <span style={{ fontSize: 13, color: '#1a1a1a', opacity: 0.7 }}>{t('No specific needs defined', lang)}</span>}
               {prefs.map(pId => {
                 const conf = PREFS_CONFIG.find(c => c.id === pId);
                 return conf ? (
                   <span key={pId} className="profile-pill" style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
-                    <span style={{fontSize: '14px'}}>{conf.icon}</span> {conf.label}
+                    <span style={{fontSize: '14px'}}>{conf.icon}</span> {t(conf.label, lang)}
                   </span>
                 ) : null;
               })}
@@ -191,10 +193,10 @@ export function ProfileScreen({ userProfile, onUpdateProfile, onLogout, onResetD
         {/* Vehicle Details Card */}
         <div className="profile-vehicle-card">
           <div className="profile-card-header">
-            <h3>Vehicle Details</h3>
+            <h3>{t('Vehicle Details', lang)}</h3>
             <button className="profile-edit-btn">
               <svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34c-.39-.39-1.02-.39-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z" fill="currentColor"/></svg>
-              Edit
+              {t('Edit', lang)}
             </button>
           </div>
           <div className="vehicle-details-body">
@@ -203,16 +205,16 @@ export function ProfileScreen({ userProfile, onUpdateProfile, onLogout, onResetD
             </div>
             <div className="vehicle-specs-table">
               <div className="spec-row">
-                <span className="spec-label">Vehicle</span>
-                <span className="spec-val">Car</span>
+                <span className="spec-label">{t('Vehicle', lang)}</span>
+                <span className="spec-val">{t('Car', lang)}</span>
               </div>
               <div className="spec-row">
-                <span className="spec-label">Brand</span>
+                <span className="spec-label">{t('Brand', lang)}</span>
                 <span className="spec-val">Toyota</span>
               </div>
               <div className="spec-row">
-                <span className="spec-label">Color</span>
-                <span className="spec-val">Dark Gray</span>
+                <span className="spec-label">{t('Color', lang)}</span>
+                <span className="spec-val">{t('Dark Gray', lang)}</span>
               </div>
               <div className="spec-row" style={{borderBottom: 'none', paddingBottom: 0}}>
                 <span className="spec-label">Model</span>
@@ -225,14 +227,14 @@ export function ProfileScreen({ userProfile, onUpdateProfile, onLogout, onResetD
         {/* Vehicle Specifications */}
         <div className="profile-specs-card" style={{ marginBottom: 20 }}>
           <div className="profile-card-header">
-            <h3>Vehicle Specifications</h3>
+            <h3>{t('Vehicle Specifications', lang)}</h3>
             <button className="profile-edit-btn orange-edit" onClick={() => setIsEditingSpecs(!isEditingSpecs)}>
               {isEditingSpecs ? (
-                <>Done</>
+                <>{t('Done', lang)}</>
               ) : (
                 <>
                   <svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34c-.39-.39-1.02-.39-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z" fill="currentColor"/></svg>
-                  Edit
+                  {t('Edit', lang)}
                 </>
               )}
             </button>
@@ -252,19 +254,42 @@ export function ProfileScreen({ userProfile, onUpdateProfile, onLogout, onResetD
                       background: isActive ? '#f0f0f0' : 'white'
                     }}
                   >
-                    {s}
+                    {t(s, lang)}
                   </span>
                 );
               })}
             </div>
           ) : (
             <div className="profile-pill-wrap">
-              {vehicleSpecs.length === 0 && <span style={{ fontSize: 13, color: '#1a1a1a', opacity: 0.7 }}>No specifications added</span>}
+              {vehicleSpecs.length === 0 && <span style={{ fontSize: 13, color: '#1a1a1a', opacity: 0.7 }}>{t('No specifications added', lang)}</span>}
               {vehicleSpecs.map(s => (
-                <span key={s} className="profile-pill">{s}</span>
+                <span key={s} className="profile-pill">{t(s, lang)}</span>
               ))}
             </div>
           )}
+        </div>
+
+        <div className="profile-settings-card" style={{ marginBottom: 20 }}>
+          <div className="profile-card-header">
+            <h3>{t('Settings', lang)}</h3>
+          </div>
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '8px 0' }}>
+            <span style={{ fontWeight: 500 }}>{t('Language', lang)}</span>
+            <button 
+              onClick={() => onUpdateProfile({ language: lang === 'nl' ? 'en' : 'nl' })}
+              style={{
+                background: '#bbcd2f',
+                border: 'none',
+                borderRadius: '9999px',
+                padding: '6px 12px',
+                fontSize: '14px',
+                fontWeight: 'bold',
+                cursor: 'pointer'
+              }}
+            >
+              {lang === 'nl' ? '🇳🇱 NL' : '🇬🇧 EN'}
+            </button>
+          </div>
         </div>
 
         <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
@@ -282,7 +307,7 @@ export function ProfileScreen({ userProfile, onUpdateProfile, onLogout, onResetD
               cursor: 'pointer'
             }}
           >
-            Start New Test Session
+            {t('Start New Test Session', lang)}
           </button>
           <button 
             onClick={onLogout}
@@ -298,7 +323,7 @@ export function ProfileScreen({ userProfile, onUpdateProfile, onLogout, onResetD
               cursor: 'pointer'
             }}
           >
-            Delete Profile from Database
+            {t('Delete Profile from Database', lang)}
           </button>
         </div>
 

@@ -3,6 +3,7 @@ import { createPortal } from 'react-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { MapContainer, TileLayer, Marker, Tooltip, Polyline, useMap, Popup, ZoomControl } from 'react-leaflet';
 import L from 'leaflet';
+import { useLanguage, t } from '../LanguageContext';
 import 'leaflet/dist/leaflet.css';
 import './HomePage.css';
 
@@ -217,6 +218,7 @@ function FullscreenMap({ onClose, riders = [] }) {
 // ── HomePage ───────────────────────────────────────────────────
 export default function HomePage({ onNavigate, riders = [] }) {
   const [mapOpen, setMapOpen] = useState(false);
+  const lang = useLanguage();
 
   return (
     <>
@@ -233,7 +235,7 @@ export default function HomePage({ onNavigate, riders = [] }) {
             <img src="/logo.png" alt="Ons Kortenhoef logo" draggable={false} />
           </div>
           <div className="home-header__text">
-            <span className="home-header__label">Your Community</span>
+            <span className="home-header__label">{t('Your Community', lang)}</span>
             <h1 className="home-header__title">Ons Kortenhoef</h1>
           </div>
         </motion.header>
@@ -266,7 +268,7 @@ export default function HomePage({ onNavigate, riders = [] }) {
             aria-label="Open full map"
           >
             <SearchIcon />
-            Explore
+            {t('Explore', lang)}
           </motion.button>
         </motion.div>
 
@@ -282,9 +284,7 @@ export default function HomePage({ onNavigate, riders = [] }) {
             transition={{ duration: 0.4, delay: 0.2 }}
           >
             <img src="/icons/card-bg-lines.svg" className="home-action-card__bg-lines" alt="" />
-            <span className="home-action-card__text">
-              I need <br /> a ride
-            </span>
+            <span className="home-action-card__text" dangerouslySetInnerHTML={{ __html: t('I need <br /> a ride', lang) }} />
             <div className="home-action-card__icon-new" style={{ top: 'auto', bottom: '-15px' }}>
               <img src="/icons/poi-car.svg" alt="" />
             </div>
@@ -300,9 +300,7 @@ export default function HomePage({ onNavigate, riders = [] }) {
             transition={{ duration: 0.4, delay: 0.3 }}
           >
             <img src="/icons/card-bg-lines.svg" className="home-action-card__bg-lines" alt="" />
-            <span className="home-action-card__text">
-              I’m here <br /> to help
-            </span>
+            <span className="home-action-card__text" dangerouslySetInnerHTML={{ __html: t('I’m here <br /> to help', lang) }} />
             <div className="home-action-card__icon-new">
               <img src="/icons/poi-hand-heart.svg" alt="" />
             </div>

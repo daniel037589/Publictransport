@@ -1,5 +1,6 @@
 import { motion, LayoutGroup } from 'framer-motion';
 import { HomeIcon, MyTripsIcon, CommunityIcon, ProfileIcon } from './Icons';
+import { useLanguage, t } from '../LanguageContext';
 import './Navbar.css';
 
 const NAV_ITEMS = [
@@ -10,6 +11,7 @@ const NAV_ITEMS = [
 ];
 
 export default function Navbar({ activeTab, onTabChange }) {
+  const lang = useLanguage();
   return (
     <nav className="navbar" role="navigation" aria-label="Main navigation">
       <div className="navbar__inner">
@@ -22,7 +24,7 @@ export default function Navbar({ activeTab, onTabChange }) {
                 layout
                 className={`navbar__item${isActive ? ' navbar__item--active' : ''}`}
                 onClick={() => onTabChange(id)}
-                aria-label={label}
+                aria-label={t(label, lang)}
                 aria-current={isActive ? 'page' : undefined}
                 transition={{
                   type: "spring",
@@ -52,10 +54,10 @@ export default function Navbar({ activeTab, onTabChange }) {
                       animate={{ opacity: 1, x: 0 }}
                       className="navbar__label"
                     >
-                      {label}
+                      {t(label, lang)}
                     </motion.span>
                   )}
-                  {!isActive && <span className="navbar__label">{label}</span>}
+                  {!isActive && <span className="navbar__label">{t(label, lang)}</span>}
                 </div>
               </motion.button>
             );
